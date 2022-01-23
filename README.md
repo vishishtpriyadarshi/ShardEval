@@ -6,12 +6,13 @@ The simulator is built on the top of [BlockEval](https://github.com/deepakgouda/
 ```bash
 cd BTP
 pip install -r requirements.txt
-mkdir logs
+cd playground
+mkdir simulation_logs
 ```
 
 ## Usage 
 ```python
-python simulate.py params/params.json > logs/simulation_results.log
+python simulate.py params/params.json > simulation_logs/simulation_results.log
 ```
 
 Upon executing the simulator, a log file ```simulation_results.log``` containing the simulation results and entire lifecycle of the simulation will be generated.
