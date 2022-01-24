@@ -2,6 +2,7 @@ from time import time
 import numpy as np
 
 from nodes.participating_node import ParticipatingNode
+from nodes.full_node import FullNode
 
 
 class Network:
@@ -46,4 +47,28 @@ class Network:
         Run Proof-of-Stake as a Sybil resistance mechanim
         to filter the participating nodes as full nodes.
         """
-        pass
+        
+        participating_node_ids = list(self.participating_nodes.keys())
+        num_nodes = len(self.participating_nodes)
+        # Dummy mechanism
+        mask = np.random.choice([0, 1], size=(num_nodes,), p=[1./3, 2./3])
+
+        for idx in range(num_nodes):
+            curr_participating_node = self.participating_nodes[participating_node_ids[idx]]
+
+            if mask[idx] == 1:
+                curr_id = int(curr_participating_node.id[2:])
+                self.full_nodes["FN%d" % curr_id] = FullNode(
+                    "FN%d" % curr_id,
+                    curr_participating_node.env,
+                    curr_participating_node.location,
+                    curr_participating_node.params
+                )
+
+                if bool(self.params["verbose"]):
+                    print(
+                        "%7.4f" % time() # self.env.now
+                        + " : "
+                        + "%s entered the network from location %s"
+                        % ("FN%d" % curr_id, curr_participating_node.location)
+                    )

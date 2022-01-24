@@ -13,6 +13,7 @@ from network.network import Network
 
 def execute_simulation(name, env, params):
     network_obj = Network(name, env, params)
+    network_obj.execute_sybil_resistance_mechanism()
 
 def load_parameters():
     params_file = sys.argv[1]
