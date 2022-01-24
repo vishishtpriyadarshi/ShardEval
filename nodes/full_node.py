@@ -16,6 +16,8 @@ class FullNode(ParticipatingNode):
         # 1 - Principal Committee
         # 2 - Shard Leader
         # 3 - Shard Member
+        
+        self.shard_id = -1
 
     def add_network_parameters(self, network_nodes, neighbours_ids):
         self.network_nodes = network_nodes
