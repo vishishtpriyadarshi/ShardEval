@@ -10,12 +10,15 @@ class FullNode(ParticipatingNode):
     These nodes are the subsets of the participating nodes."""
 
     def __init__(self, id, env, network_nodes, neighbours_ids, location, params):
-        super().__init__(self, id, env, network_nodes, neighbours_ids, location, params)
+        super().__init__(self, id, env, location, params)
         self.node_type = 3
         # 0 - Node is in between re-configuration (slot)
         # 1 - Principal Committee
         # 2 - Shard Leader
         # 3 - Shard Member
+
+        self.network_nodes = network_nodes
+        self.neighbours_ids = neighbours_ids
         
 
     def cast_vote:
