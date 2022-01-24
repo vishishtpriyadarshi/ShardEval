@@ -1,88 +1,176 @@
-1643020058.3517 : FN0 entered the network from location Ireland
-1643020058.3517 : FN1 entered the network from location Ohio
-1643020058.3517 : FN2 entered the network from location Tokyo
-1643020058.3518 : FN3 entered the network from location Tokyo
-1643020058.3518 : FN5 entered the network from location Ohio
-1643020058.3518 : FN6 entered the network from location Ireland
-1643020058.3518 : FN7 entered the network from location Ireland
-1643020058.3518 : FN8 entered the network from location Ireland
-1643020058.3518 : FN10 entered the network from location Ireland
-1643020058.3518 : FN11 entered the network from location Tokyo
-1643020058.3518 : FN14 entered the network from location Ireland
-1643020058.3518 : FN17 entered the network from location Ireland
-1643020058.3518 : FN18 entered the network from location Tokyo
-1643020058.3518 : FN20 entered the network from location Tokyo
-1643020058.3518 : FN22 entered the network from location Tokyo
-1643020058.3518 : FN23 entered the network from location Tokyo
-1643020058.3518 : FN24 entered the network from location Tokyo
-1643020058.3518 : FN25 entered the network from location Ohio
-1643020058.3518 : FN26 entered the network from location Tokyo
-1643020058.3518 : FN27 entered the network from location Ohio
-1643020058.3518 : FN30 entered the network from location Ireland
-1643020058.3518 : FN31 entered the network from location Tokyo
-1643020058.3518 : FN33 entered the network from location Ohio
-1643020058.3518 : FN35 entered the network from location Tokyo
-1643020058.3518 : FN36 entered the network from location Ireland
-1643020058.3519 : FN45 entered the network from location Ohio
-1643020058.3519 : FN47 entered the network from location Ireland
-1643020058.3519 : FN48 entered the network from location Tokyo
-1643020058.3519 : FN49 entered the network from location Ireland
-1643020058.3519 : FN50 entered the network from location Tokyo
-1643020058.3519 : FN51 entered the network from location Ohio
-1643020058.3519 : FN52 entered the network from location Ireland
-1643020058.3519 : FN54 entered the network from location Ohio
-1643020058.3519 : FN55 entered the network from location Ireland
-1643020058.3519 : FN57 entered the network from location Ireland
-1643020058.3519 : FN58 entered the network from location Tokyo
-1643020058.3519 : FN59 entered the network from location Ireland
-1643020058.3519 : FN60 entered the network from location Ohio
-1643020058.3519 : FN62 entered the network from location Ohio
-1643020058.3519 : FN66 entered the network from location Ohio
-1643020058.3519 : FN68 entered the network from location Ireland
-1643020058.3519 : FN69 entered the network from location Ohio
-1643020058.3519 : FN70 entered the network from location Tokyo
-1643020058.3519 : FN71 entered the network from location Tokyo
-1643020058.3519 : FN72 entered the network from location Ireland
-1643020058.3519 : FN73 entered the network from location Ireland
-1643020058.3519 : FN74 entered the network from location Tokyo
-1643020058.3520 : FN76 entered the network from location Ohio
-1643020058.3520 : FN81 entered the network from location Tokyo
-1643020058.3520 : FN83 entered the network from location Tokyo
-1643020058.3520 : FN85 entered the network from location Ohio
-1643020058.3520 : FN86 entered the network from location Ireland
-1643020058.3520 : FN87 entered the network from location Ireland
-1643020058.3520 : FN89 entered the network from location Tokyo
-1643020058.3520 : FN91 entered the network from location Ireland
-1643020058.3520 : FN94 entered the network from location Tokyo
-1643020058.3520 : FN95 entered the network from location Tokyo
-1643020058.3520 : FN96 entered the network from location Ireland
+1643030001.2499 : FN0 entered the network from location Ireland
+1643030001.2499 : FN1 entered the network from location Tokyo
+1643030001.2499 : FN2 entered the network from location Ohio
+1643030001.2499 : FN3 entered the network from location Ireland
+1643030001.2499 : FN4 entered the network from location Tokyo
+1643030001.2499 : FN6 entered the network from location Ireland
+1643030001.2499 : FN7 entered the network from location Tokyo
+1643030001.2499 : FN8 entered the network from location Ohio
+1643030001.2499 : FN10 entered the network from location Ohio
+1643030001.2499 : FN11 entered the network from location Ireland
+1643030001.2499 : FN13 entered the network from location Ireland
+1643030001.2499 : FN16 entered the network from location Ireland
+1643030001.2499 : FN17 entered the network from location Ohio
+1643030001.2499 : FN20 entered the network from location Ireland
+1643030001.2500 : FN21 entered the network from location Tokyo
+1643030001.2500 : FN22 entered the network from location Ireland
+1643030001.2500 : FN23 entered the network from location Ireland
+1643030001.2500 : FN24 entered the network from location Tokyo
+1643030001.2500 : FN25 entered the network from location Ireland
+1643030001.2500 : FN26 entered the network from location Tokyo
+1643030001.2500 : FN27 entered the network from location Ireland
+1643030001.2500 : FN28 entered the network from location Ohio
+1643030001.2500 : FN30 entered the network from location Tokyo
+1643030001.2500 : FN31 entered the network from location Ohio
+1643030001.2500 : FN33 entered the network from location Ireland
+1643030001.2500 : FN34 entered the network from location Ohio
+1643030001.2500 : FN36 entered the network from location Ireland
+1643030001.2500 : FN37 entered the network from location Ireland
+1643030001.2500 : FN38 entered the network from location Tokyo
+1643030001.2500 : FN40 entered the network from location Ireland
+1643030001.2500 : FN41 entered the network from location Ohio
+1643030001.2500 : FN42 entered the network from location Tokyo
+1643030001.2500 : FN43 entered the network from location Ireland
+1643030001.2500 : FN44 entered the network from location Ireland
+1643030001.2500 : FN45 entered the network from location Ireland
+1643030001.2501 : FN47 entered the network from location Tokyo
+1643030001.2501 : FN48 entered the network from location Ireland
+1643030001.2501 : FN50 entered the network from location Ireland
+1643030001.2501 : FN51 entered the network from location Ireland
+1643030001.2501 : FN52 entered the network from location Tokyo
+1643030001.2501 : FN54 entered the network from location Tokyo
+1643030001.2501 : FN55 entered the network from location Tokyo
+1643030001.2501 : FN56 entered the network from location Ireland
+1643030001.2501 : FN57 entered the network from location Tokyo
+1643030001.2501 : FN58 entered the network from location Ohio
+1643030001.2501 : FN59 entered the network from location Tokyo
+1643030001.2501 : FN60 entered the network from location Tokyo
+1643030001.2501 : FN62 entered the network from location Tokyo
+1643030001.2501 : FN63 entered the network from location Tokyo
+1643030001.2501 : FN64 entered the network from location Ohio
+1643030001.2501 : FN65 entered the network from location Ohio
+1643030001.2501 : FN66 entered the network from location Ohio
+1643030001.2501 : FN67 entered the network from location Tokyo
+1643030001.2501 : FN68 entered the network from location Ohio
+1643030001.2501 : FN69 entered the network from location Ireland
+1643030001.2501 : FN70 entered the network from location Ireland
+1643030001.2501 : FN71 entered the network from location Tokyo
+1643030001.2502 : FN72 entered the network from location Tokyo
+1643030001.2502 : FN73 entered the network from location Tokyo
+1643030001.2502 : FN74 entered the network from location Ireland
+1643030001.2502 : FN77 entered the network from location Ireland
+1643030001.2502 : FN82 entered the network from location Ireland
+1643030001.2502 : FN83 entered the network from location Ireland
+1643030001.2502 : FN85 entered the network from location Ohio
+1643030001.2502 : FN88 entered the network from location Ohio
+1643030001.2502 : FN89 entered the network from location Tokyo
+1643030001.2502 : FN91 entered the network from location Ireland
+1643030001.2502 : FN92 entered the network from location Tokyo
+1643030001.2502 : FN93 entered the network from location Ireland
+1643030001.2502 : FN94 entered the network from location Ohio
+1643030001.2502 : FN95 entered the network from location Ohio
+1643030001.2502 : FN96 entered the network from location Tokyo
+1643030001.2502 : FN99 entered the network from location Ireland
 
 ============  NETWORK INFORMATION  ============
-Principal Committee Nodes - ['FN1', 'FN8'] 
+Principal Committee Nodes - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38']
+FN73 has neighbors - ['FN93' 'FN69' 'FN16' 'FN41']
+FN93 has neighbors - ['FN38' 'FN41' 'FN13' 'FN16']
+FN69 has neighbors - ['FN73' 'FN16' 'FN13' 'FN93']
+FN13 has neighbors - ['FN41' 'FN69' 'FN16' 'FN93']
+FN41 has neighbors - ['FN38' 'FN16' 'FN73' 'FN13']
+FN16 has neighbors - ['FN73' 'FN38' 'FN41' 'FN13']
+FN38 has neighbors - ['FN13' 'FN41' 'FN69' 'FN93']
 
 
 				SHARD - 1
-Nodes - ['FN3', 'FN5', 'FN26', 'FN36', 'FN45', 'FN47', 'FN54', 'FN71', 'FN87', 'FN94', 'FN96']
-Leader - ['FN45']
+Leader - ['FN8']
+Nodes -
+1. FN8 has neighbours - ['FN13' 'FN93' 'FN16' 'FN41' 'FN62' 'FN21' 'FN11' 'FN60']
+2. FN11 has neighbours - ['FN77' 'FN44' 'FN21' 'FN8']
+3. FN21 has neighbours - ['FN60' 'FN11' 'FN54' 'FN50']
+4. FN24 has neighbours - ['FN31' 'FN21' 'FN47' 'FN54']
+5. FN31 has neighbours - ['FN44' 'FN77' 'FN24' 'FN47']
+6. FN44 has neighbours - ['FN60' 'FN62' 'FN47' 'FN54']
+7. FN47 has neighbours - ['FN44' 'FN11' 'FN21' 'FN77']
+8. FN50 has neighbours - ['FN44' 'FN31' 'FN92' 'FN24']
+9. FN54 has neighbours - ['FN11' 'FN21' 'FN62' 'FN60']
+10. FN60 has neighbours - ['FN62' 'FN47' 'FN54' 'FN11']
+11. FN62 has neighbours - ['FN50' 'FN92' 'FN54' 'FN77']
+12. FN77 has neighbours - ['FN60' 'FN92' 'FN54' 'FN11']
+13. FN92 has neighbours - ['FN60' 'FN54' 'FN24' 'FN47']
 
 
 				SHARD - 2
-Nodes - ['FN2', 'FN14', 'FN18', 'FN22', 'FN30', 'FN50', 'FN66', 'FN68', 'FN69', 'FN76', 'FN81']
-Leader - ['FN50']
+Leader - ['FN20']
+Nodes -
+1. FN2 has neighbours - ['FN7' 'FN95' 'FN20' 'FN37']
+2. FN7 has neighbours - ['FN95' 'FN83' 'FN42' 'FN37']
+3. FN20 has neighbours - ['FN41' 'FN93' 'FN13' 'FN16' 'FN99' 'FN2' 'FN33' 'FN95']
+4. FN33 has neighbours - ['FN2' 'FN37' 'FN95' 'FN72']
+5. FN37 has neighbours - ['FN95' 'FN7' 'FN42' 'FN40']
+6. FN40 has neighbours - ['FN2' 'FN56' 'FN20' 'FN51']
+7. FN42 has neighbours - ['FN37' 'FN7' 'FN99' 'FN83']
+8. FN51 has neighbours - ['FN42' 'FN99' 'FN7' 'FN72']
+9. FN56 has neighbours - ['FN7' 'FN40' 'FN20' 'FN83']
+10. FN72 has neighbours - ['FN95' 'FN37' 'FN2' 'FN40']
+11. FN83 has neighbours - ['FN2' 'FN51' 'FN56' 'FN33']
+12. FN95 has neighbours - ['FN51' 'FN37' 'FN83' 'FN7']
+13. FN99 has neighbours - ['FN20' 'FN72' 'FN7' 'FN95']
 
 
 				SHARD - 3
-Nodes - ['FN6', 'FN7', 'FN10', 'FN17', 'FN20', 'FN24', 'FN48', 'FN57', 'FN60', 'FN72', 'FN91']
-Leader - ['FN60']
+Leader - ['FN6']
+Nodes -
+1. FN6 has neighbours - ['FN38' 'FN16' 'FN73' 'FN93' 'FN74' 'FN27' 'FN25' 'FN28']
+2. FN25 has neighbours - ['FN65' 'FN63' 'FN27' 'FN28']
+3. FN27 has neighbours - ['FN52' 'FN74' 'FN25' 'FN88']
+4. FN28 has neighbours - ['FN70' 'FN25' 'FN74' 'FN27']
+5. FN52 has neighbours - ['FN65' 'FN74' 'FN63' 'FN91']
+6. FN63 has neighbours - ['FN65' 'FN91' 'FN25' 'FN6']
+7. FN64 has neighbours - ['FN25' 'FN70' 'FN96' 'FN65']
+8. FN65 has neighbours - ['FN63' 'FN70' 'FN91' 'FN88']
+9. FN70 has neighbours - ['FN27' 'FN6' 'FN64' 'FN63']
+10. FN74 has neighbours - ['FN91' 'FN6' 'FN52' 'FN65']
+11. FN88 has neighbours - ['FN52' 'FN27' 'FN91' 'FN28']
+12. FN91 has neighbours - ['FN88' 'FN74' 'FN96' 'FN70']
+13. FN96 has neighbours - ['FN25' 'FN52' 'FN88' 'FN63']
 
 
 				SHARD - 4
-Nodes - ['FN1', 'FN8', 'FN25', 'FN31', 'FN33', 'FN49', 'FN51', 'FN55', 'FN58', 'FN62', 'FN70', 'FN85', 'FN86']
-Leader - ['FN55']
+Leader - ['FN67']
+Nodes -
+1. FN4 has neighbours - ['FN17' 'FN58' 'FN67' 'FN23']
+2. FN10 has neighbours - ['FN68' 'FN17' 'FN36' 'FN82']
+3. FN17 has neighbours - ['FN36' 'FN45' 'FN82' 'FN67']
+4. FN23 has neighbours - ['FN17' 'FN30' 'FN71' 'FN10']
+5. FN30 has neighbours - ['FN57' 'FN67' 'FN36' 'FN17']
+6. FN36 has neighbours - ['FN82' 'FN58' 'FN45' 'FN71']
+7. FN45 has neighbours - ['FN30' 'FN23' 'FN71' 'FN4']
+8. FN57 has neighbours - ['FN23' 'FN30' 'FN71' 'FN45']
+9. FN58 has neighbours - ['FN10' 'FN30' 'FN67' 'FN17']
+10. FN67 has neighbours - ['FN69' 'FN73' 'FN13' 'FN38' 'FN57' 'FN36' 'FN23' 'FN30']
+11. FN68 has neighbours - ['FN71' 'FN36' 'FN23' 'FN58']
+12. FN71 has neighbours - ['FN68' 'FN82' 'FN58' 'FN30']
+13. FN82 has neighbours - ['FN58' 'FN23' 'FN71' 'FN68']
 
 
 				SHARD - 5
-Nodes - ['FN0', 'FN11', 'FN23', 'FN27', 'FN35', 'FN52', 'FN59', 'FN73', 'FN74', 'FN83', 'FN89', 'FN95']
-Leader - ['FN35']
+Leader - ['FN43']
+Nodes -
+1. FN0 has neighbours - ['FN34' 'FN94' 'FN89' 'FN3']
+2. FN1 has neighbours - ['FN89' 'FN0' 'FN34' 'FN43']
+3. FN3 has neighbours - ['FN26' 'FN43' 'FN34' 'FN94']
+4. FN22 has neighbours - ['FN3' 'FN55' 'FN34' 'FN59']
+5. FN26 has neighbours - ['FN3' 'FN55' 'FN48' 'FN85']
+6. FN34 has neighbours - ['FN55' 'FN59' 'FN48' 'FN85']
+7. FN43 has neighbours - ['FN13' 'FN93' 'FN16' 'FN38' 'FN0' 'FN94' 'FN66' 'FN26']
+8. FN48 has neighbours - ['FN1' 'FN59' 'FN94' 'FN34']
+9. FN55 has neighbours - ['FN0' 'FN43' 'FN94' 'FN34']
+10. FN59 has neighbours - ['FN3' 'FN1' 'FN22' 'FN0']
+11. FN66 has neighbours - ['FN43' 'FN89' 'FN22' 'FN0']
+12. FN85 has neighbours - ['FN1' 'FN22' 'FN26' 'FN94']
+13. FN89 has neighbours - ['FN66' 'FN1' 'FN0' 'FN59']
+14. FN94 has neighbours - ['FN43' 'FN1' 'FN48' 'FN26']
 
 

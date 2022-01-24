@@ -27,6 +27,7 @@ def load_parameters():
     return params
 
 def main():
+    np.random.seed(7)
     params = load_parameters()
     execute_simulation("Test 1", "", params)
 

@@ -17,6 +17,8 @@ class Network:
         self.locations = params["locations"]
         self.participating_nodes = {}
         self.full_nodes = {}
+        self.principal_committee_nodes = {}
+        self.shard_nodes = []
 
         self.add_participating_nodes(params["num_nodes"])
 
@@ -78,6 +80,7 @@ class Network:
         Start executing a fresh epoch
         """
         self.partition_nodes()
+        self.establish_network_connections()
         self.display_network_info()
 
     def partition_nodes(self):
@@ -94,6 +97,7 @@ class Network:
 
         for node_id in principal_committee_nodes:
             self.full_nodes[node_id].node_type = 1
+            self.principal_committee_nodes[node_id] = self.full_nodes[node_id]
 
         # Allot nodes to different shards
         shard_nodes = nodes[num_principal_committe_nodes:]
@@ -107,18 +111,84 @@ class Network:
             # Assign a leader randomly
             self.full_nodes[np.random.choice(shard_groups[idx])].node_type = 2
 
-    def display_network_info(self):
-        principal_committee_nodes = [node.id for _, node in self.full_nodes.items() if node.node_type == 1]
+        self.shard_nodes = [[] for i in range(self.params["num_shards"])]
+        for id, node in self.full_nodes.items():
+            if id not in self.principal_committee_nodes:
+                self.shard_nodes[node.shard_id - 1].append(node.id)
+       
+    def establish_network_connections(self):
+        """
+        Establish network topology between the full nodes
+        """
+
+        # 1. Connect the Principal Committee nodes
+        """Degree of network graph. Degree >= n/2 guarantees a connected graph"""
+        degree = len(self.principal_committee_nodes) // 2 + 1
+
+        for id, node in self.principal_committee_nodes.items():
+            possible_neighbours = list(self.principal_committee_nodes.keys())
+            possible_neighbours.remove(id)
+            
+            """Generate a random sample of size degree without replacement from possible neighbours"""
+            neighbours_list = np.random.choice(
+                possible_neighbours, size=degree, replace=False
+            )
+            
+            node.add_network_parameters(self.full_nodes, neighbours_list)
     
-        shard_nodes = [[] for i in range(self.params["num_shards"])]
-        for _, node in self.full_nodes.items():
-            shard_nodes[node.shard_id - 1].append(node.id)
+        # 2. Connect the leaders of the shards with the Principal Committee
+        for idx in range(len(self.shard_nodes)):
+            curr_leader = self.get_shard_leader(idx)
+            possible_neighbours = list(self.principal_committee_nodes.keys())
+            
+            neighbours_list = np.random.choice(
+                possible_neighbours, size=degree, replace=False
+            )
+
+            curr_leader.add_network_parameters(self.full_nodes, neighbours_list)
+
+        # 3. Connect the shard nodes with each other and the leaders
+        for idx in range(len(self.shard_nodes)):
+            for curr_node in self.shard_nodes[idx]:
+                possible_neighbours = self.shard_nodes[idx].copy()
+                possible_neighbours.remove(curr_node)
+            
+                neighbours_list = np.random.choice(
+                    possible_neighbours, size=degree, replace=False
+                )
+
+                if self.full_nodes[curr_node].node_type == 2:
+                    # If curr_node is a leader, append to the neighbors list
+                    self.full_nodes[curr_node].neighbours_ids = np.append(self.full_nodes[curr_node].neighbours_ids
+                                                                            , neighbours_list)
+                else:
+                    self.full_nodes[curr_node].add_network_parameters(self.full_nodes, neighbours_list)
+
+    def get_shard_leader(self, idx):
+        """
+        Return leader of the specified shard
+        """
+        leader = [idx for idx in self.shard_nodes[idx] if self.full_nodes[idx].node_type == 2]
+        if len(leader) != 1:
+            raise RuntimeError("More than 1 leader for the Shard - %d" %idx)
         
+        return self.full_nodes[leader[0]]
+
+    def display_network_info(self):
         print("\n============  NETWORK INFORMATION  ============")
-        print("Principal Committee Nodes -", principal_committee_nodes, "\n\n")
+        print("Principal Committee Nodes -", list(self.principal_committee_nodes.keys()))
+        
+        for id, node in self.principal_committee_nodes.items():
+            print("{} has neighbors -".format(id), end=' ')
+            print(node.neighbours_ids)
+        print("\n")
 
         for i in range(self.params["num_shards"]):
-            print("\t\t\t\tSHARD -", i+1)
-            print("Nodes -", shard_nodes[i])
-            print("Leader -", [i for i in shard_nodes[i] if self.full_nodes[i].node_type == 2])
+            print("\t\t\t\tSHARD -", i+1)            
+            print("Leader -", [l for l in self.shard_nodes[i] if self.full_nodes[l].node_type == 2])
+
+            print("Nodes -")
+            for j in range(len(self.shard_nodes[i])):
+                print("{}. {} has neighbours -".format(j+1, self.shard_nodes[i][j]), end=' ') 
+                print(self.full_nodes[self.shard_nodes[i][j]].neighbours_ids, end='\n')
             print("\n")

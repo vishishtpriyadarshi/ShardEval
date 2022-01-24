@@ -4,7 +4,7 @@
     "num_epochs": 1,
     "num_slots": 10,
     "num_shards": 5,
-    "principal_committee_size": 0.05,
+    "principal_committee_size": 0.1,
     "log_file": "simulation_results.log",
     "verbose": "True",
     "locations": [
