@@ -44,23 +44,16 @@ class TransactionPool:
         dest_location = self.nodes[self.id].location
         delay = get_transmission_delay(source_location, dest_location)
 
-        # yield self.env.timeout(delay)
+        yield self.env.timeout(delay)
         if (
             not self.transaction_queue.is_present(transaction)
             and transaction not in self.prev_transactions
         ):
             self.transaction_queue.insert(transaction)
-            # broadcast(
-            #     self.env,
-            #     transaction,
-            #     "Transaction",
-            #     self.id,
-            #     self.neighbourList,
-            #     self.params,
-            #     nodes=self.nodes,
-            # )
-            # if self.params["verbose"] == "vv":
-            #     print(
-            #         "%7.4f : %s accepted by %s"
-            #         % (self.env.now, transaction.id, self.id)
-            #     )
+            broadcast(self.env, transaction, "Tx", self.id, self.neighbours_ids, self.nodes)
+            
+            if self.params["verbose"] == "Elaborate":
+                print(
+                    "%7.4f : %s accepted by %s"
+                    % (self.env.now, transaction.id, self.id)
+                )

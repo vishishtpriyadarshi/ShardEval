@@ -86,6 +86,7 @@ class Network:
         """
         self.partition_nodes()
         self.establish_network_connections()
+        self.allow_transactions_generation()
         self.add_pipes()
         self.display_network_info()
 
@@ -157,20 +158,26 @@ class Network:
 
         # Connect the shard nodes with each other and the leaders
         for idx in range(len(self.shard_nodes)):
-            for curr_node in self.shard_nodes[idx]:
+            curr_shard_nodes = {}
+            for node_id in self.shard_nodes[idx]:
+                curr_shard_nodes[node_id] = self.full_nodes[node_id]
+
+            for curr_node_id in self.shard_nodes[idx]:
                 possible_neighbours = self.shard_nodes[idx].copy()
-                possible_neighbours.remove(curr_node)
+                possible_neighbours.remove(curr_node_id)
             
                 neighbours_list = np.random.choice(
                     possible_neighbours, size=degree, replace=False
                 )
 
-                if self.full_nodes[curr_node].node_type == 2:
+                if self.full_nodes[curr_node_id].node_type == 2:
                     # If curr_node is a leader, append to the neighbors list
-                    self.full_nodes[curr_node].neighbours_ids = np.append(self.full_nodes[curr_node].neighbours_ids,
+                    self.full_nodes[curr_node_id].neighbours_ids = np.append(self.full_nodes[curr_node_id].neighbours_ids,
                                                                           neighbours_list)
                 else:
-                    self.full_nodes[curr_node].add_network_parameters(self.full_nodes, neighbours_list)
+                    self.full_nodes[curr_node_id].add_network_parameters(curr_shard_nodes, neighbours_list)
+                
+                self.full_nodes[curr_node_id].shard_leader =  self.get_shard_leader(idx)
 
 
     def get_shard_leader(self, idx):
@@ -182,6 +189,20 @@ class Network:
             raise RuntimeError("More than 1 leader for the Shard - %d" %idx)
         
         return self.full_nodes[leader[0]]
+
+
+    def allow_transactions_generation(self):
+        """
+        Prompt each shard node to generate and broadcast the transactions
+        """
+        for idx in range(len(self.shard_nodes)):
+            for node_id in self.shard_nodes[idx]:
+                curr_node = self.full_nodes[node_id]
+
+                if curr_node.node_type == 2:
+                    continue
+                
+                curr_node.env.process(curr_node.generate_transactions())
 
 
     def add_pipes(self):

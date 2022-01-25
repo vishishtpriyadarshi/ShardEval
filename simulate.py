@@ -15,9 +15,15 @@ def execute_simulation(name, env, params):
     network_obj = Network(name, env, params)
     network_obj.execute_sybil_resistance_mechanism()
 
-    env.run(until=params["simulation_time"])
     for idx in range(params["num_epochs"]):
         network_obj.run_epoch()
+    
+    """
+    To-Do:  Decide where it should be put.
+            Putting it before prev loop doesn't generate transactions.
+    """
+    env.run(until=params["simulation_time"])
+
 
 def load_parameters():
     params_file = sys.argv[1]
@@ -26,6 +32,7 @@ def load_parameters():
     params = json.loads(params)
 
     return params
+
 
 def main():
     np.random.seed(7)
@@ -36,7 +43,7 @@ def main():
     execute_simulation("Test Network", env, params)
     stop_time = time()
 
-    print(f"Simulation Time = {stop_time - start_time} seconds")
+    print(f"\nSimulation Time = {stop_time - start_time} seconds")
 
 
 if __name__=="__main__":
