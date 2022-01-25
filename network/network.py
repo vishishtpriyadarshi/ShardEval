@@ -41,7 +41,7 @@ class Network:
             )
             if bool(self.params["verbose"]) and self.params["verbose"] == "elaborate":
                 print(
-                    "%7.4f" % time() # self.env.now
+                    "%7.4f" % self.env.now
                     + " : "
                     + "%s added at location %s"
                     % ("PN%d" % id, location)
@@ -73,7 +73,7 @@ class Network:
 
                 if bool(self.params["verbose"]):
                     print(
-                        "%7.4f" % time() # self.env.now
+                        "%7.4f" % self.env.now
                         + " : "
                         + "%s entered the network from location %s"
                         % ("FN%d" % curr_id, curr_participating_node.location)

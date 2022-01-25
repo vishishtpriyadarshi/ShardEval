@@ -15,6 +15,7 @@ def execute_simulation(name, env, params):
     network_obj = Network(name, env, params)
     network_obj.execute_sybil_resistance_mechanism()
 
+    env.run(until=params["simulation_time"])
     for idx in range(params["num_epochs"]):
         network_obj.run_epoch()
 
@@ -29,7 +30,13 @@ def load_parameters():
 def main():
     np.random.seed(7)
     params = load_parameters()
-    execute_simulation("Test 1", "", params)
+    
+    start_time = time()
+    env = simpy.Environment()
+    execute_simulation("Test Network", env, params)
+    stop_time = time()
+
+    print(f"Simulation Time = {stop_time - start_time} seconds")
 
 
 if __name__=="__main__":
