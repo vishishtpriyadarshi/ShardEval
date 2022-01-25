@@ -3,6 +3,7 @@ import numpy as np
 
 from nodes.participating_node import ParticipatingNode
 from nodes.full_node import FullNode
+from network.pipe import Pipe
 
 
 class Network:
@@ -19,8 +20,10 @@ class Network:
         self.full_nodes = {}
         self.principal_committee_nodes = {}
         self.shard_nodes = []
+        self.pipes = {}
 
         self.add_participating_nodes(params["num_nodes"])
+
 
     def add_participating_nodes(self, num_nodes=20):
         """
@@ -43,6 +46,7 @@ class Network:
                     + "%s added at location %s"
                     % ("PN%d" % id, location)
                 )
+
 
     def execute_sybil_resistance_mechanism(self):
         """
@@ -75,13 +79,16 @@ class Network:
                         % ("FN%d" % curr_id, curr_participating_node.location)
                     )
 
+
     def run_epoch(self):
         """
         Start executing a fresh epoch
         """
         self.partition_nodes()
         self.establish_network_connections()
+        self.add_pipes()
         self.display_network_info()
+
 
     def partition_nodes(self):
         """
@@ -116,12 +123,13 @@ class Network:
             if id not in self.principal_committee_nodes:
                 self.shard_nodes[node.shard_id - 1].append(node.id)
        
+
     def establish_network_connections(self):
         """
         Establish network topology between the full nodes
         """
 
-        # 1. Connect the Principal Committee nodes
+        # Connect the Principal Committee nodes
         """Degree of network graph. Degree >= n/2 guarantees a connected graph"""
         degree = len(self.principal_committee_nodes) // 2 + 1
 
@@ -136,7 +144,7 @@ class Network:
             
             node.add_network_parameters(self.full_nodes, neighbours_list)
     
-        # 2. Connect the leaders of the shards with the Principal Committee
+        # Connect the leaders of the shards with the Principal Committee
         for idx in range(len(self.shard_nodes)):
             curr_leader = self.get_shard_leader(idx)
             possible_neighbours = list(self.principal_committee_nodes.keys())
@@ -147,7 +155,7 @@ class Network:
 
             curr_leader.add_network_parameters(self.full_nodes, neighbours_list)
 
-        # 3. Connect the shard nodes with each other and the leaders
+        # Connect the shard nodes with each other and the leaders
         for idx in range(len(self.shard_nodes)):
             for curr_node in self.shard_nodes[idx]:
                 possible_neighbours = self.shard_nodes[idx].copy()
@@ -159,10 +167,11 @@ class Network:
 
                 if self.full_nodes[curr_node].node_type == 2:
                     # If curr_node is a leader, append to the neighbors list
-                    self.full_nodes[curr_node].neighbours_ids = np.append(self.full_nodes[curr_node].neighbours_ids
-                                                                            , neighbours_list)
+                    self.full_nodes[curr_node].neighbours_ids = np.append(self.full_nodes[curr_node].neighbours_ids,
+                                                                          neighbours_list)
                 else:
                     self.full_nodes[curr_node].add_network_parameters(self.full_nodes, neighbours_list)
+
 
     def get_shard_leader(self, idx):
         """
@@ -173,6 +182,16 @@ class Network:
             raise RuntimeError("More than 1 leader for the Shard - %d" %idx)
         
         return self.full_nodes[leader[0]]
+
+
+    def add_pipes(self):
+        """
+        Add pipes for the full nodes
+        """
+        full_node_ids = list(self.full_nodes.keys())
+        for id in full_node_ids:
+            self.pipes[id] = Pipe(self.env, id, self.full_nodes)
+
 
     def display_network_info(self):
         print("\n============  NETWORK INFORMATION  ============")

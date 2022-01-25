@@ -6,11 +6,18 @@ The simulator ShardEval is built on the top of [BlockEval](https://github.com/de
 ```bash
 cd ShardEval
 pip install -r requirements.txt
-cd playground
 ```
 
 ## Usage 
+
+### 1. ShardEval
 ```python
+python simulate.py config/params.json > simulation_logs/simulation_results.log
+```
+
+### 2. BlockEval (*Playground*)
+```python
+cd playground
 python simulate.py params/params.json > simulation_logs/simulation_results.log
 ```
 
