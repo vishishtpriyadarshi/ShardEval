@@ -9,3 +9,7 @@ def broadcast(env, object, object_type, source, neighbour_list, nodes):
             env.process(
                 nodes[neighbour].transaction_pool.put_transaction(object, nodes[source].location)
             )
+
+    elif object_type == "Mini-block":
+        # Broadcast Mini-block to the Principal Committee members
+        print("[Propagation in Process]")

@@ -1,10 +1,10 @@
 {
-    "num_nodes": 100,
+    "num_nodes": 20,
     "simulation_time": 600,
     "num_epochs": 1,
     "num_slots": 10,
-    "num_shards": 5,
-    "principal_committee_size": 0.1,
+    "num_shards": 2,
+    "principal_committee_size": 0.25,
     "block_mu": 560,
     "block_sigma": 30,
     "transaction_mu": 26.66,
@@ -12,6 +12,7 @@
     "tx_value_low": 1,
     "tx_value_high": 100,
     "reward_percentage": 0.10,
+    "mini_block_capacity": 5,
     "log_file": "simulation_results.log",
     "verbose": "True",
     "locations": [

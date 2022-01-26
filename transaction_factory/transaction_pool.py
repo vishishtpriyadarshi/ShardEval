@@ -57,3 +57,7 @@ class TransactionPool:
                     "%7.4f : %s accepted by %s"
                     % (self.env.now, transaction.id, self.id)
                 )
+            
+            curr_node = self.nodes[self.id]
+            if curr_node.node_type == 2:
+                print(f"Leader of the shard {curr_node.shard_id} is {self.id} and has {self.transaction_queue.length()} transactions")
