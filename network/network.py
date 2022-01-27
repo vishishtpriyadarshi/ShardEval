@@ -87,7 +87,6 @@ class Network:
         self.partition_nodes()
         self.establish_network_connections()
         self.allow_transactions_generation()
-        self.add_pipes()
         self.display_network_info()
 
 
@@ -200,19 +199,11 @@ class Network:
                 curr_node = self.full_nodes[node_id]
 
                 if curr_node.node_type == 2:
+                    curr_node.env.process(curr_node.preprocess_transactions())
                     continue
                 
                 curr_node.env.process(curr_node.generate_transactions())
-
-
-    def add_pipes(self):
-        """
-        Add pipes for the full nodes
-        """
-        full_node_ids = list(self.full_nodes.keys())
-        for id in full_node_ids:
-            self.pipes[id] = Pipe(self.env, id, self.full_nodes)
-
+                
 
     def display_network_info(self):
         print("\n============  NETWORK INFORMATION  ============")

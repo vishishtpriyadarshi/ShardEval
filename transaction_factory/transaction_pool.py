@@ -50,7 +50,7 @@ class TransactionPool:
             and transaction not in self.prev_transactions
         ):
             self.transaction_queue.insert(transaction)
-            broadcast(self.env, transaction, "Tx", self.id, self.neighbours_ids, self.nodes)
+            broadcast(self.env, transaction, "Tx", self.id, self.neighbours_ids, self.nodes, self.params)
             
             if self.params["verbose"] == "Elaborate":
                 print(
