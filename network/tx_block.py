@@ -7,12 +7,15 @@ class TxBlock(Block):
     the shard nodes.
     """
 
-    def __init__(self, id, transactions_list, params, shard_id):
+    def __init__(self, id, transactions_list, params, shard_id, shard_nodes):
         super().__init__(id, transactions_list, params)
         self.shard_id = shard_id
-
+        
         self.votes_status = {}
         for tx in transactions_list:
             self.votes_status[tx.id] = {}
+            for node_id in shard_nodes:
+                self.votes_status[tx.id][node_id] = -1
+                # -1 means votes has not been casted
         
         self.visitor_count_post_voting = {}

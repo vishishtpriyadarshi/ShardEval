@@ -13,7 +13,7 @@ from network.tx_block import TxBlock
 from network.pipe import Pipe
 from transaction_factory.transaction import Transaction
 from transaction_factory.transaction_pool import TransactionPool
-from utils import get_transaction_delay, is_voting_complete, get_shard_neighbours, get_principal_committee_neigbours
+from utils import get_transaction_delay, is_voting_complete, get_shard_neighbours, get_principal_committee_neigbours, is_vote_casted
 
 
 class FullNode(ParticipatingNode):
@@ -119,7 +119,14 @@ class FullNode(ParticipatingNode):
                 yield self.env.timeout(delay)
                 
                 shard_neigbours = get_shard_neighbours(self.curr_shard_nodes, self.neighbours_ids, self.shard_id)
-                tx_block = TxBlock(f"TB_{self.id}", transactions_list, self.params, self.shard_id)
+
+                # To-do: Clean this piece of code for filtered_curr_shard_nodes
+                filtered_curr_shard_nodes = []
+                for node_id in self.curr_shard_nodes.keys():
+                    if self.curr_shard_nodes[node_id].shard_id == self.shard_id:
+                        filtered_curr_shard_nodes.append(node_id)
+
+                tx_block = TxBlock(f"TB_{self.id}", transactions_list, self.params, self.shard_id, filtered_curr_shard_nodes)
 
                 broadcast(
                     self.env, 
@@ -195,17 +202,34 @@ class FullNode(ParticipatingNode):
             raise RuntimeError("Tx-block received by Principal Committee node.")
         
         flag = is_voting_complete(tx_block)
+        print("[Debug]:", flag)
         shard_neigbours = get_shard_neighbours(
             self.curr_shard_nodes, self.neighbours_ids, self.shard_id
         )
 
         if self.node_type == 2:
-            if flag:
-                self.generate_mini_block(tx_block)
+            if self.id not in tx_block.visitor_count_post_voting.keys():
+                tx_block.visitor_count_post_voting[self.id] = 1
+                if flag:
+                    if self.params["verbose"]:
+                        print(
+                            "%7.4f" % self.env.now
+                            + " : "
+                            + "Node %s (Leader) received voted Tx-block %s" % (self.id, tx_block.id)
+                        )
+                    self.generate_mini_block(tx_block)
 
         elif self.node_type == 3:
             if flag:
                 if self.id not in tx_block.visitor_count_post_voting.keys():
+                    tx_block.visitor_count_post_voting[self.id] = 1
+                    if self.params["verbose"]:
+                        print(
+                            "%7.4f" % self.env.now
+                            + " : "
+                            + "Node %s (shard node) propagated voted Tx-block %s" % (self.id, tx_block.id)
+                        )
+
                     broadcast(
                         self.env, 
                         tx_block, 
@@ -215,11 +239,16 @@ class FullNode(ParticipatingNode):
                         self.curr_shard_nodes, 
                         self.params
                     )
-
-                tx_block.visitor_count_post_voting[self.id] = 1
             else:
                 if is_vote_casted(tx_block, self.id) == False:
                     self.cast_vote(tx_block)
+                    if self.params["verbose"]:
+                        print(
+                            "%7.4f" % self.env.now
+                            + " : "
+                            + "Node %s voted and for the Tx-block %s" % (self.id, tx_block.id)
+                        )
+
                     broadcast(
                         self.env, 
                         tx_block, 
@@ -238,21 +267,24 @@ class FullNode(ParticipatingNode):
         """
         while True:
             block = yield self.pipes.get()
+            block_type = ""
 
+            if isinstance(block, TxBlock):
+                self.process_received_tx_block(block)
+                block_type = "Tx"
+            elif isinstance(block, MiniBlock):
+                pass
+                block_type = "Final"
+            else:
+                raise RuntimeError("Unknown Block received")
+            
             if self.params["verbose"]:
                 print(
                     "%7.4f" % self.env.now
                     + " : "
                     + "%s received a %s-block"
-                    % (self.id, block.id[:2])
+                    % (self.id, block_type)
                 )
-            
-            if isinstance(block, TxBlock):
-                self.process_received_tx_block(block)
-            elif isinstance(block, MiniBlock):
-                pass
-            else:
-                raise RuntimeError("Unknown Block received")
 
 
     def update_blockchain(self):

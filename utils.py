@@ -5,15 +5,28 @@ import json
 def is_voting_complete(tx_block):
     for _, tx_status in tx_block.votes_status.items():
         for _, node_vote in tx_status.items():
-            if node_vote == False:
-                return res
+            if node_vote == False or node_vote == -1:
+                return False
     return True
 
+
+def is_vote_casted(tx_block, node_id):
+    random_tx = list(tx_block.votes_status.values())[0]
+    return random_tx[node_id] != -1
+    
 
 def get_shard_neighbours(nodes, neighbours_ids, shard_id):
     shard_neigbours = []
     for id in neighbours_ids:
         if nodes[id].shard_id == shard_id and (nodes[id].node_type == 3 or nodes[id].node_type == 2):
+            shard_neigbours.append(id)
+    return shard_neigbours
+
+
+def get_shard_nodes(nodes, shard_id):
+    shard_neigbours = []
+    for id in neighbours_ids:
+        if nodes[id].shard_id == shard_id:
             shard_neigbours.append(id)
     return shard_neigbours
 
