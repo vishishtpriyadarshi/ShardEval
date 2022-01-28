@@ -218,7 +218,7 @@ class Network:
             print("\t\t\t\tSHARD -", i+1)            
             print("Leader -", [l for l in self.shard_nodes[i] if self.full_nodes[l].node_type == 2])
 
-            print("Nodes -")
+            print("Nodes -", self.shard_nodes[i], "\n")
             for j in range(len(self.shard_nodes[i])):
                 print("{}. {} has neighbours -".format(j+1, self.shard_nodes[i][j]), end=' ') 
                 print(self.full_nodes[self.shard_nodes[i][j]].neighbours_ids, end='\n')
