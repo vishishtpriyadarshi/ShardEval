@@ -3,10 +3,9 @@ import json
 
 
 def is_voting_complete(tx_block):
-    # print(tx_block.votes_status)
     for _, tx_status in tx_block.votes_status.items():
         for _, node_vote in tx_status.items():
-            if node_vote == False or node_vote == -1:
+            if node_vote == -1:
                 return False
     return True
 
