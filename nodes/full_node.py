@@ -123,9 +123,10 @@ class FullNode(ParticipatingNode):
                 # To-do: Clean this piece of code for filtered_curr_shard_nodes
                 filtered_curr_shard_nodes = []
                 for node_id in self.curr_shard_nodes.keys():
-                    if self.curr_shard_nodes[node_id].shard_id == self.shard_id:
+                    if self.curr_shard_nodes[node_id].shard_id == self.shard_id and self.curr_shard_nodes[node_id].node_type == 3:
                         filtered_curr_shard_nodes.append(node_id)
 
+                # print("[Neighbours]:", shard_neigbours)
                 tx_block = TxBlock(f"TB_{self.id}", transactions_list, self.params, self.shard_id, filtered_curr_shard_nodes)
 
                 broadcast(
@@ -202,7 +203,7 @@ class FullNode(ParticipatingNode):
             raise RuntimeError("Tx-block received by Principal Committee node.")
         
         flag = is_voting_complete(tx_block)
-        print("[Debug]:", flag)
+        # print("[Debug]:", flag)
         shard_neigbours = get_shard_neighbours(
             self.curr_shard_nodes, self.neighbours_ids, self.shard_id
         )
@@ -249,6 +250,7 @@ class FullNode(ParticipatingNode):
                             + "Node %s voted and for the Tx-block %s" % (self.id, tx_block.id)
                         )
 
+                    print("[Neighbours]:", shard_neigbours)
                     broadcast(
                         self.env, 
                         tx_block, 
@@ -268,6 +270,9 @@ class FullNode(ParticipatingNode):
         while True:
             block = yield self.pipes.get()
             block_type = ""
+
+            # if self.id == "FN1":
+            #     print("[Node Debug]: FN1 here")
 
             if isinstance(block, TxBlock):
                 self.process_received_tx_block(block)

@@ -133,6 +133,9 @@ class Network:
         """Degree of network graph. Degree >= n/2 guarantees a connected graph"""
         degree = len(self.principal_committee_nodes) // 2 + 1
 
+        # neighbours info is a dictionary mapping nodes to its neighbours for constructing undirected graph
+        neighbours_info = {}
+
         for id, node in self.principal_committee_nodes.items():
             possible_neighbours = list(self.principal_committee_nodes.keys())
             possible_neighbours.remove(id)
@@ -142,7 +145,18 @@ class Network:
                 possible_neighbours, size=degree, replace=False
             )
             
-            node.add_network_parameters(self.full_nodes, neighbours_list)
+            if id not in neighbours_info.keys():
+                neighbours_info[id] = set()
+            
+            for neighbour_id in neighbours_list:
+                if neighbour_id not in neighbours_info.keys():
+                    neighbours_info[neighbour_id] = set()
+
+                neighbours_info[id].add(neighbour_id)
+                neighbours_info[neighbour_id].add(id)
+
+        for key, value in neighbours_info.items():
+            self.full_nodes[key].add_network_parameters(self.full_nodes, list(value))
     
         # Connect the leaders of the shards with the Principal Committee
         for idx in range(len(self.shard_nodes)):
@@ -161,6 +175,7 @@ class Network:
             for node_id in self.shard_nodes[idx]:
                 curr_shard_nodes[node_id] = self.full_nodes[node_id]
 
+            neighbours_info = {}
             for curr_node_id in self.shard_nodes[idx]:
                 possible_neighbours = self.shard_nodes[idx].copy()
                 possible_neighbours.remove(curr_node_id)
@@ -169,14 +184,27 @@ class Network:
                     possible_neighbours, size=degree, replace=False
                 )
 
-                if self.full_nodes[curr_node_id].node_type == 2:
-                    # If curr_node is a leader, append to the neighbors list
-                    self.full_nodes[curr_node_id].neighbours_ids = np.append(self.full_nodes[curr_node_id].neighbours_ids,
-                                                                          neighbours_list)
-                else:
-                    self.full_nodes[curr_node_id].add_network_parameters(curr_shard_nodes, neighbours_list)
+                print(f"{curr_node_id} - {neighbours_list}")
+
+                if curr_node_id not in neighbours_info.keys():
+                    neighbours_info[curr_node_id] = set()
+                
+                for neighbour_id in neighbours_list:
+                    if neighbour_id not in neighbours_info.keys():
+                        neighbours_info[neighbour_id] = set()
+
+                    neighbours_info[curr_node_id].add(neighbour_id)
+                    neighbours_info[neighbour_id].add(curr_node_id)
                 
                 self.full_nodes[curr_node_id].shard_leader =  self.get_shard_leader(idx)
+            
+            for key, value in neighbours_info.items():
+                if self.full_nodes[key].node_type == 2:
+                    # If curr_node is a leader, append to the neighbors list
+                    self.full_nodes[key].neighbours_ids = np.append(self.full_nodes[key].neighbours_ids,
+                                                                    list(value))
+                else:
+                    self.full_nodes[key].add_network_parameters(curr_shard_nodes, list(value))
 
 
     def get_shard_leader(self, idx):
