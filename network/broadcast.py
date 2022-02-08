@@ -13,6 +13,7 @@ def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
     elif object_type == "Mini-block":
         # Broadcast Mini-block to the Principal Committee members
         print("[Mini-block]: Propagation in Process")
+        
 
     elif object_type == "Tx-block":
         # Broadcast Tx-block to the shard nodes

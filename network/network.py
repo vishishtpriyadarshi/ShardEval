@@ -131,7 +131,8 @@ class Network:
 
         # Connect the Principal Committee nodes
         """Degree of network graph. Degree >= n/2 guarantees a connected graph"""
-        degree = len(self.principal_committee_nodes) // 2 + 1
+        # degree = len(self.principal_committee_nodes) // 2 + 1
+        degree = len(self.principal_committee_nodes) - 1
 
         # neighbours info is a dictionary mapping nodes to its neighbours for constructing undirected graph
         neighbours_info = {}

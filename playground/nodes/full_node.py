@@ -5,7 +5,7 @@ import simpy
 import numpy as np
 from network.block import Block
 from network.broadcast import broadcast
-from transaction_factory.transaction_pool import TransactionPool
+from factory.transaction_pool import TransactionPool
 from utils import get_block_delay, get_transmission_delay
 
 class FullNode:

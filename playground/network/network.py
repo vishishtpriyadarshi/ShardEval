@@ -6,7 +6,7 @@ from nodes.full_node import FullNode
 from network.block import Block
 from network.pipe import Pipe
 from network.broadcast import broadcast
-from transaction_factory.transaction import Transaction
+from factory.transaction import Transaction
 from utils import get_transaction_delay
 
 

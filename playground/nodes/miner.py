@@ -7,7 +7,7 @@ import numpy as np
 from network.block import Block
 from nodes.full_node import FullNode
 from network.broadcast import broadcast
-from transaction_factory.transaction_pool import TransactionPool
+from factory.transaction_pool import TransactionPool
 from utils import get_block_delay, get_transaction_delay
 
 

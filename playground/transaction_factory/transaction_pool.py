@@ -1,6 +1,6 @@
 import numpy as np
 from network.broadcast import broadcast
-from transaction_factory.transaction import Transaction
+from factory.transaction import Transaction
 from utils import get_transmission_delay, PriorityQueue
 
 
