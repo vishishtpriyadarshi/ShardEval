@@ -9,4 +9,6 @@ class MiniBlock(Block):
 
     def __init__(self, id, transactions_list, params, shard_id):
         super().__init__(id, transactions_list, params)
+
         self.shard_id = shard_id
+        self.publisher_id = None

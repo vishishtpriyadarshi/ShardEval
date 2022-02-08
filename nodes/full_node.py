@@ -276,17 +276,6 @@ class FullNode(ParticipatingNode):
         
         # To-do: Adjust mu and sigma for conensus delay
         consensus_delay_obj = Consensus(1, 1)
-        
-        broadcast(
-            self.env, 
-            block, 
-            "Mini-block-consensus", 
-            self.id, 
-            self.neighbour_ids,
-            self.curr_shard_nodes, 
-            self.params
-        )
-
         yield self.env.timeout(consensus_delay_obj.get_consensus_time())
 
         # To-do: Adjust threshold
@@ -295,6 +284,18 @@ class FullNode(ParticipatingNode):
             vote = 1
         else:
             vote = 0
+
+        block.publisher_id = self.id
+        broadcast(
+            self.env, 
+            block, 
+            "Mini-block-consensus", 
+            self.id, 
+            self.neighbour_ids,
+            self.curr_shard_nodes, 
+            self.params,
+            vote
+        )
 
 
     def receive_block(self):
@@ -308,14 +309,21 @@ class FullNode(ParticipatingNode):
             block = yield self.pipes.get()
             block_type = ""
 
-            if isinstance(block, TxBlock):
+            if is_instance(block, TxBlock):
                 self.process_received_tx_block(block)
                 block_type = "Tx"
-            elif isinstance(block, MiniBlock):
-                self.process_received_mini_block(block)
+
+            elif is_instance(block, MiniBlock):
+                if block.publisher_id == None:
+                    self.process_received_mini_block(block)
+                else:
+                    pass
+
                 block_type = "Mini"
-            elif isinstance(block, Block):
+
+            elif is_instance(block, Block):
                 block_type = "Final"
+
             else:
                 raise RuntimeError("Unknown Block received")
             

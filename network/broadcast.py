@@ -1,4 +1,4 @@
-def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
+def broadcast(env, object, object_type, source, neighbour_list, nodes, params, vote=""):
     """
     Broadcast the object from the source to destination
     """
@@ -10,13 +10,10 @@ def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
                 nodes[neighbour].transaction_pool.put_transaction(object, nodes[source].location)
             )
 
-    elif object_type == "Mini-block":
-        # Broadcast Mini-block to the Principal Committee members
-        print("[Mini-block]: Propagation in Process")
-        
-
-    elif object_type == "Tx-block":
+    elif object_type == "Tx-block" or object_type == "Mini-block-consensus" or object_type == "Mini-block":
         # Broadcast Tx-block to the shard nodes
+        # OR Broadcast Mini-block to the Principal Committee members
+        # OR Intra-committee broadcast Mini-block between the Principal Committee members
         events = []
         for neighbour in neighbour_list:
             source_location = nodes[neighbour].location
@@ -27,6 +24,6 @@ def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
             print(
                 "%7.4f" % env.now
                 + " : "
-                + "Node %s propagated Tx-block %s" % (source, object.id)
+                + "Node %s propagated %s %s" % (source, object_type, object.id)
             )
         return env.all_of(events)
