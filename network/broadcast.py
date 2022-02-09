@@ -1,4 +1,4 @@
-def broadcast(env, object, object_type, source, neighbour_list, nodes, params, vote=""):
+def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
     """
     Broadcast the object from the source to destination
     """
@@ -26,4 +26,5 @@ def broadcast(env, object, object_type, source, neighbour_list, nodes, params, v
                 + " : "
                 + "Node %s propagated %s %s" % (source, object_type, object.id)
             )
+            
         return env.all_of(events)

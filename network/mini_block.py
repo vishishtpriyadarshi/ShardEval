@@ -11,4 +11,4 @@ class MiniBlock(Block):
         super().__init__(id, transactions_list, params)
 
         self.shard_id = shard_id
-        self.publisher_id = None
+        self.publisher_info = {}

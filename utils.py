@@ -65,6 +65,19 @@ def get_transmission_delay(source, destination):
     return delay
 
 
+def can_generate_block(mini_block_consensus_pool, size_principal_committee, num_shards):
+    res = True
+
+    if len(mini_block_consensus_pool) == num_shards:
+        for key, val in mini_block_consensus_pool:
+            if len(val) != size_principal_committee:
+                res = False
+                break
+    else:
+        res = False
+
+    return res
+
 """
 Custom Priority Queue implementation to maintain the order of 
 transactions to be proposed by a full node, with key as the reward
