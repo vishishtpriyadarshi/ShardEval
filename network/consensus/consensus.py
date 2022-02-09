@@ -3,8 +3,6 @@ from scipy.stats import norm
 
 
 class Consensus:
-    _mu, _sigma = 0, 0
-
     def __init__(self, mu, sigma):
         self._mu = mu
         self._sigma = sigma
