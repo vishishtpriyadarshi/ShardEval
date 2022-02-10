@@ -10,8 +10,10 @@ def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
                 nodes[neighbour].transaction_pool.put_transaction(object, nodes[source].location)
             )
 
-    elif object_type == "Tx-block" or object_type == "Mini-block-consensus" or object_type == "Mini-block":
-        # Broadcast Tx-block to the shard nodes
+    elif (object_type == "Block" or object_type == "Tx-block" or \
+            object_type == "Mini-block-consensus" or object_type == "Mini-block"):
+        # Broadcast Block to the network
+        # OR Broadcast Tx-block to the shard nodes
         # OR Broadcast Mini-block to the Principal Committee members
         # OR Intra-committee broadcast Mini-block between the Principal Committee members
         events = []

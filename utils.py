@@ -74,10 +74,10 @@ def can_generate_block(mini_block_consensus_pool, size_principal_committee, num_
         return False
     else:
         for key, val in mini_block_consensus_pool.items():
-            if len(val) != size_principal_committee:
+            if len(val["votes"]) != size_principal_committee:
                 return False
             
-            for node_id, vote in val.items():
+            for node_id, vote in val["votes"].items():
                 if vote == -1:
                     return False
         return True        
@@ -87,6 +87,7 @@ def has_received_mini_block(mini_block_consensus_pool, block_id):
     """
     Check whether the principal committee node is receiving mini-block for the first time
     """
+    print(f"[Test] = {block_id in mini_block_consensus_pool}\n{block_id}\t{mini_block_consensus_pool}")
     return block_id in mini_block_consensus_pool
 
 
