@@ -185,7 +185,7 @@ class FullNode(ParticipatingNode):
             3. Broadcast the block to the shards (To-do: neighbors may have to debug)
             """
 
-        print(f"[Debug for {self.id}] -{self.mini_block_consensus_pool}")
+        # print(f"[Debug for {self.id}] -{self.mini_block_consensus_pool}")
 
 
     def validate_transaction(self, tx):
@@ -372,7 +372,11 @@ class FullNode(ParticipatingNode):
             }
             """
 
-            if has_received_mini_block(self.mini_block_consensus_pool, block):
+            if has_received_mini_block(self.mini_block_consensus_pool, block.id):
+                # Add publisher's vote in its own data copy
+                self.mini_block_consensus_pool[block.id][block.publisher_info["id"]] = block.publisher_info["vote"]
+                
+                # Filter the neighbours who have already voted for the mini-block
                 filtered_neighbour_ids = [ id for id in self.neighbours_ids if id not in self.mini_block_consensus_pool[block.id] ]
                 
                 # Add meta-data to the mini-block before the broadcast
@@ -380,6 +384,8 @@ class FullNode(ParticipatingNode):
                 block.publisher_info["vote"] = self.mini_block_consensus_pool[block.id][self.id]
                 
                 if filtered_neighbour_ids:
+                    # print(f"[Debug for - {self.id} = {filtered_neighbour_ids}")
+                    # print(f"More info - {self.mini_block_consensus_pool}")
                     broadcast(
                         self.env, 
                         block, 
@@ -389,10 +395,15 @@ class FullNode(ParticipatingNode):
                         self.curr_shard_nodes, 
                         self.params,
                     )
-                else:
-                    print("[Debug]: Success")
+                # else:
+                #     print(f"[Debug]: Success for node {self.id} for block - {block.id}")
             else:
+                # print(f"[Debug] - {self.mini_block_consensus_pool}")
+                # print(f"Contd. - {block.id}")
                 self.mini_block_consensus_pool[block.id] = {}
+
+                # Add publisher's vote in its own data copy
+                self.mini_block_consensus_pool[block.id][block.publisher_info["id"]] = block.publisher_info["vote"]
 
                 # Add own vote for the mini-block if vote not yet casted
                 if self.id not in self.mini_block_consensus_pool[block.id]:
@@ -401,11 +412,7 @@ class FullNode(ParticipatingNode):
 
                     # To-do: Adjust threshold
                     threshold = 0.5
-                    if consensus_delay_obj.get_random_number() > threshold:
-                        vote = 1
-                    else:
-                        vote = 0
-
+                    vote = 1 if consensus_delay_obj.get_random_number() > threshold else 0
                     self.mini_block_consensus_pool[block.id][self.id] = vote
                 
                 # Add meta-data to the mini-block before the broadcast
@@ -422,9 +429,6 @@ class FullNode(ParticipatingNode):
                     self.params,
                 )
             
-            # Add publisher's vote in its own data copy
-            self.mini_block_consensus_pool[block.id][block.publisher_info["id"]] = block.publisher_info["vote"]
-
 
     def update_blockchain(self):
         pass

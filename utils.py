@@ -83,11 +83,11 @@ def can_generate_block(mini_block_consensus_pool, size_principal_committee, num_
     return res
 
 
-def has_received_mini_block(mini_block_consensus_pool, block):
+def has_received_mini_block(mini_block_consensus_pool, block_id):
     """
     Check whether the principal committee node is receiving mini-block for the first time
     """
-    return block in mini_block_consensus_pool
+    return block_id in mini_block_consensus_pool
 
 
 """
