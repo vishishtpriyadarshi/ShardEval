@@ -66,10 +66,14 @@ def get_transmission_delay(source, destination):
 
 
 def can_generate_block(mini_block_consensus_pool, size_principal_committee, num_shards):
+    """
+    Check whether the principal committee node can generate block
+    """
     res = True
 
+    # To-do: Handle case when 1 shard produces mutliple mini-blocks while other shard has produced only 1 mini-block
     if len(mini_block_consensus_pool) == num_shards:
-        for key, val in mini_block_consensus_pool:
+        for key, val in mini_block_consensus_pool.items():
             if len(val) != size_principal_committee:
                 res = False
                 break
@@ -77,6 +81,14 @@ def can_generate_block(mini_block_consensus_pool, size_principal_committee, num_
         res = False
 
     return res
+
+
+def has_received_mini_block(mini_block_consensus_pool, block):
+    """
+    Check whether the principal committee node is receiving mini-block for the first time
+    """
+    return block in mini_block_consensus_pool
+
 
 """
 Custom Priority Queue implementation to maintain the order of 
