@@ -1,10 +1,13 @@
 import numpy as np
 import random
+import functools
+import operator
 
 from nodes.participating_node import ParticipatingNode
 from network.broadcast import broadcast
 from network.mini_block import MiniBlock
 from network.tx_block import TxBlock
+from network.block import Block
 from network.pipe import Pipe
 from factory.transaction import Transaction
 from factory.transaction_pool import TransactionPool
@@ -184,8 +187,55 @@ class FullNode(ParticipatingNode):
             2. Update own blockchain
             3. Broadcast the block to the shards (To-do: neighbors may have to debug)
             """
+            print(f"[Debug] - Node {self.id} ready to generate \nPool - {self.mini_block_consensus_pool}")
 
-        # print(f"[Debug for {self.id}] -{self.mini_block_consensus_pool}")
+            filtered_mini_blocks = []
+            temp_data = {}              # stores latest accepted mini-block corresponding to evey shard
+            for key, block in self.mini_block_consensus_pool.items():
+                net_vote = 0
+                for id, curr_vote in val.items():
+                    net_vote += curr_vote if curr_vote else -1
+                
+                if net_vote > 0:
+                    if block.shard_id in temp_data:
+                        existing_block = temp_data[block.shard_id]
+
+                        # Select only latest mini-block sent by a shard
+                        if int(block[block.rfind('_')+1:]) > int(existing_block[existing_block.rfind('_')+1:]):
+                            block = existing_block
+                        
+                    temp_data[block.shard_id] = block
+                    filtered_mini_blocks.append(block)
+            
+            # To-do: Add mini-blocks data to the consensus_pool before next statement gets executed
+            accepted_transactions = [ mini_block.transactions_list for mini_block in filtered_mini_blocks ]
+            
+            # Flatten to a flat list
+            accepted_transactions = functools.reduce(operator.iconcat, accepted_transactions, [])
+            
+            block = Block(f"B_{self.id}_{round(self.env.now)}", accepted_transactions, self.params)
+            
+            # Update consensus_pool
+            temp_dict = self.mini_block_consensus_pool
+            self.mini_block_consensus_pool = {key: temp_dict[key] for key in temp_dict if key in filtered_mini_blocks} 
+
+            # Update own Blockchain
+            update_blockchain()
+
+            # Broadcast the block to the shards
+            filtered_neigbours = []
+            broadcast(
+                self.env, 
+                block,
+                "Block", 
+                self.id, 
+                filtered_neigbours, 
+                self.curr_shard_nodes, 
+                self.params
+            ) 
+
+        else:
+            print(f"[Debug] - Node {self.id} not ready \nPool - {self.mini_block_consensus_pool}")
 
 
     def validate_transaction(self, tx):
@@ -217,24 +267,12 @@ class FullNode(ParticipatingNode):
             block = yield self.pipes.get()
             block_type = ""
 
-            if isinstance(block, TxBlock):
-                block_type = "Tx"
-                self.process_received_tx_block(block)
-
-            elif isinstance(block, MiniBlock):
-                block_type = "Mini"
-                self.process_received_mini_block(block)
-
-                # generate_block() is triggered whenever mini-block is received by the principal committee node
-                # Although whether block will be generated or not, is handled inside the function
-                self.generate_block()
-
-            elif isinstance(block, Block):
-                block_type = "Final"
-
+            if isinstance(block, TxBlock):      block_type = "Tx"
+            elif isinstance(block, MiniBlock):  block_type = "Mini"
+            elif isinstance(block, Block):      block_type = "Final"
             else:
                 raise RuntimeError("Unknown Block received")
-            
+
             if self.params["verbose"]:
                 print(
                     "%7.4f" % self.env.now
@@ -242,6 +280,19 @@ class FullNode(ParticipatingNode):
                     + "%s received a %s-block"
                     % (self.id, block_type)
                 )
+
+            if isinstance(block, TxBlock):
+                self.process_received_tx_block(block)
+
+            elif isinstance(block, MiniBlock):
+                self.process_received_mini_block(block)
+
+                # generate_block() is triggered whenever mini-block is received by the principal committee node
+                # Although whether block will be generated or not, is handled inside the function
+                self.generate_block()
+
+            elif isinstance(block, Block):
+                pass
 
     
     def process_received_tx_block(self, tx_block):
@@ -335,10 +386,7 @@ class FullNode(ParticipatingNode):
 
             # To-do: Adjust threshold
             threshold = 0.5
-            if consensus_delay_obj.get_random_number() > threshold:
-                vote = 1
-            else:
-                vote = 0
+            vote = 1 if consensus_delay_obj.get_random_number() > threshold else 0
 
             # Add own vote for this mini-block
             self.mini_block_consensus_pool[block.id][self.id] = vote
@@ -378,14 +426,18 @@ class FullNode(ParticipatingNode):
                 
                 # Filter the neighbours who have already voted for the mini-block
                 filtered_neighbour_ids = [ id for id in self.neighbours_ids if id not in self.mini_block_consensus_pool[block.id] ]
+                filtered_neighbour_ids += [ id for id, vote in self.mini_block_consensus_pool[block.id].items() if vote == -1 ]
                 
                 # Add meta-data to the mini-block before the broadcast
+                prev_publisher_id = block.publisher_info["id"]
                 block.publisher_info["id"] = self.id
                 block.publisher_info["vote"] = self.mini_block_consensus_pool[block.id][self.id]
                 
                 if filtered_neighbour_ids:
                     # print(f"[Debug for - {self.id} = {filtered_neighbour_ids}")
                     # print(f"More info - {self.mini_block_consensus_pool}")
+                    print(f"[Filter Debug] - {filtered_neighbour_ids}")
+                    block.message_data = [ self.id ]
                     broadcast(
                         self.env, 
                         block, 
@@ -395,8 +447,19 @@ class FullNode(ParticipatingNode):
                         self.curr_shard_nodes, 
                         self.params,
                     )
-                # else:
-                #     print(f"[Debug]: Success for node {self.id} for block - {block.id}")
+                else:
+                    if block.message_data and prev_publisher_id == block.message_data[0]:
+                        print(f"Meta = {block.message_data}")
+                        block.message_data = []
+                        broadcast(
+                            self.env, 
+                            block, 
+                            "Mini-block-consensus", 
+                            self.id, 
+                            [ prev_publisher_id ],
+                            self.curr_shard_nodes, 
+                            self.params,
+                        )
             else:
                 # print(f"[Debug] - {self.mini_block_consensus_pool}")
                 # print(f"Contd. - {block.id}")

@@ -69,18 +69,18 @@ def can_generate_block(mini_block_consensus_pool, size_principal_committee, num_
     """
     Check whether the principal committee node can generate block
     """
-    res = True
-
     # To-do: Handle case when 1 shard produces mutliple mini-blocks while other shard has produced only 1 mini-block
-    if len(mini_block_consensus_pool) == num_shards:
+    if len(mini_block_consensus_pool) < num_shards:
+        return False
+    else:
         for key, val in mini_block_consensus_pool.items():
             if len(val) != size_principal_committee:
-                res = False
-                break
-    else:
-        res = False
-
-    return res
+                return False
+            
+            for node_id, vote in val.items():
+                if vote == -1:
+                    return False
+        return True        
 
 
 def has_received_mini_block(mini_block_consensus_pool, block_id):

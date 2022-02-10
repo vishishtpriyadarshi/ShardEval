@@ -24,7 +24,7 @@ def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
             print(
                 "%7.4f" % env.now
                 + " : "
-                + "Node %s propagated %s %s" % (source, object_type, object.id)
+                + "Node %s propagated %s %s to its neighbours" % (source, object_type, object.id)
             )
             
         return env.all_of(events)
