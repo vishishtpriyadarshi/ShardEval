@@ -43,7 +43,18 @@ def main():
     execute_simulation("Test Network", env, params)
     stop_time = time()
 
-    print(f"\nSimulation Time = {stop_time - start_time} seconds")
+    sim_time = stop_time - start_time
+    print(f"\nSimulation Time = {sim_time} seconds")
+
+    if 'chain' in params:
+        print(f"Blockchain = {params['chain']}")
+        count = 0
+        for block in params['chain']:
+            count += len(block.transactions_list)
+        
+        print(f"TPS = {count/sim_time}")
+    else:
+        print("Simulation didn't execute for sufficiently long time")
 
 
 if __name__=="__main__":

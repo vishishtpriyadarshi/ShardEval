@@ -205,7 +205,8 @@ class FullNode(ParticipatingNode):
             2. Update own blockchain
             3. Broadcast the block to the shards (To-do: neighbors may have to debug)
             """
-            print(f"[Debug] - Node {self.id} ready to generate \nPool - {self.mini_block_consensus_pool}")
+            if self.params["verbose"]:
+                print(f"[Debug] - Node {self.id} ready to generate \nPool - {self.mini_block_consensus_pool}")
 
             self.processed_mini_blocks = [ id for id in self.mini_block_consensus_pool ]
             filtered_mini_blocks = []
@@ -229,7 +230,7 @@ class FullNode(ParticipatingNode):
             
             # To-do: Add mini-blocks data to the consensus_pool before next statement gets executed
             accepted_transactions = [ mini_block.transactions_list for mini_block in filtered_mini_blocks ]
-            
+
             # Flatten to a flat list
             accepted_transactions = functools.reduce(operator.iconcat, accepted_transactions, [])
             
@@ -260,7 +261,8 @@ class FullNode(ParticipatingNode):
             ) 
 
         else:
-            print(f"[Debug] - Node {self.id} not ready \nPool - {self.mini_block_consensus_pool}")
+            if self.params["verbose"]:
+                print(f"[Debug] - Node {self.id} not ready \nPool - {self.mini_block_consensus_pool}")
 
 
     def validate_transaction(self, tx):
@@ -552,3 +554,6 @@ class FullNode(ParticipatingNode):
 
     def update_blockchain(self, block):
         self.blockchain.append(block)
+        
+        if self.node_type == 2:
+            self.params["chain"] = self.blockchain

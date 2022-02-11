@@ -1,6 +1,6 @@
 {
     "num_nodes": 15,
-    "simulation_time": 600,
+    "simulation_time": 1200,
     "num_epochs": 1,
     "num_slots": 10,
     "num_shards": 1,
@@ -14,7 +14,7 @@
     "reward_percentage": 0.10,
     "mini_block_capacity": 5,
     "log_file": "simulation_results.log",
-    "verbose": "True",
+    "verbose": 1,
     "locations": [
         "Ireland",
         "Tokyo",
