@@ -160,6 +160,7 @@ class Network:
             self.full_nodes[key].add_network_parameters(self.full_nodes, list(value))
     
         # Connect the leaders of the shards with the Principal Committee
+        # degree = len(self.principal_committee_nodes) // 2 + 1
         for idx in range(len(self.shard_nodes)):
             curr_leader = self.get_shard_leader(idx)
             possible_neighbours = list(self.principal_committee_nodes.keys())
@@ -169,6 +170,10 @@ class Network:
             )
 
             curr_leader.add_network_parameters(self.full_nodes, neighbours_list)
+            
+            # Add back connections to the principal committee neighbours
+            for id in neighbours_list:
+                self.full_nodes[id].neighbours_ids.append(curr_leader.id)
 
         # Connect the shard nodes with each other and the leaders
         for idx in range(len(self.shard_nodes)):
@@ -177,6 +182,8 @@ class Network:
                 curr_shard_nodes[node_id] = self.full_nodes[node_id]
 
             neighbours_info = {}
+            degree = len(self.shard_nodes[idx]) // 2 + 1
+
             for curr_node_id in self.shard_nodes[idx]:
                 possible_neighbours = self.shard_nodes[idx].copy()
                 possible_neighbours.remove(curr_node_id)
@@ -184,8 +191,6 @@ class Network:
                 neighbours_list = np.random.choice(
                     possible_neighbours, size=degree, replace=False
                 )
-
-                print(f"{curr_node_id} - {neighbours_list}")
 
                 if curr_node_id not in neighbours_info.keys():
                     neighbours_info[curr_node_id] = set()

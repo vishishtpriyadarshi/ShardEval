@@ -76,7 +76,8 @@ class FullNode(ParticipatingNode):
             for key, value in self.curr_shard_nodes.items():
                 transaction_state[key] = 0
 
-            transaction = Transaction("T_%s_%d" % (self.id, num), self.env.now, value, reward, transaction_state)
+            id = int(1000*round(self.env.now, 3))
+            transaction = Transaction(f"T_{self.id}_{id}", self.env.now, value, reward, transaction_state)
             # self.data["numTransactions"] += 1
             
             if self.params["verbose"]:
@@ -88,7 +89,6 @@ class FullNode(ParticipatingNode):
                 )
 
             # [WIP]: Rough Broadcast to all the neighbors
-        
             broadcast(
                 self.env, 
                 transaction, 
@@ -132,7 +132,8 @@ class FullNode(ParticipatingNode):
                     if self.curr_shard_nodes[node_id].shard_id == self.shard_id and self.curr_shard_nodes[node_id].node_type == 3:
                         filtered_curr_shard_nodes.append(node_id)
 
-                tx_block = TxBlock(f"TB_{self.id}", transactions_list, self.params, self.shard_id, filtered_curr_shard_nodes)
+                id = int(1000*round(self.env.now, 3))
+                tx_block = TxBlock(f"TB_{self.id}_{id}", transactions_list, self.params, self.shard_id, filtered_curr_shard_nodes)
 
                 broadcast(
                     self.env, 
@@ -162,7 +163,7 @@ class FullNode(ParticipatingNode):
             # To-Do: Filter transactions from tx_block based on votes
             accepted_transactions = tx_block.transactions_list
             
-            id = 1000*round(self.env.now, 3)
+            id = int(1000*round(self.env.now, 3))
             mini_block = MiniBlock(f"MB_{self.id}_{id}", accepted_transactions, self.params, self.shard_id)
             principal_committee_neigbours = get_principal_committee_neigbours(self.curr_shard_nodes, self.neighbours_ids)
             
@@ -187,7 +188,10 @@ class FullNode(ParticipatingNode):
         # Generate block only when each shard has provided with a mini-block and other principal committee nodes 
         # have voted on it
 
-        size_principal_committee = 1 + len(self.neighbours_ids)
+        # Considering each principal committee node is connected to all other nodes
+        size_principal_committee = 1 + len(get_principal_committee_neigbours(self.curr_shard_nodes, self.neighbours_ids))
+        # print(f"len = {size_principal_committee}")
+        
         if can_generate_block(self.mini_block_consensus_pool, size_principal_committee, self.params["num_shards"]):
             """
             Steps - 
@@ -226,7 +230,8 @@ class FullNode(ParticipatingNode):
             # Flatten to a flat list
             accepted_transactions = functools.reduce(operator.iconcat, accepted_transactions, [])
             
-            block = Block(f"B_{self.id}_{round(self.env.now)}", accepted_transactions, self.params)
+            id = int(1000*round(self.env.now, 3))
+            block = Block(f"B_{self.id}_{id}", accepted_transactions, self.params)
             
             # Update consensus_pool
             temp_dict = self.mini_block_consensus_pool
@@ -298,7 +303,7 @@ class FullNode(ParticipatingNode):
                 self.process_received_tx_block(block)
 
             elif isinstance(block, MiniBlock) and block.id not in self.processed_mini_blocks:
-                print(f"[Test] = current - {block.id}\tProcessed = {self.processed_mini_blocks}")
+                # print(f"[Test] = current - {block.id}\tProcessed = {self.processed_mini_blocks}")
                 self.process_received_mini_block(block)
 
                 # generate_block() is triggered whenever mini-block is received by the principal committee node
@@ -386,14 +391,15 @@ class FullNode(ParticipatingNode):
         Handle the received mini-block
         """
         if self.node_type != 1:
-            raise RuntimeError("Mini-block not received by principal committee node.")
+            raise RuntimeError(f"Mini-block not received by principal committee node. Received by node {self.id}.")
 
         if not block.publisher_info:                  # MiniBlock received from the shard leader
             self.mini_block_consensus_pool[block.id] = {}
             self.mini_block_consensus_pool[block.id]["data"] = block
             self.mini_block_consensus_pool[block.id]["votes"] = {}
 
-            for neighbour_id in self.neighbours_ids:
+            principal_committee_neigbours = get_principal_committee_neigbours(self.curr_shard_nodes, self.neighbours_ids)
+            for neighbour_id in principal_committee_neigbours:
                 self.mini_block_consensus_pool[block.id]["votes"][neighbour_id] = -1
                 # -1 = No vote received
             
@@ -417,7 +423,7 @@ class FullNode(ParticipatingNode):
                 block, 
                 "Mini-block-consensus", 
                 self.id, 
-                self.neighbours_ids,
+                get_principal_committee_neigbours(self.curr_shard_nodes, self.neighbours_ids),
                 self.curr_shard_nodes, 
                 self.params,
             )
@@ -442,7 +448,8 @@ class FullNode(ParticipatingNode):
                 self.mini_block_consensus_pool[block.id]["votes"][block.publisher_info["id"]] = block.publisher_info["vote"]
                 
                 # Filter the neighbours who have already voted for the mini-block
-                filtered_neighbour_ids = [ id for id in self.neighbours_ids if id not in self.mini_block_consensus_pool[block.id] ]
+                principal_committee_neigbours = get_principal_committee_neigbours(self.curr_shard_nodes, self.neighbours_ids)
+                filtered_neighbour_ids = [ id for id in principal_committee_neigbours if id not in self.mini_block_consensus_pool[block.id] ]
                 filtered_neighbour_ids += [ id for id, vote in self.mini_block_consensus_pool[block.id].items() if vote == -1 ]
                 
                 # Add meta-data to the mini-block before the broadcast
@@ -506,7 +513,7 @@ class FullNode(ParticipatingNode):
                     block, 
                     "Mini-block-consensus", 
                     self.id, 
-                    self.neighbours_ids,
+                    get_principal_committee_neigbours(self.curr_shard_nodes, self.neighbours_ids),
                     self.curr_shard_nodes, 
                     self.params,
                 )
