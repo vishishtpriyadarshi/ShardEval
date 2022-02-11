@@ -87,7 +87,7 @@ def has_received_mini_block(mini_block_consensus_pool, block_id):
     """
     Check whether the principal committee node is receiving mini-block for the first time
     """
-    print(f"[Test] = {block_id in mini_block_consensus_pool}\n{block_id}\t{mini_block_consensus_pool}")
+    # print(f"[Test] = {block_id in mini_block_consensus_pool}\n{block_id}\t{mini_block_consensus_pool}")
     return block_id in mini_block_consensus_pool
 
 
