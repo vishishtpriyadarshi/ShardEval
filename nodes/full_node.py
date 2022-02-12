@@ -85,6 +85,10 @@ class FullNode(ParticipatingNode):
             id = int(1000*round(self.env.now, 3))
             transaction = Transaction(f"T_{self.id}_{id}", self.env.now, value, reward, transaction_state)
             # self.data["numTransactions"] += 1
+
+            if "tx_count" not in self.params:
+                self.params["tx_count"] = 0
+            self.params["tx_count"] += 1
             
             if self.params["verbose"]:
                 print(
@@ -252,11 +256,6 @@ class FullNode(ParticipatingNode):
             
             # To-do: Add mini-blocks data to the consensus_pool before next statement gets executed
             accepted_transactions = [ mini_block.transactions_list for mini_block in filtered_mini_blocks ]
-
-            if "total_tx_processed" not in self.params:
-                self.params["total_tx_rejected"] = 0
-            else:
-                self.params["total_tx_rejected"] += count_tx_processed - len(accepted_transactions)
 
             # Flatten to a flat list
             accepted_transactions = functools.reduce(operator.iconcat, accepted_transactions, [])

@@ -24,7 +24,7 @@ def get_transmission_delay(source, destination):
     sigma = params["delay"][source][destination]["sigma"]
     delay = mu + sigma * np.random.randn()
     if delay < 0:
-        return getTransmissionDelay(source, destination)
+        return get_transmission_delay(source, destination)
     return delay
 
 

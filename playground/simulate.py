@@ -96,6 +96,7 @@ print(
 print(f"\nNumber of forks observed = {net.data['numForks']}")
 
 print(f"\nSimulation Time = {stop-start} seconds")
+print(f"\nTPS = {numTxs/(stop-start)} seconds")
 
 toStore = net.nodes.copy()
 

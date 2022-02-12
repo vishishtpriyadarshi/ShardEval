@@ -55,11 +55,16 @@ def main():
             count += len(block.transactions_list)
         
         print(f"Length of Blockchain = {len(params['chain'])}")
-        print(f"\nTotal no of transactions accepted = {count}")
+        # print(f"\nTotal no of transactions accepted = {count}")
         # print(f"(accepted) TPS = {count/sim_time}")
 
-        # print(f"\nTotal no of transactions rejected = {params['total_tx_rejected']}")
-        print(f"(total) TPS = {(count + params['total_tx_rejected']) / sim_time}")
+        time_tx_processing = params['simulation_time'] - params['tx_start_time']
+        time_network_configuration = params['tx_start_time'] - params['network_config_start_time']
+
+        print(f"\nTotal no of transactions processed = {params['tx_count']}")
+        print(f"(total) TPS = {params['tx_count']/sim_time}")
+
+        # print(f"\nLatency of network configuration (in simpy units) = {time_network_configuration}")
     else:
         print("Simulation didn't execute for sufficiently long time")
 

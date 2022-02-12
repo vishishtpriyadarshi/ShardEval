@@ -85,8 +85,11 @@ class Network:
         """
         Start executing a fresh epoch
         """
+        self.params["network_config_start_time"] = self.env.now
         self.partition_nodes()
         self.establish_network_connections()
+
+        self.params["tx_start_time"] = self.env.now
         self.allow_transactions_generation()
         self.display_network_info()
 
@@ -163,7 +166,7 @@ class Network:
             self.full_nodes[key].add_network_parameters(self.full_nodes, list(value))
     
         # Connect the leaders of the shards with the Principal Committee
-        # degree = len(self.principal_committee_nodes) // 2 + 1
+        degree = len(self.principal_committee_nodes) // 2 + 1
         for idx in range(len(self.shard_nodes)):
             curr_leader = self.get_shard_leader(idx)
             possible_neighbours = list(self.principal_committee_nodes.keys())
