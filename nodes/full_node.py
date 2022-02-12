@@ -32,7 +32,7 @@ class FullNode(ParticipatingNode):
         # 3 - Shard Member
         
         self.shard_id = -1
-        self.shard_leader = None
+        self.shard_leader_id = -1
         self.curr_shard_nodes = {}
         self.neighbours_ids = []
         self.blockchain = []

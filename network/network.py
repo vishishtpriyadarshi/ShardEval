@@ -17,12 +17,12 @@ class Network:
         self.env = env
         self.params = params
         self.locations = params["locations"]
-        self.participating_nodes = {}
+        self.participating_nodes = []
         self.full_nodes = {}
-        self.principal_committee_nodes = {}
+        self.principal_committee_node_ids = []
         self.shard_nodes = []
         self.pipes = {}
-
+        self.num_nodes = params['num_nodes']
         self.add_participating_nodes(params["num_nodes"])
 
 
@@ -32,14 +32,15 @@ class Network:
         part of the network (may contain) Sybil identities.
         """
 
+        # node id is serial number as of now
         for id in range(num_nodes):
             location = np.random.choice(self.locations, size=1)[0]
-            self.participating_nodes["PN%d" % id] = ParticipatingNode(
-                "PN%d" % id,
+            self.participating_nodes.append(ParticipatingNode(
+                id,
                 self.env,
                 location,
                 self.params
-            )
+            ))
             if bool(self.params["verbose"]) and self.params["verbose"] == "elaborate":
                 print(
                     "%7.4f" % self.env.now
@@ -49,22 +50,23 @@ class Network:
                 )
 
 
+    # sybil resistance: https://en.wikipedia.org/wiki/Sybil_attack
     def execute_sybil_resistance_mechanism(self):
         """
-        Run Proof-of-Stake as a Sybil resistance mechanim
+        TODO:Run Proof-of-Stake as a Sybil resistance mechanim
         to filter the participating nodes as full nodes.
         """
         
-        participating_node_ids = list(self.participating_nodes.keys())
-        num_nodes = len(self.participating_nodes)
-        # Dummy mechanism
-        mask = np.random.choice([0, 1], size=(num_nodes,), p=[1./3, 2./3])
+        # participating_node_ids = list(self.participating_nodes.keys())
 
-        for idx in range(num_nodes):
-            curr_participating_node = self.participating_nodes[participating_node_ids[idx]]
+        # Dummy mechanism: currently we are choosing nodes at random and converting them to full nodes
+        mask = np.random.choice([0, 1], size=(self.num_nodes,), p=[1./3, 2./3])
+
+        for idx in range(self.num_nodes):
+            curr_participating_node = self.participating_nodes[idx]
 
             if mask[idx] == 1:
-                curr_id = int(curr_participating_node.id[2:])
+                curr_id = curr_participating_node.id
                 self.full_nodes["FN%d" % curr_id] = FullNode(
                     "FN%d" % curr_id,
                     curr_participating_node.env,
@@ -79,6 +81,9 @@ class Network:
                         + "%s entered the network from location %s"
                         % ("FN%d" % curr_id, curr_participating_node.location)
                     )
+            else:
+            # rejected nodes are looged here
+                pass
 
 
     def run_epoch(self):
@@ -101,75 +106,90 @@ class Network:
         """
 
         # Add members to the Principal Committee randomly
-        nodes = np.asarray(list(self.full_nodes.keys()))
+        nodes = list(self.full_nodes.keys())
         np.random.shuffle(nodes)
         num_principal_committe_nodes = int(len(nodes) * self.params["principal_committee_size"])
-        principal_committee_nodes = nodes[0: num_principal_committe_nodes]
-        principal_committee_leader = random.choice(principal_committee_nodes)
+        self.principal_committee_node_ids = nodes[0: num_principal_committe_nodes]
+        # TODO:prinicpal committee leader election algo
+        principal_committee_leader = random.choice(self.principal_committee_node_ids)
 
-        for node_id in principal_committee_nodes:
+        for node_id in self.principal_committee_node_ids:
             self.full_nodes[node_id].node_type = 1
-            self.principal_committee_nodes[node_id] = self.full_nodes[node_id]
+            # self.principal_committee_node[node_id] = self.full_nodes[node_id]
             self.full_nodes[node_id].pc_leader_id = principal_committee_leader
         
         # Allot nodes to different shards
         shard_nodes = nodes[num_principal_committe_nodes:]
         shard_groups = np.array_split(shard_nodes, self.params["num_shards"])
-
+        
         for idx in range(self.params["num_shards"]):
+            # TODO:Shard leader election algo
+            shard_leader_id = np.random.choice(shard_groups[idx])
+            self.full_nodes[shard_leader_id].node_type = 2
             for node_id in shard_groups[idx]:
                 self.full_nodes[node_id].shard_id = idx
-                self.full_nodes[node_id].node_type = 3
+                self.full_nodes[node_id].shard_leader_id = shard_leader_id
+                if node_id != shard_leader_id:
+                    self.full_nodes[node_id].node_type = 3
+                
             
-            # Assign a leader randomly
-            self.full_nodes[np.random.choice(shard_groups[idx])].node_type = 2
 
-        self.shard_nodes = [[] for i in range(self.params["num_shards"])]
-        for id, node in self.full_nodes.items():
-            if id not in self.principal_committee_nodes:
-                self.shard_nodes[node.shard_id - 1].append(node.id)
+
+        self.shard_nodes = [shards.tolist() for shards in shard_groups]
+        # for id, node in self.full_nodes.items():
+        #     if id not in self.principal_committee_node_ids:
+        #         self.shard_nodes[node.shard_id - 1].append(node.id)
        
 
     def establish_network_connections(self):
         """
         Establish network topology between the full nodes
         """
-
-        # Connect the Principal Committee nodes
         """Degree of network graph. Degree >= n/2 guarantees a connected graph"""
-        # degree = len(self.principal_committee_nodes) // 2 + 1
-        degree = len(self.principal_committee_nodes) - 1
+        # degree = len(self.principal_committee_node_ids) // 2 + 1
+
+        ################## Connect the Principal Committee nodes ##################
+        # keeping the degress as num nodes - 1 to make the pricinpal committee network fully connected
+        degree = len(self.principal_committee_node_ids) - 1
 
         # neighbours info is a dictionary mapping nodes to its neighbours for constructing undirected graph
         neighbours_info = {}
 
-        for id, node in self.principal_committee_nodes.items():
-            possible_neighbours = list(self.principal_committee_nodes.keys())
+        for id in self.principal_committee_node_ids:
+            
+            
+            possible_neighbours = self.principal_committee_node_ids.copy()
             possible_neighbours.remove(id)
             
-            """Generate a random sample of size degree without replacement from possible neighbours"""
-            neighbours_list = np.random.choice(
-                possible_neighbours, size=degree, replace=False
-            )
-            
-            if id not in neighbours_info.keys():
-                neighbours_info[id] = set()
-            
-            for neighbour_id in neighbours_list:
-                if neighbour_id not in neighbours_info.keys():
-                    neighbours_info[neighbour_id] = set()
+            neighbours_info[id] = possible_neighbours
 
-                neighbours_info[id].add(neighbour_id)
-                neighbours_info[neighbour_id].add(id)
+            """Generate a random sample of size degree without replacement from possible neighbours"""
+            # This is a generic code to create bidirectional links among neighbors when graph is not fully connected
+            # neighbours_list = np.random.choice(
+            #     possible_neighbours, 
+            #     size=degree, 
+            #     replace=False
+            # )
+            
+            # if id not in neighbours_info.keys():
+            #     neighbours_info[id] = set()
+            
+            # for neighbour_id in neighbours_list:
+            #     if neighbour_id not in neighbours_info.keys():
+            #         neighbours_info[neighbour_id] = set()
+
+            #     neighbours_info[id].add(neighbour_id)
+            #     neighbours_info[neighbour_id].add(id)
 
         for key, value in neighbours_info.items():
             self.full_nodes[key].add_network_parameters(self.full_nodes, list(value))
     
         # Connect the leaders of the shards with the Principal Committee
-        degree = len(self.principal_committee_nodes) // 2 + 1
+        degree = len(self.principal_committee_node_ids) // 2 + 1
         for idx in range(len(self.shard_nodes)):
             curr_leader = self.get_shard_leader(idx)
-            possible_neighbours = list(self.principal_committee_nodes.keys())
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>", curr_leader)
+            possible_neighbours = self.principal_committee_node_ids
             
             neighbours_list = np.random.choice(
                 possible_neighbours, size=degree, replace=False
@@ -223,11 +243,13 @@ class Network:
         """
         Return leader of the specified shard
         """
-        leader = [idx for idx in self.shard_nodes[idx] if self.full_nodes[idx].node_type == 2]
-        if len(leader) != 1:
-            raise RuntimeError("More than 1 leader for the Shard - %d" %idx)
+        print(">>>>>>>>>>>>>>>>>shard nodes", self.shard_nodes)
+        return self.full_nodes[self.full_nodes[self.shard_nodes[idx][0]].shard_leader_id]
+        # leader = [idx for idx in self.shard_nodes[idx] if self.full_nodes[idx].node_type == 2]
+        # if len(leader_id) != 1:
+        #     raise RuntimeError("More than 1 leader for the Shard - %d" %idx)
         
-        return self.full_nodes[leader[0]]
+        # return self.full_nodes[leader[0]]
 
 
     def allow_transactions_generation(self):
@@ -247,12 +269,12 @@ class Network:
 
     def display_network_info(self):
         print("\n============  NETWORK INFORMATION  ============")
-        print("Principal Committee Nodes -", list(self.principal_committee_nodes.keys()))
-        print(f"Leader = {self.principal_committee_nodes[list(self.principal_committee_nodes.keys())[0]].pc_leader_id}")
+        print("Principal Committee Nodes -", self.principal_committee_node_ids)
+        print(f"Leader = {self.full_nodes[self.principal_committee_node_ids[0]].pc_leader_id}")
 
-        for id, node in self.principal_committee_nodes.items():
+        for id in self.principal_committee_node_ids:
             print("{} has neighbors -".format(id), end=' ')
-            print(node.neighbours_ids)
+            print(self.full_nodes[id].neighbours_ids)
         print("\n")
 
         for i in range(self.params["num_shards"]):
