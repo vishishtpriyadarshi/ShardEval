@@ -11,7 +11,8 @@ def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
             )
 
     elif (object_type == "Block" or object_type == "Tx-block" or \
-            object_type == "Mini-block-consensus" or object_type == "Mini-block"):
+            object_type == "Mini-block-consensus" or object_type == "Mini-block" or \
+            object_type == "Mini-blocks-voting"):
         # Broadcast Block to the network
         # OR Broadcast Tx-block to the shard nodes
         # OR Broadcast Mini-block to the Principal Committee members
@@ -23,10 +24,11 @@ def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
             events.append(store.put_data(object, source_location))
 
         if params["verbose"]:
+            debug_info = "Mini-block-voting-list" if isinstance(object, list) else object.id
             print(
                 "%7.4f" % env.now
                 + " : "
-                + "Node %s propagated %s %s to its neighbours" % (source, object_type, object.id)
+                + "Node %s propagated %s %s to its neighbours %s" % (source, object_type, debug_info, neighbour_list)
             )
             
         return env.all_of(events)

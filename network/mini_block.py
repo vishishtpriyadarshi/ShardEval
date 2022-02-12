@@ -12,4 +12,5 @@ class MiniBlock(Block):
 
         self.shard_id = shard_id
         self.publisher_info = {}
-        self.message_data = []
+        # self.message_data = []
+        self.message_data = {}

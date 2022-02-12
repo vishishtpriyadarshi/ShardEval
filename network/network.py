@@ -1,5 +1,6 @@
 from time import time
 import numpy as np
+import random
 
 from nodes.participating_node import ParticipatingNode
 from nodes.full_node import FullNode
@@ -101,11 +102,13 @@ class Network:
         np.random.shuffle(nodes)
         num_principal_committe_nodes = int(len(nodes) * self.params["principal_committee_size"])
         principal_committee_nodes = nodes[0: num_principal_committe_nodes]
+        principal_committee_leader = random.choice(principal_committee_nodes)
 
         for node_id in principal_committee_nodes:
             self.full_nodes[node_id].node_type = 1
             self.principal_committee_nodes[node_id] = self.full_nodes[node_id]
-
+            self.full_nodes[node_id].pc_leader_id = principal_committee_leader
+        
         # Allot nodes to different shards
         shard_nodes = nodes[num_principal_committe_nodes:]
         shard_groups = np.array_split(shard_nodes, self.params["num_shards"])
@@ -242,7 +245,8 @@ class Network:
     def display_network_info(self):
         print("\n============  NETWORK INFORMATION  ============")
         print("Principal Committee Nodes -", list(self.principal_committee_nodes.keys()))
-        
+        print(f"Leader = {self.principal_committee_nodes[list(self.principal_committee_nodes.keys())[0]].pc_leader_id}")
+
         for id, node in self.principal_committee_nodes.items():
             print("{} has neighbors -".format(id), end=' ')
             print(node.neighbours_ids)

@@ -44,6 +44,8 @@ def main():
     stop_time = time()
 
     sim_time = stop_time - start_time
+    
+    print("\n\n============  SIMULATION DETAILS  ============")
     print(f"\nSimulation Time = {sim_time} seconds")
 
     if 'chain' in params:
@@ -52,7 +54,12 @@ def main():
         for block in params['chain']:
             count += len(block.transactions_list)
         
-        print(f"TPS = {count/sim_time}")
+        print(f"Length of Blockchain = {len(params['chain'])}")
+        print(f"\nTotal no of transactions accepted = {count}")
+        # print(f"(accepted) TPS = {count/sim_time}")
+
+        # print(f"\nTotal no of transactions rejected = {params['total_tx_rejected']}")
+        print(f"(total) TPS = {(count + params['total_tx_rejected']) / sim_time}")
     else:
         print("Simulation didn't execute for sufficiently long time")
 
