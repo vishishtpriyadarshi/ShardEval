@@ -58,6 +58,11 @@ class FullNode(ParticipatingNode):
         self.env.process(self.receive_block())
     
 
+    def update_neighbours(self, neighbours_ids):
+        self.neighbours_ids = neighbours_ids
+        self.transaction_pool.neighbours_ids = neighbours_ids
+
+
     def generate_transactions(self):
         """
         Generates transactions in the shard and broadcasts it to the neighbour nodes

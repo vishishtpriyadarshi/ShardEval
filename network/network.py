@@ -5,6 +5,7 @@ import random
 from nodes.participating_node import ParticipatingNode
 from nodes.full_node import FullNode
 from network.pipe import Pipe
+from utils.spanning_tree import SpanningTree
 
 
 class Network:
@@ -131,9 +132,6 @@ class Network:
                 self.full_nodes[node_id].shard_leader_id = shard_leader_id
                 if node_id != shard_leader_id:
                     self.full_nodes[node_id].node_type = 3
-                
-            
-
 
         self.shard_nodes = [shards.tolist() for shards in shard_groups]
         # for id, node in self.full_nodes.items():
@@ -156,8 +154,6 @@ class Network:
         neighbours_info = {}
 
         for id in self.principal_committee_node_ids:
-            
-            
             possible_neighbours = self.principal_committee_node_ids.copy()
             possible_neighbours.remove(id)
             
@@ -188,7 +184,6 @@ class Network:
         degree = len(self.principal_committee_node_ids) // 2 + 1
         for idx in range(len(self.shard_nodes)):
             curr_leader = self.get_shard_leader(idx)
-            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>", curr_leader)
             possible_neighbours = self.principal_committee_node_ids
             
             neighbours_list = np.random.choice(
@@ -228,22 +223,35 @@ class Network:
                     neighbours_info[curr_node_id].add(neighbour_id)
                     neighbours_info[neighbour_id].add(curr_node_id)
                 
-                self.full_nodes[curr_node_id].shard_leader =  self.get_shard_leader(idx)
+                self.full_nodes[curr_node_id].shard_leader = self.get_shard_leader(idx)
             
             for key, value in neighbours_info.items():
                 if self.full_nodes[key].node_type == 2:
                     # If curr_node is a leader, append to the neighbors list
-                    self.full_nodes[key].neighbours_ids = np.append(self.full_nodes[key].neighbours_ids,
-                                                                    list(value))
+                    updated_neighbours_ids = np.append(self.full_nodes[key].neighbours_ids, list(value))
+                    self.full_nodes[key].update_neighbours(updated_neighbours_ids)
                 else:
                     self.full_nodes[key].add_network_parameters(curr_shard_nodes, list(value))
+            
+            # Create a Spanning Tree for the broadcast for the shard nodes
+            spanning_tree = SpanningTree(curr_shard_nodes)
+            neighbours_info = spanning_tree.Kruskal_MST()
+            
+            # Make edges bi-directional
+            for id, neighbours in neighbours_info.items():
+                for neighbour_id in list(neighbours):
+                    neighbours_info[neighbour_id].add(id)
+
+            # Update the neighbours
+            for key, value in neighbours_info.items():
+                # print(f"{key} -- {self.full_nodes[key].neighbours_ids}")
+                self.full_nodes[key].update_neighbours(list(value))
 
 
     def get_shard_leader(self, idx):
         """
         Return leader of the specified shard
         """
-        print(">>>>>>>>>>>>>>>>>shard nodes", self.shard_nodes)
         return self.full_nodes[self.full_nodes[self.shard_nodes[idx][0]].shard_leader_id]
         # leader = [idx for idx in self.shard_nodes[idx] if self.full_nodes[idx].node_type == 2]
         # if len(leader_id) != 1:

@@ -62,7 +62,8 @@ def main():
         time_network_configuration = params['tx_start_time'] - params['network_config_start_time']
 
         print(f"\nTotal no of transactions processed = {params['tx_count']}")
-        print(f"(total) TPS = {params['tx_count']/sim_time}")
+        # print(f"(total) TPS = {params['tx_count']/sim_time}")
+        print(f"Simpy TPS = {params['tx_count']/params['simulation_time']}")
 
         # print(f"\nLatency of network configuration (in simpy units) = {time_network_configuration}")
     else:

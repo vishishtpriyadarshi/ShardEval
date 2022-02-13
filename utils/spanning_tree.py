@@ -12,7 +12,6 @@ class SpanningTree:
             for neighbour_id in node.neighbours_ids:
                 self.add_edge(node.id, neighbour_id, 1)
 
-
     def add_edge(self, u, v, w):
         """ Establishe edge from u to v with weight w """
         self.graph.append([u, v, w])
@@ -50,12 +49,12 @@ class SpanningTree:
         # self.graph = sorted(self.graph,
         # 					key=lambda item: item[2])
 
-        parent, rank = [], []
+        parent, rank = {}, {}
 
         # Create V subsets with single elements
-        for node in range(self.V):
-            parent.append(node)
-            rank.append(0)
+        for node_id in self.nodes:
+            parent[node_id] = node_id
+            rank[node_id] = 0
 
         i = 0   # An index variable, used for sorted edges
         e = 0   # An index variable, used for result[]
