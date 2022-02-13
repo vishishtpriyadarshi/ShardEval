@@ -327,7 +327,8 @@ class FullNode(ParticipatingNode):
         (iii) (Final) Block sent by the Principal Committee (for all the nodes)
         """
         while True:
-            block = yield self.pipes.get()
+            packeted_message = yield self.pipes.get()
+            block = packeted_message.message
             block_type = ""
 
             if isinstance(block, list):         block_type = "List"

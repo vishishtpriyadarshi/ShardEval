@@ -1,3 +1,5 @@
+from network.packet import Packet
+
 def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
     """
     Broadcast the object from the source to destination
@@ -20,8 +22,9 @@ def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
         events = []
         for neighbour in neighbour_list:
             source_location = nodes[neighbour].location
+            packeted_object = Packet(source, object, neighbour)
             store = nodes[neighbour].pipes
-            events.append(store.put_data(object, source_location))
+            events.append(store.put_data(packeted_object, source_location))
 
         if params["verbose"]:
             debug_info = "Mini-block-voting-list" if isinstance(object, list) else object.id
