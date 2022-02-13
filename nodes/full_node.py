@@ -12,7 +12,7 @@ from network.pipe import Pipe
 from factory.transaction import Transaction
 from factory.transaction_pool import TransactionPool
 from network.consensus.consensus import Consensus
-from utils import get_transaction_delay, is_voting_complete, get_shard_neighbours, \
+from utils.helper import get_transaction_delay, is_voting_complete, get_shard_neighbours, \
      get_principal_committee_neigbours, is_vote_casted, can_generate_block, has_received_mini_block
 
 
