@@ -1,5 +1,6 @@
 import numpy as np
 import json
+from queue import Queue
 
 
 def is_voting_complete(tx_block):
@@ -89,3 +90,21 @@ def has_received_mini_block(mini_block_consensus_pool, block_id):
     """
     # print(f"[Test] = {block_id in mini_block_consensus_pool}\n{block_id}\t{mini_block_consensus_pool}")
     return block_id in mini_block_consensus_pool
+
+
+def assign_next_hop_to_leader(nodes, leader):
+    """
+    Perform BFS to assign next_hop to all the shard nodes
+    """
+    q = Queue(maxsize = len(nodes))
+    q.put(leader.id)
+    used = {node_id: False for node_id in nodes}
+    used[leader.id] = True
+
+    while not q.empty():
+        curr_node = nodes[q.get()]
+        for neighbour_id in curr_node.neighbours_ids:
+            if not used[neighbour_id]:
+                used[neighbour_id] = True
+                q.put(neighbour_id)
+                nodes[neighbour_id].next_hop_id = curr_node.id

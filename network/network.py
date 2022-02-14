@@ -6,6 +6,7 @@ from nodes.participating_node import ParticipatingNode
 from nodes.full_node import FullNode
 from network.pipe import Pipe
 from utils.spanning_tree import SpanningTree
+from utils.helper import assign_next_hop_to_leader
 
 
 class Network:
@@ -246,6 +247,11 @@ class Network:
             for key, value in neighbours_info.items():
                 # print(f"{key} -- {self.full_nodes[key].neighbours_ids}")
                 self.full_nodes[key].update_neighbours(list(value))
+            
+            # Assign next_hop to reach the leader
+            assign_next_hop_to_leader(curr_shard_nodes, self.get_shard_leader(idx))
+            # for id, node in curr_shard_nodes.items():
+            #     print(f"{id} = {node.next_hop_id}")
 
 
     def get_shard_leader(self, idx):

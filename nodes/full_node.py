@@ -46,6 +46,7 @@ class FullNode(ParticipatingNode):
         # Experimental
         self.pc_leader_id = -1
         self.mini_blocks_vote_pool = []
+        self.next_hop_id = -1
 
 
     def add_network_parameters(self, curr_shard_nodes, neighbours_ids):
