@@ -1,5 +1,6 @@
 import numpy as np
 import json
+from queue import Queue
 
 
 def is_voting_complete(tx_block):
@@ -91,45 +92,21 @@ def has_received_mini_block(mini_block_consensus_pool, block_id):
     return block_id in mini_block_consensus_pool
 
 
-"""
-Custom Priority Queue implementation to maintain the order of 
-transactions to be proposed by a full node, with key as the reward
-"""
+def assign_next_hop_to_leader(nodes, leader):
+    """
+    Perform BFS to assign next_hop to all the shard nodes
+    """
+    q = Queue(maxsize = len(nodes))
+    q.put(leader.id)
+    used = {node_id: False for node_id in nodes}
+    used[leader.id] = True
 
-class PriorityQueue:
-    def __init__(self):
-        self.queue = []
-
-    def is_empty(self):
-        return len(self.queue) == []
-
-    def is_present(self, transaction):
-        return transaction in self.queue
-
-    def length(self):
-        return len(self.queue)
-
-    def insert(self, new_transaction):
-        idx = 0
-        while (idx < len(self.queue) and 
-                self.queue[idx].reward >= new_transaction.reward):
-            idx += 1
-        self.queue.insert(idx, new_transaction)
-
-    def pop(self, count):
-        count = min(self.length(), count)
-        elements = self.queue[:count]
-        self.queue = self.queue[count:]
-        return elements
-
-    def remove(self, transaction):
-        self.queue.remove(transaction)
-
-    def get(self, count):
-        count = min(self.length(), count)
-        return self.queue[:count]
-
-    def display(self):
-        for tx in self.queue:
-            print(tx.id, end=" ")
-        print()
+    while not q.empty():
+        curr_node = nodes[q.get()]
+        for neighbour_id in curr_node.neighbours_ids:
+            if neighbour_id not in nodes:               # neighbour is a principal committee node
+                continue
+            if not used[neighbour_id]:
+                used[neighbour_id] = True
+                q.put(neighbour_id)
+                nodes[neighbour_id].next_hop_id = curr_node.id

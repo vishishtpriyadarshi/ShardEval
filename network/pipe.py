@@ -1,5 +1,5 @@
 import simpy
-from utils import get_transmission_delay
+from utils.helper import get_transmission_delay
 
 
 class Pipe(object):

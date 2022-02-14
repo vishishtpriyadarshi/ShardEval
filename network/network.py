@@ -5,6 +5,8 @@ import random
 from nodes.participating_node import ParticipatingNode
 from nodes.full_node import FullNode
 from network.pipe import Pipe
+from utils.spanning_tree import SpanningTree
+from utils.helper import assign_next_hop_to_leader
 
 
 class Network:
@@ -131,9 +133,6 @@ class Network:
                 self.full_nodes[node_id].shard_leader_id = shard_leader_id
                 if node_id != shard_leader_id:
                     self.full_nodes[node_id].node_type = 3
-                
-            
-
 
         self.shard_nodes = [shards.tolist() for shards in shard_groups]
         # for id, node in self.full_nodes.items():
@@ -156,8 +155,6 @@ class Network:
         neighbours_info = {}
 
         for id in self.principal_committee_node_ids:
-            
-            
             possible_neighbours = self.principal_committee_node_ids.copy()
             possible_neighbours.remove(id)
             
@@ -188,7 +185,6 @@ class Network:
         degree = len(self.principal_committee_node_ids) // 2 + 1
         for idx in range(len(self.shard_nodes)):
             curr_leader = self.get_shard_leader(idx)
-            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>", curr_leader)
             possible_neighbours = self.principal_committee_node_ids
             
             neighbours_list = np.random.choice(
@@ -228,22 +224,44 @@ class Network:
                     neighbours_info[curr_node_id].add(neighbour_id)
                     neighbours_info[neighbour_id].add(curr_node_id)
                 
-                self.full_nodes[curr_node_id].shard_leader =  self.get_shard_leader(idx)
+                self.full_nodes[curr_node_id].shard_leader = self.get_shard_leader(idx)
             
+            principal_committee_neigbours = []
             for key, value in neighbours_info.items():
                 if self.full_nodes[key].node_type == 2:
                     # If curr_node is a leader, append to the neighbors list
-                    self.full_nodes[key].neighbours_ids = np.append(self.full_nodes[key].neighbours_ids,
-                                                                    list(value))
+                    principal_committee_neigbours = self.full_nodes[key].neighbours_ids
+                    self.full_nodes[key].update_neighbours(list(value))
                 else:
                     self.full_nodes[key].add_network_parameters(curr_shard_nodes, list(value))
+            
+            # Create a Spanning Tree for the broadcast for the shard nodes
+            spanning_tree = SpanningTree(curr_shard_nodes)
+            neighbours_info = spanning_tree.Kruskal_MST()
+            
+            # Make edges bi-directional
+            for id, neighbours in neighbours_info.items():
+                for neighbour_id in list(neighbours):
+                    neighbours_info[neighbour_id].add(id)
+
+            # Update the neighbours
+            for key, value in neighbours_info.items():
+                # print(f"{key} -- {self.full_nodes[key].neighbours_ids}")
+                value = list(value)
+                if self.full_nodes[key].node_type == 2:
+                    value += list(principal_committee_neigbours)
+                self.full_nodes[key].update_neighbours(value)
+            
+            # Assign next_hop to reach the leader
+            assign_next_hop_to_leader(curr_shard_nodes, self.get_shard_leader(idx))
+            # for id, node in curr_shard_nodes.items():
+            #     print(f"{id} = {node.next_hop_id}")
 
 
     def get_shard_leader(self, idx):
         """
         Return leader of the specified shard
         """
-        print(">>>>>>>>>>>>>>>>>shard nodes", self.shard_nodes)
         return self.full_nodes[self.full_nodes[self.shard_nodes[idx][0]].shard_leader_id]
         # leader = [idx for idx in self.shard_nodes[idx] if self.full_nodes[idx].node_type == 2]
         # if len(leader_id) != 1:
@@ -270,19 +288,18 @@ class Network:
     def display_network_info(self):
         print("\n============  NETWORK INFORMATION  ============")
         print("Principal Committee Nodes -", self.principal_committee_node_ids)
-        print(f"Leader = {self.full_nodes[self.principal_committee_node_ids[0]].pc_leader_id}")
+        print(f"Leader = '{self.full_nodes[self.principal_committee_node_ids[0]].pc_leader_id}'")
 
         for id in self.principal_committee_node_ids:
-            print("{} has neighbors -".format(id), end=' ')
-            print(self.full_nodes[id].neighbours_ids)
+            print(f"{id} has neighbors - {self.full_nodes[id].neighbours_ids}")
         print("\n")
 
         for i in range(self.params["num_shards"]):
             print("\t\t\t\tSHARD -", i+1)            
-            print("Leader -", [l for l in self.shard_nodes[i] if self.full_nodes[l].node_type == 2])
+            print(f"Leader - '{self.get_shard_leader(i).id}'")
 
             print("Nodes -", self.shard_nodes[i], "\n")
             for j in range(len(self.shard_nodes[i])):
-                print("{}. {} has neighbours -".format(j+1, self.shard_nodes[i][j]), end=' ') 
-                print(self.full_nodes[self.shard_nodes[i][j]].neighbours_ids, end='\n')
+                curr_node = self.full_nodes[self.shard_nodes[i][j]]
+                print(f"{j+1}. {curr_node.id} has neighbours - {curr_node.neighbours_ids} and next hop to leader is '{curr_node.next_hop_id}'")
             print("\n")
