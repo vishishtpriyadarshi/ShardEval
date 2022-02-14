@@ -341,30 +341,15 @@ class FullNode(ParticipatingNode):
 
             if self.params["verbose"]:
                 debug_info = [ b.id for b in block ] if isinstance(block, list) else block.id
-                if block_type == "List":
-                    print(
-                        "%7.4f" % self.env.now
-                        + " : "
-                        + "%s received a %s-block - %s from %s"
-                        % (self.id, block_type, debug_info, block[0].publisher_info)
-                    )
-                elif block_type == "Mini":
-                    print(
-                        "%7.4f" % self.env.now
-                        + " : "
-                        + "%s received a %s-block - %s from %s"
-                        % (self.id, block_type, debug_info, block.publisher_info)
-                    )
-                else:
-                    print(
-                        "%7.4f" % self.env.now
-                        + " : "
-                        + "%s received a %s-block - %s"
-                        % (self.id, block_type, debug_info)
-                    )
+                print(
+                    "%7.4f" % self.env.now
+                    + " : "
+                    + "%s received a %s-block - %s from %s"
+                    % (self.id, block_type, debug_info, packeted_message.sender_id)
+                )
 
             if isinstance(block, list):
-                self.process_received_mini_blocks_list(block)
+                self.process_received_mini_blocks_list(block, packeted_message.sender_id)
                 if self.id == self.pc_leader_id:
                     self.generate_block()
 
@@ -385,7 +370,7 @@ class FullNode(ParticipatingNode):
                 self.process_received_block(block)
     
 
-    def process_received_tx_block(self, tx_block, source_id):
+    def process_received_tx_block(self, tx_block, sender_id):
         """
         Handle the received Tx-block
         """
@@ -405,37 +390,35 @@ class FullNode(ParticipatingNode):
         )
 
         if self.node_type == 2:
-            if self.id not in tx_block.visitor_count_post_voting.keys():
-                tx_block.visitor_count_post_voting[self.id] = 1
-                if flag:
-                    if self.params["verbose"]:
-                        print(
-                            "%7.4f" % self.env.now
-                            + " : "
-                            + "Node %s (Leader) received voted Tx-block %s" % (self.id, tx_block.id)
-                        )
-                    self.generate_mini_block(tx_block)
+            if flag:
+                if self.params["verbose"]:
+                    print(
+                        "%7.4f" % self.env.now
+                        + " : "
+                        + "Node %s (Leader) received voted Tx-block %s" % (self.id, tx_block.id)
+                    )
+                self.generate_mini_block(tx_block)
+            else:
+                raise RuntimeError(f"Shard Leader {self.id} received a voted Tx-block {tx_block.id} which is not been voted by all shard nodes.")
 
         elif self.node_type == 3:
             if flag:
-                if self.id not in tx_block.visitor_count_post_voting.keys():
-                    tx_block.visitor_count_post_voting[self.id] = 1
-                    if self.params["verbose"]:
-                        print(
-                            "%7.4f" % self.env.now
-                            + " : "
-                            + "Node %s (shard node) propagated voted Tx-block %s" % (self.id, tx_block.id)
-                        )
-
-                    broadcast(
-                        self.env, 
-                        tx_block, 
-                        "Tx-block", 
-                        self.id, 
-                        [ self.next_hop_id ], 
-                        self.curr_shard_nodes, 
-                        self.params
+                if self.params["verbose"]:
+                    print(
+                        "%7.4f" % self.env.now
+                        + " : "
+                        + "Node %s (shard node) propagated voted Tx-block %s" % (self.id, tx_block.id)
                     )
+
+                broadcast(
+                    self.env, 
+                    tx_block, 
+                    "Tx-block", 
+                    self.id, 
+                    [ self.next_hop_id ], 
+                    self.curr_shard_nodes, 
+                    self.params
+                )
             else:
                 if is_vote_casted(tx_block, self.id) == False:
                     self.cast_vote(tx_block)
@@ -450,9 +433,15 @@ class FullNode(ParticipatingNode):
                     neighbours = []
                     if is_voting_complete(tx_block):
                         neighbours = [ self.next_hop_id ]
+                        if self.params["verbose"]:
+                            print(
+                                "%7.4f" % self.env.now
+                                + " : "
+                                + "Voting for the tx-block %s is complete and node %s sent it on its path to shard leader" % (tx_block.id, self.id)
+                            )
                     else:
                         neighbours = shard_neigbours    # Exclude source node
-                        neighbours.remove(source_id)
+                        neighbours.remove(sender_id)
 
                     broadcast(
                         self.env, 
@@ -465,7 +454,7 @@ class FullNode(ParticipatingNode):
                     )
             
 
-    def process_received_mini_blocks_list(self, blocks):
+    def process_received_mini_blocks_list(self, blocks, sender_id):
         """
         Handle the received list of mini-blocks
         """
@@ -474,8 +463,7 @@ class FullNode(ParticipatingNode):
 
         if self.id == self.pc_leader_id:
             for mini_block in blocks:
-                publisher_id = mini_block.publisher_info["id"]
-                self.mini_block_consensus_pool[mini_block.id]["votes"][publisher_id] = mini_block.message_data[publisher_id]
+                self.mini_block_consensus_pool[mini_block.id]["votes"][sender_id] = mini_block.message_data[sender_id]
             
         else:
             voted_blocks = []
@@ -488,7 +476,6 @@ class FullNode(ParticipatingNode):
                 new_mini_block = MiniBlock(mini_block.id, mini_block.transactions_list, mini_block.params, mini_block.shard_id)
                 new_mini_block.shard_id = mini_block.shard_id
 
-                new_mini_block.publisher_info["id"] = self.id
                 new_mini_block.message_data[self.id] = vote
                 voted_blocks.append(new_mini_block)
             

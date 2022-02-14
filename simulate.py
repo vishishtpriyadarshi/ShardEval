@@ -1,7 +1,3 @@
-"""
-Run: python simulate.py config/params.json > simulation_logs/simulation_results.log
-"""
-
 import sys
 import simpy
 import numpy as np
@@ -26,7 +22,10 @@ def execute_simulation(name, env, params):
 
 
 def load_parameters():
-    params_file = sys.argv[1]
+    params_file = "config/params.json"
+    if len(sys.argv) > 2:
+        params_file = sys.argv[1]
+
     with open(params_file, "r") as f:
         params = f.read()
     params = json.loads(params)
@@ -37,7 +36,13 @@ def load_parameters():
 def main():
     np.random.seed(7)
     params = load_parameters()
-    
+
+    orig_stdout = sys.stdout
+    file_name = f"simulation_logs/simulation_results_n{params['num_nodes']}_sh{params['num_shards']}_sim{params['simulation_time']}.log"
+    f = open(file_name, 'w')
+    print(f"Writing simulation logs to the file '{file_name}'\n")
+    sys.stdout = f
+
     start_time = time()
     env = simpy.Environment()
     execute_simulation("Test Network", env, params)
@@ -54,7 +59,7 @@ def main():
             count += len(block.transactions_list)
         
         print(f"Length of Blockchain = {len(params['chain'])}")
-        # print(f"Total no of transactions included in Blockchain = {count}")
+        print(f"Total no of transactions included in Blockchain = {count}")
         # print(f"(accepted) TPS = {count/sim_time}")
 
         time_tx_processing = params['simulation_time'] - params['tx_start_time']
@@ -67,6 +72,8 @@ def main():
     else:
         print("Simulation didn't execute for sufficiently long time")
 
+    sys.stdout = orig_stdout
+    f.close()
 
 if __name__=="__main__":
     main()
