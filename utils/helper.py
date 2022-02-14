@@ -104,6 +104,8 @@ def assign_next_hop_to_leader(nodes, leader):
     while not q.empty():
         curr_node = nodes[q.get()]
         for neighbour_id in curr_node.neighbours_ids:
+            if neighbour_id not in nodes:               # neighbour is a principal committee node
+                continue
             if not used[neighbour_id]:
                 used[neighbour_id] = True
                 q.put(neighbour_id)
