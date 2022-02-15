@@ -51,22 +51,25 @@ def main():
     sim_time = stop_time - start_time
     
     print("\n\n============  SIMULATION DETAILS  ============")
-    print(f"\nSimulation Time = {sim_time} seconds")
+    print(f"\nNumber of nodes = {params['num_nodes']}")
+    print(f"Number of shards = {params['num_shards']}")
+    print(f"Simulation Time = {sim_time} seconds")
 
     if 'chain' in params:
         count = 0
         for block in params['chain']:
             count += len(block.transactions_list)
         
-        print(f"Length of Blockchain = {len(params['chain'])}")
+        print(f"\nLength of Blockchain = {len(params['chain'])}")
         print(f"Total no of transactions included in Blockchain = {count}")
         # print(f"(accepted) TPS = {count/sim_time}")
 
         time_tx_processing = params['simulation_time'] - params['tx_start_time']
         time_network_configuration = params['tx_start_time'] - params['network_config_start_time']
 
-        print(f"\nTotal no of transactions processed = {params['tx_count']}")
-        print(f"Simpy TPS = {params['tx_count']/params['simulation_time']}")
+        print(f"Total no of transactions processed = {params['tx_count']}")
+        print(f"\nSimpy TPS (processed) = {params['tx_count']/params['simulation_time']}")
+        print(f"Simpy TPS (accepted) = {count/params['simulation_time']}")
 
         # print(f"\nLatency of network configuration (in simpy units) = {time_network_configuration}")
     else:
