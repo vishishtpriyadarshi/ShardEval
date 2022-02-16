@@ -1,0 +1,256 @@
++---------------+-----------+-----------------------------------------------------------------+---------------------------------+
+|  Tx-Block ID  | Timestamp |                              Sender                             |             Receiver            |
++---------------+-----------+-----------------------------------------------------------------+---------------------------------+
+| TB_FN6_399900 |           |                                                                 |                                 |
+|               |  399.9000 |                             Node FN6                            |             ['FN1']             |
+|               |  399.9004 |                                FN6                              |                FN1              |
+|               |  399.9004 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  399.9010 |                                FN1                              |               FN12              |
+|               |  399.9011 |                                FN1                              |               FN10              |
+|               |  399.9013 |                                FN1                              |                FN0              |
+|               |  399.9015 |                                FN1                              |               FN13              |
+|               |  399.9015 |                            Node FN13                            |             ['FN1']             |
+|               |  399.9020 |                               FN13                              |                FN1              |
+|               |  399.9020 |                      Node FN1 (shard node)                      |                []               |
+|               |  399.9020 |                             Node FN1                            |             ['FN6']             |
+|               |  399.9030 |                                FN1                              |                FN6              |
+|               |  399.9030 | .9030 : Node FN6 (Leader) received voted Tx-block TB_FN6_399900 |         Node FN6 (Leader)       |
+|  TB_FN6_79980 |           |                                                                 |                                 |
+|               |  79.9800  |                             Node FN6                            |             ['FN1']             |
+|               |  79.9807  |                                FN6                              |                FN1              |
+|               |  79.9807  |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  79.9811  |                                FN1                              |               FN13              |
+|               |  79.9811  |                                FN1                              |               FN10              |
+|               |  79.9814  |                                FN1                              |               FN12              |
+|               |  79.9816  |                                FN1                              |                FN0              |
+|               |  79.9816  |                             Node FN0                            |             ['FN1']             |
+|               |  79.9822  |                                FN0                              |                FN1              |
+|               |  79.9822  |                      Node FN1 (shard node)                      |                []               |
+|               |  79.9822  |                             Node FN1                            |             ['FN6']             |
+|               |  79.9832  |                                FN1                              |                FN6              |
+|               |  79.9832  |  9832 : Node FN6 (Leader) received voted Tx-block TB_FN6_79980  |         Node FN6 (Leader)       |
+| TB_FN6_773140 |           |                                                                 |                                 |
+|               |  773.1400 |                             Node FN6                            |             ['FN1']             |
+|               |  773.1406 |                                FN6                              |                FN1              |
+|               |  773.1406 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  773.1410 |                                FN1                              |               FN10              |
+|               |  773.1411 |                                FN1                              |               FN12              |
+|               |  773.1414 |                                FN1                              |                FN0              |
+|               |  773.1416 |                                FN1                              |               FN13              |
+|               |  773.1416 |                            Node FN13                            |             ['FN1']             |
+|               |  773.1420 |                               FN13                              |                FN1              |
+|               |  773.1420 |                      Node FN1 (shard node)                      |                []               |
+|               |  773.1420 |                             Node FN1                            |             ['FN6']             |
+|               |  773.1431 |                                FN1                              |                FN6              |
+|               |  773.1431 | .1431 : Node FN6 (Leader) received voted Tx-block TB_FN6_773140 |         Node FN6 (Leader)       |
+| TB_FN6_239940 |           |                                                                 |                                 |
+|               |  239.9400 |                             Node FN6                            |             ['FN1']             |
+|               |  239.9407 |                                FN6                              |                FN1              |
+|               |  239.9407 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  239.9410 |                                FN1                              |               FN12              |
+|               |  239.9413 |                                FN1                              |               FN10              |
+|               |  239.9417 |                                FN1                              |               FN13              |
+|               |  239.9417 |                                FN1                              |                FN0              |
+|               |  239.9417 |                             Node FN0                            |             ['FN1']             |
+|               |  239.9423 |                                FN0                              |                FN1              |
+|               |  239.9423 |                      Node FN1 (shard node)                      |                []               |
+|               |  239.9423 |                             Node FN1                            |             ['FN6']             |
+|               |  239.9434 |                                FN1                              |                FN6              |
+|               |  239.9434 | .9434 : Node FN6 (Leader) received voted Tx-block TB_FN6_239940 |         Node FN6 (Leader)       |
+| TB_FN6_346580 |           |                                                                 |                                 |
+|               |  346.5800 |                             Node FN6                            |             ['FN1']             |
+|               |  346.5806 |                                FN6                              |                FN1              |
+|               |  346.5806 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  346.5808 |                                FN1                              |               FN12              |
+|               |  346.5808 |                                FN1                              |               FN10              |
+|               |  346.5815 |                                FN1                              |               FN13              |
+|               |  346.5819 |                                FN1                              |                FN0              |
+|               |  346.5819 |                             Node FN0                            |             ['FN1']             |
+|               |  346.5823 |                                FN0                              |                FN1              |
+|               |  346.5823 |                      Node FN1 (shard node)                      |                []               |
+|               |  346.5823 |                             Node FN1                            |             ['FN6']             |
+|               |  346.5835 |                                FN1                              |                FN6              |
+|               |  346.5835 | .5835 : Node FN6 (Leader) received voted Tx-block TB_FN6_346580 |         Node FN6 (Leader)       |
+| TB_FN6_133300 |           |                                                                 |                                 |
+|               |  133.3000 |                             Node FN6                            |             ['FN1']             |
+|               |  133.3003 |                                FN6                              |                FN1              |
+|               |  133.3003 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  133.3008 |                                FN1                              |               FN10              |
+|               |  133.3010 |                                FN1                              |               FN12              |
+|               |  133.3011 |                                FN1                              |                FN0              |
+|               |  133.3012 |                                FN1                              |               FN13              |
+|               |  133.3012 |                            Node FN13                            |             ['FN1']             |
+|               |  133.3018 |                               FN13                              |                FN1              |
+|               |  133.3018 |                      Node FN1 (shard node)                      |                []               |
+|               |  133.3018 |                             Node FN1                            |             ['FN6']             |
+|               |  133.3031 |                                FN1                              |                FN6              |
+|               |  133.3031 | .3031 : Node FN6 (Leader) received voted Tx-block TB_FN6_133300 |         Node FN6 (Leader)       |
+| TB_FN6_666500 |           |                                                                 |                                 |
+|               |  666.5000 |                             Node FN6                            |             ['FN1']             |
+|               |  666.5005 |                                FN6                              |                FN1              |
+|               |  666.5005 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  666.5010 |                                FN1                              |                FN0              |
+|               |  666.5012 |                                FN1                              |               FN12              |
+|               |  666.5014 |                                FN1                              |               FN10              |
+|               |  666.5015 |                                FN1                              |               FN13              |
+|               |  666.5015 |                            Node FN13                            |             ['FN1']             |
+|               |  666.5021 |                               FN13                              |                FN1              |
+|               |  666.5021 |                      Node FN1 (shard node)                      |                []               |
+|               |  666.5021 |                             Node FN1                            |             ['FN6']             |
+|               |  666.5034 |                                FN1                              |                FN6              |
+|               |  666.5034 | .5034 : Node FN6 (Leader) received voted Tx-block TB_FN6_666500 |         Node FN6 (Leader)       |
+| TB_FN6_826460 |           |                                                                 |                                 |
+|               |  826.4600 |                             Node FN6                            |             ['FN1']             |
+|               |  826.4607 |                                FN6                              |                FN1              |
+|               |  826.4607 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  826.4610 |                                FN1                              |               FN10              |
+|               |  826.4612 |                                FN1                              |               FN12              |
+|               |  826.4615 |                                FN1                              |               FN13              |
+|               |  826.4618 |                                FN1                              |                FN0              |
+|               |  826.4618 |                             Node FN0                            |             ['FN1']             |
+|               |  826.4621 |                                FN0                              |                FN1              |
+|               |  826.4621 |                      Node FN1 (shard node)                      |                []               |
+|               |  826.4621 |                             Node FN1                            |             ['FN6']             |
+|               |  826.4631 |                                FN1                              |                FN6              |
+|               |  826.4631 | .4631 : Node FN6 (Leader) received voted Tx-block TB_FN6_826460 |         Node FN6 (Leader)       |
+| TB_FN6_506540 |           |                                                                 |                                 |
+|               |  506.5400 |                             Node FN6                            |             ['FN1']             |
+|               |  506.5404 |                                FN6                              |                FN1              |
+|               |  506.5404 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  506.5407 |                                FN1                              |               FN10              |
+|               |  506.5414 |                                FN1                              |               FN13              |
+|               |  506.5416 |                                FN1                              |               FN12              |
+|               |  506.5417 |                                FN1                              |                FN0              |
+|               |  506.5417 |                             Node FN0                            |             ['FN1']             |
+|               |  506.5421 |                                FN0                              |                FN1              |
+|               |  506.5421 |                      Node FN1 (shard node)                      |                []               |
+|               |  506.5421 |                             Node FN1                            |             ['FN6']             |
+|               |  506.5432 |                                FN1                              |                FN6              |
+|               |  506.5432 | .5432 : Node FN6 (Leader) received voted Tx-block TB_FN6_506540 |         Node FN6 (Leader)       |
+| TB_FN6_613180 |           |                                                                 |                                 |
+|               |  613.1800 |                             Node FN6                            |             ['FN1']             |
+|               |  613.1805 |                                FN6                              |                FN1              |
+|               |  613.1805 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  613.1813 |                                FN1                              |               FN12              |
+|               |  613.1814 |                                FN1                              |               FN10              |
+|               |  613.1815 |                                FN1                              |                FN0              |
+|               |  613.1818 |                                FN1                              |               FN13              |
+|               |  613.1818 |                            Node FN13                            |             ['FN1']             |
+|               |  613.1824 |                               FN13                              |                FN1              |
+|               |  613.1824 |                      Node FN1 (shard node)                      |                []               |
+|               |  613.1824 |                             Node FN1                            |             ['FN6']             |
+|               |  613.1836 |                                FN1                              |                FN6              |
+|               |  613.1836 | .1836 : Node FN6 (Leader) received voted Tx-block TB_FN6_613180 |         Node FN6 (Leader)       |
+| TB_FN6_453220 |           |                                                                 |                                 |
+|               |  453.2200 |                             Node FN6                            |             ['FN1']             |
+|               |  453.2206 |                                FN6                              |                FN1              |
+|               |  453.2206 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  453.2216 |                                FN1                              |               FN13              |
+|               |  453.2217 |                                FN1                              |               FN12              |
+|               |  453.2217 |                                FN1                              |               FN10              |
+|               |  453.2218 |                                FN1                              |                FN0              |
+|               |  453.2218 |                             Node FN0                            |             ['FN1']             |
+|               |  453.2222 |                                FN0                              |                FN1              |
+|               |  453.2222 |                      Node FN1 (shard node)                      |                []               |
+|               |  453.2222 |                             Node FN1                            |             ['FN6']             |
+|               |  453.2230 |                                FN1                              |                FN6              |
+|               |  453.2230 | .2230 : Node FN6 (Leader) received voted Tx-block TB_FN6_453220 |         Node FN6 (Leader)       |
+| TB_FN6_719820 |           |                                                                 |                                 |
+|               |  719.8200 |                             Node FN6                            |             ['FN1']             |
+|               |  719.8204 |                                FN6                              |                FN1              |
+|               |  719.8204 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  719.8207 |                                FN1                              |               FN12              |
+|               |  719.8213 |                                FN1                              |                FN0              |
+|               |  719.8213 |                                FN1                              |               FN10              |
+|               |  719.8214 |                                FN1                              |               FN13              |
+|               |  719.8214 |                            Node FN13                            |             ['FN1']             |
+|               |  719.8218 |                               FN13                              |                FN1              |
+|               |  719.8218 |                      Node FN1 (shard node)                      |                []               |
+|               |  719.8218 |                             Node FN1                            |             ['FN6']             |
+|               |  719.8229 |                                FN1                              |                FN6              |
+|               |  719.8229 | .8229 : Node FN6 (Leader) received voted Tx-block TB_FN6_719820 |         Node FN6 (Leader)       |
+| TB_FN6_986420 |           |                                                                 |                                 |
+|               |  986.4200 |                             Node FN6                            |             ['FN1']             |
+|               |  986.4205 |                                FN6                              |                FN1              |
+|               |  986.4205 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  986.4207 |                                FN1                              |               FN10              |
+|               |  986.4212 |                                FN1                              |               FN12              |
+|               |  986.4214 |                                FN1                              |               FN13              |
+|               |  986.4215 |                                FN1                              |                FN0              |
+|               |  986.4215 |                             Node FN0                            |             ['FN1']             |
+|               |  986.4220 |                                FN0                              |                FN1              |
+|               |  986.4220 |                      Node FN1 (shard node)                      |                []               |
+|               |  986.4220 |                             Node FN1                            |             ['FN6']             |
+|               |  986.4232 |                                FN1                              |                FN6              |
+|               |  986.4232 | .4232 : Node FN6 (Leader) received voted Tx-block TB_FN6_986420 |         Node FN6 (Leader)       |
+| TB_FN6_186620 |           |                                                                 |                                 |
+|               |  186.6200 |                             Node FN6                            |             ['FN1']             |
+|               |  186.6206 |                                FN6                              |                FN1              |
+|               |  186.6206 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  186.6213 |                                FN1                              |               FN10              |
+|               |  186.6216 |                                FN1                              |               FN12              |
+|               |  186.6218 |                                FN1                              |               FN13              |
+|               |  186.6218 |                                FN1                              |                FN0              |
+|               |  186.6218 |                             Node FN0                            |             ['FN1']             |
+|               |  186.6224 |                                FN0                              |                FN1              |
+|               |  186.6224 |                      Node FN1 (shard node)                      |                []               |
+|               |  186.6224 |                             Node FN1                            |             ['FN6']             |
+|               |  186.6234 |                                FN1                              |                FN6              |
+|               |  186.6234 | .6234 : Node FN6 (Leader) received voted Tx-block TB_FN6_186620 |         Node FN6 (Leader)       |
+| TB_FN6_559860 |           |                                                                 |                                 |
+|               |  559.8600 |                             Node FN6                            |             ['FN1']             |
+|               |  559.8605 |                                FN6                              |                FN1              |
+|               |  559.8605 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  559.8612 |                                FN1                              |               FN12              |
+|               |  559.8613 |                                FN1                              |               FN13              |
+|               |  559.8614 |                                FN1                              |               FN10              |
+|               |  559.8617 |                                FN1                              |                FN0              |
+|               |  559.8617 |                             Node FN0                            |             ['FN1']             |
+|               |  559.8622 |                                FN0                              |                FN1              |
+|               |  559.8622 |                      Node FN1 (shard node)                      |                []               |
+|               |  559.8622 |                             Node FN1                            |             ['FN6']             |
+|               |  559.8634 |                                FN1                              |                FN6              |
+|               |  559.8634 | .8634 : Node FN6 (Leader) received voted Tx-block TB_FN6_559860 |         Node FN6 (Leader)       |
+| TB_FN6_293260 |           |                                                                 |                                 |
+|               |  293.2600 |                             Node FN6                            |             ['FN1']             |
+|               |  293.2606 |                                FN6                              |                FN1              |
+|               |  293.2606 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  293.2607 |                                FN1                              |               FN12              |
+|               |  293.2611 |                                FN1                              |               FN10              |
+|               |  293.2616 |                                FN1                              |                FN0              |
+|               |  293.2618 |                                FN1                              |               FN13              |
+|               |  293.2618 |                            Node FN13                            |             ['FN1']             |
+|               |  293.2625 |                               FN13                              |                FN1              |
+|               |  293.2625 |                      Node FN1 (shard node)                      |                []               |
+|               |  293.2625 |                             Node FN1                            |             ['FN6']             |
+|               |  293.2631 |                                FN1                              |                FN6              |
+|               |  293.2631 | .2631 : Node FN6 (Leader) received voted Tx-block TB_FN6_293260 |         Node FN6 (Leader)       |
+| TB_FN6_879780 |           |                                                                 |                                 |
+|               |  879.7800 |                             Node FN6                            |             ['FN1']             |
+|               |  879.7803 |                                FN6                              |                FN1              |
+|               |  879.7803 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  879.7805 |                                FN1                              |               FN10              |
+|               |  879.7807 |                                FN1                              |               FN12              |
+|               |  879.7813 |                                FN1                              |                FN0              |
+|               |  879.7817 |                                FN1                              |               FN13              |
+|               |  879.7817 |                            Node FN13                            |             ['FN1']             |
+|               |  879.7824 |                               FN13                              |                FN1              |
+|               |  879.7824 |                      Node FN1 (shard node)                      |                []               |
+|               |  879.7824 |                             Node FN1                            |             ['FN6']             |
+|               |  879.7828 |                                FN1                              |                FN6              |
+|               |  879.7828 | .7828 : Node FN6 (Leader) received voted Tx-block TB_FN6_879780 |         Node FN6 (Leader)       |
+| TB_FN6_933100 |           |                                                                 |                                 |
+|               |  933.1000 |                             Node FN6                            |             ['FN1']             |
+|               |  933.1005 |                                FN6                              |                FN1              |
+|               |  933.1005 |                             Node FN1                            | ['FN10', 'FN13', 'FN12', 'FN0'] |
+|               |  933.1009 |                                FN1                              |               FN10              |
+|               |  933.1009 |                                FN1                              |               FN12              |
+|               |  933.1013 |                                FN1                              |               FN13              |
+|               |  933.1015 |                                FN1                              |                FN0              |
+|               |  933.1015 |                             Node FN0                            |             ['FN1']             |
+|               |  933.1021 |                                FN0                              |                FN1              |
+|               |  933.1021 |                      Node FN1 (shard node)                      |                []               |
+|               |  933.1021 |                             Node FN1                            |             ['FN6']             |
+|               |  933.1032 |                                FN1                              |                FN6              |
+|               |  933.1032 | .1032 : Node FN6 (Leader) received voted Tx-block TB_FN6_933100 |         Node FN6 (Leader)       |
++---------------+-----------+-----------------------------------------------------------------+---------------------------------+
