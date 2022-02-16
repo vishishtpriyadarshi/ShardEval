@@ -295,10 +295,10 @@ class Network:
         print("\n")
 
         for i in range(self.params["num_shards"]):
-            print("\t\t\t\tSHARD -", i+1)            
-            print(f"Leader - '{self.get_shard_leader(i).id}'")
-
-            print("Nodes -", self.shard_nodes[i], "\n")
+            print("\t\t\t\tSHARD -", i+1)
+            print("Nodes -", self.shard_nodes[i])  
+            print(f"Leader - '{self.get_shard_leader(i).id}'\n")
+            
             for j in range(len(self.shard_nodes[i])):
                 curr_node = self.full_nodes[self.shard_nodes[i][j]]
                 print(f"{j+1}. {curr_node.id} has neighbours - {curr_node.neighbours_ids} and next hop to leader is '{curr_node.next_hop_id}'")
