@@ -1,8 +1,10 @@
 import sys
 import json
-import networkx as nx
-import matplotlib.pyplot as plt
 import re
+
+import networkx as nx
+from pyvis.network import Network
+import matplotlib.pyplot as plt
 
 
 def extract_nodes(line):
@@ -26,17 +28,15 @@ def create_graph(log_file):
     network_info = {}
     network_info['principal_committee'] = {}
     pc_flag = 0
+    leaders = []
 
     with open(log_file, 'r') as f:
         for line in f:
-            ct += 1
-            if ct == 28:
-                break
-            
             if 'Principal Committee Nodes' in line:
                 pc_flag = 1
                 nodes = extract_nodes(line)
                 network_info['principal_committee']['Leader'] = extract_nodes(next(f))
+                leaders.append(network_info['principal_committee']['Leader'][0])
                 for node in nodes:
                     network_info['principal_committee'][node] = extract_nodes(next(f))
             
@@ -47,6 +47,7 @@ def create_graph(log_file):
 
                 shard_nodes = extract_nodes(next(f))
                 network_info[shard_name]['Leader'] = extract_nodes(next(f))
+                leaders.append(network_info[shard_name]['Leader'][0])
 
                 next(f)     # Read a whitespace line
                 for node in shard_nodes:
@@ -67,29 +68,28 @@ def create_graph(log_file):
         total_nodes += val.keys()
     
     total_nodes = list(set(total_nodes).difference(["Leader"]))
-    G.add_nodes_from(total_nodes)
-    leaders = []
+    for node in total_nodes:
+        c = 'blue' if node in leaders else 'green'
+        G.add_node(node, color=c)
 
     for key, val in network_info.items():
         for id, neighbours in val.items():
-            if id == 'Leader':
-                leaders.append(neighbours[0])
-            else:
+            if id != 'Leader':
                 for node in neighbours:
                     G.add_edge(id, node)
     
-    color_map = []
-    for node in G:
-        if node in leaders:
-            color_map.append('blue')
-        else: 
-            color_map.append('green')
-    
-    nx.draw(G, node_color=color_map, with_labels = True)
+    nx.draw(G, with_labels = True)
 
     idx = [m.start() for m in re.finditer(r"_", sys.argv[1])]
     filename = "network_graph_" + sys.argv[1][idx[2] + 1 : idx[4]]
-    plt.savefig(f"analyzer/plots/{filename}.png")
+    print(f"Saving static graph in file 'logs_data/plots/{filename}.png'\n")
+    plt.savefig(f"logs_data/plots/{filename}.png")
+
+    vis_net = Network(height='750px', width='100%')
+    vis_net.from_nx(G)
+    # vis_net.show_buttons(filter_=['physics'])
+    print(f"Saving interactive graph in file 'logs_data/interactive_plots/{filename}.html'\n")
+    vis_net.save_graph(f"logs_data/interactive_plots/{filename}.html")
 
 
 def main():
