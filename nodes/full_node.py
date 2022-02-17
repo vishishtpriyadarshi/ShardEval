@@ -345,7 +345,7 @@ class FullNode(ParticipatingNode):
                 print(
                     "%7.4f" % self.env.now
                     + " : "
-                    + "%s received a %s-block - %s from %s"
+                    + "Node %s received a %s-block - %s from %s"
                     % (self.id, block_type, debug_info, packeted_message.sender_id)
                 )
 

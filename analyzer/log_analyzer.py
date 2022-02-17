@@ -29,7 +29,7 @@ def extract_nodes(line):
         start_idx = idx2 + 1
 
 
-def create_graph(log_file):
+def create_graph(log_file, verbose=False):
     ct = 0
 
     network_info = {}
@@ -60,14 +60,15 @@ def create_graph(log_file):
                 for node in shard_nodes:
                     duplicate_free_nodes = set(extract_nodes(next(f)))
                     network_info[shard_name][node] = list(duplicate_free_nodes.difference(["-1"]))
-       
-    print(
-        json.dumps(
-            network_info,
-            indent=4,
-            separators=(',', ': ')
+
+    if verbose:   
+        print(
+            json.dumps(
+                network_info,
+                indent=4,
+                separators=(',', ': ')
+            )
         )
-    )
             
     G = nx.Graph()
     total_nodes = []
@@ -112,6 +113,8 @@ def analyse_tx_blocks(log_file):
     
     filename = "metadata_" + get_file_suffix()
     col_names = ['Tx-Block ID', 'Timestamp', 'Sender', 'Receiver']
+
+    print(f"Preparing csv file 'logs_data/metadata/{filename}.csv'\n")
     writer = csv.writer(open(f"logs_data/metadata/{filename}.csv", 'w'))
     writer.writerow(col_names)
     pt = PrettyTable()
@@ -127,16 +130,17 @@ def analyse_tx_blocks(log_file):
                 receiver, sender = None, None
                 if keywords[0] in line:
                     receiver = extract_nodes(line)
-                    sender = line[line.find('Node') : line.find('propagated') - 1]
+                    sender = line[line.find('Node') + 4 : line.find('propagated') - 1]
                 elif keywords[1] in line:
-                    receiver = line[line.find(':') + 1 : line.find('received') - 1]
-                    sender = line[line.find('from') + 4 : line.find('\n')]
+                    receiver = line[line.find('Node') + 4 : line.find('received') - 1]
+                    sender = "[voted block]" if line.find('from') == -1 else line[line.find('from') + 4 : line.find('\n')]
                 else:
                     continue
 
                 writer.writerow(['', timestamp, sender, receiver])
                 pt.add_row(['', timestamp, sender, receiver])
 
+    print(f"Writing metadata in file 'logs_data/metadata/{filename}.txt'\n")
     with open(f"logs_data/metadata/{filename}.txt", "w") as text_file:
         text_file.write(pt.get_string())
 
