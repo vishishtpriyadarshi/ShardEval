@@ -14,8 +14,22 @@ pip install -r requirements.txt
 
 ### 1. ShardEval
 ```python
-python simulate.py config/params.json > simulation_logs/simulation_results.log
+mkdir simulation_logs
+python simulate.py
 ```
+Upon executing the simulator, a log file ```simulation_results.log``` containing the simulation results and entire lifecycle of the simulation will be generated.
+ 
+To analyse the generated log file -
+```python
+mkdir logs_data/interactive_plots logs_data/metadata logs_data/plots
+python analyzer/log_analyzer.py <log_file>
+```
+
+Upon execution, several files (html, txt, csv, png) will be created in respective folders inside the ```logs_data```.   
+
+
+**Note:**   
+Create log files in batch by modifying the ```script.py``` file and executing it using ```python script.py```
 
 ### 2. BlockEval (*Playground*)
 ```python
@@ -23,7 +37,6 @@ cd playground
 python simulate.py params/params.json > simulation_logs/simulation_results.log
 ```
 
-Upon executing the simulator, a log file ```simulation_results.log``` containing the simulation results and entire lifecycle of the simulation will be generated.
 
 
 ### Steps
