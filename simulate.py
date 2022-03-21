@@ -38,7 +38,7 @@ def main():
     params = load_parameters()
 
     orig_stdout = sys.stdout
-    file_name = f"simulation_logs/simulation_results_n{params['num_nodes']}_sh{params['num_shards']}_sim{params['simulation_time']}.log"
+    file_name = f"simulation_logs/simulation_results_txLimit{params['mini_block_capacity']}_n{params['num_nodes']}_sh{params['num_shards']}_sim{params['simulation_time']}.log"
     f = open(file_name, 'w')
     print(f"Writing simulation logs to the file '{file_name}'\n")
     sys.stdout = f
