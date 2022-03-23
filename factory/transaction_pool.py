@@ -51,9 +51,12 @@ class TransactionPool:
             and transaction not in self.prev_transactions
         ):
             self.transaction_queue.insert(transaction)
-            broadcast(self.env, transaction, "Tx", self.id, self.neighbours_ids, self.nodes, self.params)
+
+            curr_node = self.nodes[self.id]
+            neighbour_ids = [self.id if curr_node.next_hop_id == -1 else curr_node.next_hop_id]
+            broadcast(self.env, transaction, "Tx", self.id, neighbour_ids, self.nodes, self.params)
             
-            if self.params["verbose"] == "Elaborate":
+            if self.params["verbose"]:
                 print(
                     "%7.4f : %s accepted by %s"
                     % (self.env.now, transaction.id, self.id)

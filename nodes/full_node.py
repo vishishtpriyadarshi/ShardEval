@@ -90,11 +90,9 @@ class FullNode(ParticipatingNode):
 
             id = int(1000*round(self.env.now, 3))
             transaction = Transaction(f"T_{self.id}_{id}", self.env.now, value, reward, transaction_state)
-            # self.data["numTransactions"] += 1
-
-            if "tx_count" not in self.params:
-                self.params["tx_count"] = 0
-            self.params["tx_count"] += 1
+            
+            # Add transaction to own transaction pool
+            self.params["generated_tx_count"] += 1
             
             if self.params["verbose"]:
                 print(
@@ -131,8 +129,11 @@ class FullNode(ParticipatingNode):
             )
             yield self.env.timeout(delay)
 
-            if self.transaction_pool.transaction_queue.length() >= self.params["mini_block_capacity"]:
-                transactions_list = self.transaction_pool.transaction_queue.pop(self.params["mini_block_capacity"])
+            if self.transaction_pool.transaction_queue.length() >= self.params["tx_block_capacity"]:
+                # print(f"Queue size of {self.id} = {self.transaction_pool.transaction_queue.length()}")
+                transactions_list = self.transaction_pool.transaction_queue.pop(self.params["tx_block_capacity"])
+                # print(f"New Queue size of {self.id} = {self.transaction_pool.transaction_queue.length()}")
+                # print(f"Queue {self.id} = {[tx.id for tx in self.transaction_pool.transaction_queue.queue]}\n\n")
 
                 # To-do: Add pre-processing step
                 delay = get_transaction_delay(
@@ -151,6 +152,7 @@ class FullNode(ParticipatingNode):
                 id = int(1000*round(self.env.now, 3))
                 tx_block = TxBlock(f"TB_{self.id}_{id}", transactions_list, self.params, self.shard_id, filtered_curr_shard_nodes)
 
+                # print(f"[Logs 2]: At {self.env.now} -- {self.id} = {len(transactions_list)}")
                 broadcast(
                     self.env, 
                     tx_block, 
@@ -180,7 +182,10 @@ class FullNode(ParticipatingNode):
 
             # To-Do: Filter transactions from tx_block based on votes
             accepted_transactions = tx_block.transactions_list
-            
+            # print(f"[Log]: {self.id} = {len(accepted_transactions)}")
+
+            self.params["processed_tx_count"] += len(accepted_transactions)
+
             id = int(1000*round(self.env.now, 3))
             mini_block = MiniBlock(f"MB_{self.id}_{id}", accepted_transactions, self.params, self.shard_id)
             principal_committee_neigbours = get_principal_committee_neigbours(self.curr_shard_nodes, self.neighbours_ids)

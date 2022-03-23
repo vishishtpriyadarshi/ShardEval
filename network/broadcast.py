@@ -11,6 +11,14 @@ def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
                 env.process(
                     nodes[neighbour].transaction_pool.put_transaction(object, nodes[source].location)
                 )
+            
+            if params["verbose"]:
+                print(
+                    "%7.4f" % env.now
+                    + " : "
+                    + "%s added to tx-pool of %s"
+                    % (object.id, neighbour_list)
+                )
 
         elif (object_type == "Block" or object_type == "Tx-block" or \
                 object_type == "Mini-block-consensus" or object_type == "Mini-block" or \

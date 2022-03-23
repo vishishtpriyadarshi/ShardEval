@@ -38,10 +38,12 @@ def main():
     params = load_parameters()
 
     orig_stdout = sys.stdout
-    file_name = f"simulation_logs/simulation_results_txLimit{params['mini_block_capacity']}_n{params['num_nodes']}_sh{params['num_shards']}_sim{params['simulation_time']}.log"
+    file_name = f"simulation_logs/simulation_results_txLimit{params['tx_block_capacity']}_n{params['num_nodes']}_sh{params['num_shards']}_sim{params['simulation_time']}.log"
     f = open(file_name, 'w')
     print(f"Writing simulation logs to the file '{file_name}'\n")
     sys.stdout = f
+
+    params["generated_tx_count"], params["processed_tx_count"] = 0, 0
 
     start_time = time()
     env = simpy.Environment()
@@ -67,8 +69,10 @@ def main():
         time_tx_processing = params['simulation_time'] - params['tx_start_time']
         time_network_configuration = params['tx_start_time'] - params['network_config_start_time']
 
-        print(f"Total no of transactions processed = {params['tx_count']}")
-        print(f"\nSimpy TPS (processed) = {params['tx_count']/params['simulation_time']}")
+        print(f"Total no of transactions processed = {params['processed_tx_count']}")
+        print(f"Total no of transactions generated = {params['generated_tx_count']}")
+
+        print(f"\nSimpy TPS (processed) = {params['processed_tx_count']/params['simulation_time']}")
         print(f"Simpy TPS (accepted) = {count/params['simulation_time']}")
 
         # print(f"\nLatency of network configuration (in simpy units) = {time_network_configuration}")

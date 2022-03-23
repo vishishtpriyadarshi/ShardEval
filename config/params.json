@@ -12,7 +12,7 @@
     "tx_value_low": 1,
     "tx_value_high": 100,
     "reward_percentage": 0.1,
-    "mini_block_capacity": 20,
+    "tx_block_capacity": 20,
     "tx_blocks_in_mini_block": 2,
     "log_file": "simulation_results.log",
     "verbose": 0,
