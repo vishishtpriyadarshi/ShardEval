@@ -1,0 +1,74 @@
+
+============  NETWORK INFORMATION  ============
+Principal Committee Nodes - ['FN2', 'FN22', 'FN32', 'FN38', 'FN27', 'FN25', 'FN28', 'FN3', 'FN29', 'FN1']
+Leader = 'FN2'
+FN2 has neighbors - ['FN22', 'FN32', 'FN38', 'FN27', 'FN25', 'FN28', 'FN3', 'FN29', 'FN1', 'FN7', 'FN17', 'FN31', 'FN19']
+FN22 has neighbors - ['FN2', 'FN32', 'FN38', 'FN27', 'FN25', 'FN28', 'FN3', 'FN29', 'FN1', 'FN17', 'FN19']
+FN32 has neighbors - ['FN2', 'FN22', 'FN38', 'FN27', 'FN25', 'FN28', 'FN3', 'FN29', 'FN1', 'FN7', 'FN17', 'FN31']
+FN38 has neighbors - ['FN2', 'FN22', 'FN32', 'FN27', 'FN25', 'FN28', 'FN3', 'FN29', 'FN1', 'FN7', 'FN17', 'FN31', 'FN19']
+FN27 has neighbors - ['FN2', 'FN22', 'FN32', 'FN38', 'FN25', 'FN28', 'FN3', 'FN29', 'FN1', 'FN31']
+FN25 has neighbors - ['FN2', 'FN22', 'FN32', 'FN38', 'FN27', 'FN28', 'FN3', 'FN29', 'FN1']
+FN28 has neighbors - ['FN2', 'FN22', 'FN32', 'FN38', 'FN27', 'FN25', 'FN3', 'FN29', 'FN1', 'FN17', 'FN19']
+FN3 has neighbors - ['FN2', 'FN22', 'FN32', 'FN38', 'FN27', 'FN25', 'FN28', 'FN29', 'FN1', 'FN7', 'FN31']
+FN29 has neighbors - ['FN2', 'FN22', 'FN32', 'FN38', 'FN27', 'FN25', 'FN28', 'FN3', 'FN1', 'FN7', 'FN17', 'FN19']
+FN1 has neighbors - ['FN2', 'FN22', 'FN32', 'FN38', 'FN27', 'FN25', 'FN28', 'FN3', 'FN29', 'FN7', 'FN31', 'FN19']
+
+
+				SHARD - 1
+Nodes - ['FN18', 'FN16', 'FN21', 'FN6', 'FN7']
+Leader - 'FN7'
+
+1. FN18 has neighbours - ['FN16', 'FN6', 'FN21', 'FN7'] and next hop to leader is 'FN7'
+2. FN16 has neighbours - ['FN18'] and next hop to leader is 'FN18'
+3. FN21 has neighbours - ['FN18'] and next hop to leader is 'FN18'
+4. FN6 has neighbours - ['FN18'] and next hop to leader is 'FN18'
+5. FN7 has neighbours - ['FN18', 'FN38', 'FN1', 'FN32', 'FN3', 'FN2', 'FN29'] and next hop to leader is '-1'
+
+
+				SHARD - 2
+Nodes - ['FN34', 'FN17', 'FN26', 'FN39', 'FN35']
+Leader - 'FN17'
+
+1. FN34 has neighbours - ['FN17', 'FN26', 'FN39', 'FN35'] and next hop to leader is 'FN17'
+2. FN17 has neighbours - ['FN34', 'FN29', 'FN2', 'FN32', 'FN22', 'FN28', 'FN38'] and next hop to leader is '-1'
+3. FN26 has neighbours - ['FN34'] and next hop to leader is 'FN34'
+4. FN39 has neighbours - ['FN34'] and next hop to leader is 'FN34'
+5. FN35 has neighbours - ['FN34'] and next hop to leader is 'FN34'
+
+
+				SHARD - 3
+Nodes - ['FN30', 'FN11', 'FN31', 'FN15', 'FN23']
+Leader - 'FN31'
+
+1. FN30 has neighbours - ['FN11', 'FN23', 'FN15', 'FN31'] and next hop to leader is 'FN31'
+2. FN11 has neighbours - ['FN30'] and next hop to leader is 'FN30'
+3. FN31 has neighbours - ['FN30', 'FN32', 'FN3', 'FN1', 'FN2', 'FN27', 'FN38'] and next hop to leader is '-1'
+4. FN15 has neighbours - ['FN30'] and next hop to leader is 'FN30'
+5. FN23 has neighbours - ['FN30'] and next hop to leader is 'FN30'
+
+
+				SHARD - 4
+Nodes - ['FN36', 'FN19', 'FN4', 'FN14']
+Leader - 'FN19'
+
+1. FN36 has neighbours - ['FN19', 'FN14', 'FN4'] and next hop to leader is 'FN19'
+2. FN19 has neighbours - ['FN36', 'FN2', 'FN29', 'FN28', 'FN1', 'FN38', 'FN22'] and next hop to leader is '-1'
+3. FN4 has neighbours - ['FN36'] and next hop to leader is 'FN36'
+4. FN14 has neighbours - ['FN36'] and next hop to leader is 'FN36'
+
+
+
+
+============  SIMULATION DETAILS  ============
+
+Number of nodes = 40
+Number of shards = 4
+Simulation Time = 0.7820405960083008 seconds
+
+Length of Blockchain = 2
+Total no of transactions included in Blockchain = 48
+Total no of transactions processed = 208
+Total no of transactions generated = 1125
+
+Simpy TPS (processed) = 0.104
+Simpy TPS (accepted) = 0.024

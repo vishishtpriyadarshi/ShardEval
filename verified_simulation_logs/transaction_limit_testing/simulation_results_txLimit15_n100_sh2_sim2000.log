@@ -1,0 +1,106 @@
+
+============  NETWORK INFORMATION  ============
+Principal Committee Nodes - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44']
+Leader = 'FN59'
+FN73 has neighbors - ['FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44', 'FN7']
+FN93 has neighbors - ['FN73', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44']
+FN69 has neighbors - ['FN73', 'FN93', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44']
+FN13 has neighbors - ['FN73', 'FN93', 'FN69', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44', 'FN64']
+FN41 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44']
+FN16 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44', 'FN7']
+FN38 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44', 'FN7', 'FN64']
+FN85 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44', 'FN64']
+FN34 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44', 'FN64']
+FN66 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44', 'FN7']
+FN1 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44', 'FN64']
+FN89 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44', 'FN7']
+FN43 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44', 'FN7', 'FN64']
+FN55 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44', 'FN64']
+FN94 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44', 'FN7', 'FN64']
+FN48 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44', 'FN7']
+FN26 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44', 'FN7']
+FN0 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44']
+FN22 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44', 'FN64']
+FN3 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN59', 'FN47', 'FN24', 'FN92', 'FN44', 'FN64']
+FN59 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN47', 'FN24', 'FN92', 'FN44', 'FN7']
+FN47 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN24', 'FN92', 'FN44', 'FN64']
+FN24 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN92', 'FN44', 'FN7']
+FN92 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN44', 'FN7', 'FN64']
+FN44 has neighbors - ['FN73', 'FN93', 'FN69', 'FN13', 'FN41', 'FN16', 'FN38', 'FN85', 'FN34', 'FN66', 'FN1', 'FN89', 'FN43', 'FN55', 'FN94', 'FN48', 'FN26', 'FN0', 'FN22', 'FN3', 'FN59', 'FN47', 'FN24', 'FN92', 'FN7', 'FN64']
+
+
+				SHARD - 1
+Nodes - ['FN54', 'FN60', 'FN21', 'FN8', 'FN31', 'FN50', 'FN11', 'FN77', 'FN62', 'FN72', 'FN37', 'FN33', 'FN83', 'FN2', 'FN20', 'FN51', 'FN99', 'FN56', 'FN95', 'FN40', 'FN42', 'FN7', 'FN63', 'FN88']
+Leader - 'FN7'
+
+1. FN54 has neighbours - ['FN83', 'FN88', 'FN21', 'FN56', 'FN40', 'FN62', 'FN99', 'FN31', 'FN37', 'FN8', 'FN51', 'FN2', 'FN33', 'FN11', 'FN60', 'FN42', 'FN7'] and next hop to leader is 'FN7'
+2. FN60 has neighbours - ['FN72', 'FN20', 'FN50', 'FN95', 'FN54', 'FN77', 'FN63'] and next hop to leader is 'FN54'
+3. FN21 has neighbours - ['FN54'] and next hop to leader is 'FN54'
+4. FN8 has neighbours - ['FN54'] and next hop to leader is 'FN54'
+5. FN31 has neighbours - ['FN54'] and next hop to leader is 'FN54'
+6. FN50 has neighbours - ['FN60'] and next hop to leader is 'FN60'
+7. FN11 has neighbours - ['FN54'] and next hop to leader is 'FN54'
+8. FN77 has neighbours - ['FN60'] and next hop to leader is 'FN60'
+9. FN62 has neighbours - ['FN54'] and next hop to leader is 'FN54'
+10. FN72 has neighbours - ['FN60'] and next hop to leader is 'FN60'
+11. FN37 has neighbours - ['FN54'] and next hop to leader is 'FN54'
+12. FN33 has neighbours - ['FN54'] and next hop to leader is 'FN54'
+13. FN83 has neighbours - ['FN54'] and next hop to leader is 'FN54'
+14. FN2 has neighbours - ['FN54'] and next hop to leader is 'FN54'
+15. FN20 has neighbours - ['FN60'] and next hop to leader is 'FN60'
+16. FN51 has neighbours - ['FN54'] and next hop to leader is 'FN54'
+17. FN99 has neighbours - ['FN54'] and next hop to leader is 'FN54'
+18. FN56 has neighbours - ['FN54'] and next hop to leader is 'FN54'
+19. FN95 has neighbours - ['FN60'] and next hop to leader is 'FN60'
+20. FN40 has neighbours - ['FN54'] and next hop to leader is 'FN54'
+21. FN42 has neighbours - ['FN54'] and next hop to leader is 'FN54'
+22. FN7 has neighbours - ['FN54', 'FN38', 'FN92', 'FN44', 'FN94', 'FN48', 'FN66', 'FN16', 'FN26', 'FN73', 'FN24', 'FN59', 'FN43', 'FN89'] and next hop to leader is '-1'
+23. FN63 has neighbours - ['FN60'] and next hop to leader is 'FN60'
+24. FN88 has neighbours - ['FN54'] and next hop to leader is 'FN54'
+
+
+				SHARD - 2
+Nodes - ['FN52', 'FN6', 'FN74', 'FN91', 'FN65', 'FN28', 'FN25', 'FN64', 'FN96', 'FN27', 'FN70', 'FN58', 'FN4', 'FN17', 'FN45', 'FN68', 'FN71', 'FN30', 'FN67', 'FN10', 'FN36', 'FN23', 'FN57', 'FN82']
+Leader - 'FN64'
+
+1. FN52 has neighbours - ['FN28', 'FN10', 'FN96', 'FN65', 'FN45', 'FN30', 'FN64', 'FN71', 'FN57', 'FN91', 'FN82', 'FN70', 'FN74', 'FN27', 'FN17', 'FN4', 'FN6', 'FN67', 'FN25'] and next hop to leader is 'FN64'
+2. FN6 has neighbours - ['FN68', 'FN36', 'FN23', 'FN52'] and next hop to leader is 'FN52'
+3. FN74 has neighbours - ['FN58', 'FN52'] and next hop to leader is 'FN52'
+4. FN91 has neighbours - ['FN52'] and next hop to leader is 'FN52'
+5. FN65 has neighbours - ['FN52'] and next hop to leader is 'FN52'
+6. FN28 has neighbours - ['FN52'] and next hop to leader is 'FN52'
+7. FN25 has neighbours - ['FN52'] and next hop to leader is 'FN52'
+8. FN64 has neighbours - ['FN52', 'FN13', 'FN47', 'FN38', 'FN22', 'FN3', 'FN85', 'FN43', 'FN55', 'FN44', 'FN92', 'FN94', 'FN1', 'FN34'] and next hop to leader is '-1'
+9. FN96 has neighbours - ['FN52'] and next hop to leader is 'FN52'
+10. FN27 has neighbours - ['FN52'] and next hop to leader is 'FN52'
+11. FN70 has neighbours - ['FN52'] and next hop to leader is 'FN52'
+12. FN58 has neighbours - ['FN74'] and next hop to leader is 'FN74'
+13. FN4 has neighbours - ['FN52'] and next hop to leader is 'FN52'
+14. FN17 has neighbours - ['FN52'] and next hop to leader is 'FN52'
+15. FN45 has neighbours - ['FN52'] and next hop to leader is 'FN52'
+16. FN68 has neighbours - ['FN6'] and next hop to leader is 'FN6'
+17. FN71 has neighbours - ['FN52'] and next hop to leader is 'FN52'
+18. FN30 has neighbours - ['FN52'] and next hop to leader is 'FN52'
+19. FN67 has neighbours - ['FN52'] and next hop to leader is 'FN52'
+20. FN10 has neighbours - ['FN52'] and next hop to leader is 'FN52'
+21. FN36 has neighbours - ['FN6'] and next hop to leader is 'FN6'
+22. FN23 has neighbours - ['FN6'] and next hop to leader is 'FN6'
+23. FN57 has neighbours - ['FN52'] and next hop to leader is 'FN52'
+24. FN82 has neighbours - ['FN52'] and next hop to leader is 'FN52'
+
+
+
+
+============  SIMULATION DETAILS  ============
+
+Number of nodes = 100
+Number of shards = 2
+Simulation Time = 3.6322946548461914 seconds
+
+Length of Blockchain = 7
+Total no of transactions included in Blockchain = 210
+Total no of transactions processed = 210
+Total no of transactions generated = 3450
+
+Simpy TPS (processed) = 0.105
+Simpy TPS (accepted) = 0.105
