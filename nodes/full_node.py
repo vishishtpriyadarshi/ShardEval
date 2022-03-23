@@ -120,14 +120,12 @@ class FullNode(ParticipatingNode):
         """
         Pre-processes the transactions (done by shard leader)
         """
+
+
         if self.node_type != 2:
             raise RuntimeError("Pre-processing can only be performed by the shard leader")
 
         while True:
-            delay = get_transaction_delay(
-                self.params["transaction_mu"], self.params["transaction_sigma"]
-            )
-            yield self.env.timeout(delay)
 
             if self.transaction_pool.transaction_queue.length() >= self.params["tx_block_capacity"]:
                 # print(f"Queue size of {self.id} = {self.transaction_pool.transaction_queue.length()}")
@@ -162,6 +160,11 @@ class FullNode(ParticipatingNode):
                     self.curr_shard_nodes, 
                     self.params
                 )
+            else:
+                delay = get_transaction_delay(
+                    self.params["transaction_mu"], self.params["transaction_sigma"]
+                )
+                yield self.env.timeout(delay)
 
 
     def generate_mini_block(self, tx_block):

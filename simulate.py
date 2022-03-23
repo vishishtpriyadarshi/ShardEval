@@ -11,6 +11,7 @@ def execute_simulation(name, env, params):
     network_obj = Network(name, env, params)
     network_obj.execute_sybil_resistance_mechanism()
 
+
     for idx in range(params["num_epochs"]):
         network_obj.run_epoch()
     

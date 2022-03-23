@@ -2,8 +2,8 @@ import json
 import os
 import subprocess
 
-num_nodes = [40]
-num_shards = [4]
+num_nodes = [100]
+num_shards = [2, 4, 6, 8, 10]
 tx_block_capacity = [5, 8, 10, 15, 20]
 
 
@@ -26,4 +26,4 @@ for node_cnt in num_nodes:
                 json.dump(data, f, indent=4)
 
             cmd = ['python', 'simulate.py']
-            subprocess.Popen(cmd).wait()
+            subprocess.Popen(cmd, shell=True).wait()
