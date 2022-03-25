@@ -26,4 +26,4 @@ for node_cnt in num_nodes:
                 json.dump(data, f, indent=4)
 
             cmd = ['python', 'simulate.py']
-            subprocess.Popen(cmd, shell=True).wait()
+            subprocess.Popen(cmd).wait()

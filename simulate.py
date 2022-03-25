@@ -1,8 +1,9 @@
-import sys
+import os, sys
 import simpy
 import numpy as np
 import json
-from time import time
+import pathlib
+import time
 
 from network.network import Network
 
@@ -39,17 +40,23 @@ def main():
     params = load_parameters()
 
     orig_stdout = sys.stdout
-    file_name = f"simulation_logs/simulation_results_txLimit{params['tx_block_capacity']}_n{params['num_nodes']}_sh{params['num_shards']}_sim{params['simulation_time']}.log"
+    
+    dir_name = f"simulation_logs/{time.strftime('%Y-%m-%d')}"
+    if not os.path.exists(dir_name):
+        print(f"Creating directory '{dir_name}' for storing the simulation logs")
+    pathlib.Path(dir_name).mkdir(parents=True, exist_ok=True)
+    file_name = f"{dir_name}/simulation_results_txLimit{params['tx_block_capacity']}_n{params['num_nodes']}_sh{params['num_shards']}_sim{params['simulation_time']}.log"
+    
     f = open(file_name, 'w')
     print(f"Writing simulation logs to the file '{file_name}'\n")
     sys.stdout = f
 
     params["generated_tx_count"], params["processed_tx_count"] = 0, 0
 
-    start_time = time()
+    start_time = time.time()
     env = simpy.Environment()
     execute_simulation("Test Network", env, params)
-    stop_time = time()
+    stop_time = time.time()
 
     sim_time = stop_time - start_time
     
@@ -65,8 +72,7 @@ def main():
         
         print(f"\nLength of Blockchain = {len(params['chain'])}")
         print(f"Total no of transactions included in Blockchain = {count}")
-        # print(f"(accepted) TPS = {count/sim_time}")
-
+        
         time_tx_processing = params['simulation_time'] - params['tx_start_time']
         time_network_configuration = params['tx_start_time'] - params['network_config_start_time']
 
@@ -76,7 +82,7 @@ def main():
         print(f"\nSimpy TPS (processed) = {params['processed_tx_count']/params['simulation_time']}")
         print(f"Simpy TPS (accepted) = {count/params['simulation_time']}")
 
-        # print(f"\nLatency of network configuration (in simpy units) = {time_network_configuration}")
+        print(f"\nLatency of network configuration (in simpy units) = {time_network_configuration}")
     else:
         print("Simulation didn't execute for sufficiently long time")
 
