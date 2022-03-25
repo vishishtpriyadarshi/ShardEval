@@ -52,10 +52,9 @@ class Network:
                 )
 
 
-    # sybil resistance: https://en.wikipedia.org/wiki/Sybil_attack
-    def execute_sybil_resistance_mechanism(self):
+    def execute_sybil_resistance_mechanism(self):       # Sybil Resistance: https://en.wikipedia.org/wiki/Sybil_attack
         """
-        TODO:Run Proof-of-Stake as a Sybil resistance mechanim
+        TODO: Run Proof-of-Stake as a Sybil resistance mechanim
         to filter the participating nodes as full nodes.
         """
         
@@ -92,6 +91,7 @@ class Network:
         """
         Start executing a fresh epoch
         """
+
         self.params["network_config_start_time"] = self.env.now
         self.partition_nodes()
         self.establish_network_connections()
@@ -112,7 +112,8 @@ class Network:
         np.random.shuffle(nodes)
         num_principal_committe_nodes = int(len(nodes) * self.params["principal_committee_size"])
         self.principal_committee_node_ids = nodes[0: num_principal_committe_nodes]
-        # TODO:prinicpal committee leader election algo
+        
+        # Randomly select the leader of the principal committee
         principal_committee_leader = random.choice(self.principal_committee_node_ids)
 
         for node_id in self.principal_committee_node_ids:
@@ -125,9 +126,10 @@ class Network:
         shard_groups = np.array_split(shard_nodes, self.params["num_shards"])
         
         for idx in range(self.params["num_shards"]):
-            # TODO:Shard leader election algo
+            # Randomly select the shard leader
             shard_leader_id = np.random.choice(shard_groups[idx])
             self.full_nodes[shard_leader_id].node_type = 2
+
             for node_id in shard_groups[idx]:
                 self.full_nodes[node_id].shard_id = idx
                 self.full_nodes[node_id].shard_leader_id = shard_leader_id
@@ -161,7 +163,8 @@ class Network:
             neighbours_info[id] = possible_neighbours
 
             """Generate a random sample of size degree without replacement from possible neighbours"""
-            # This is a generic code to create bidirectional links among neighbors when graph is not fully connected
+            # NOTE - This is a generic code to create bidirectional links among neighbors when graph is not fully connected
+            
             # neighbours_list = np.random.choice(
             #     possible_neighbours, 
             #     size=degree, 
