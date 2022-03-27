@@ -43,3 +43,8 @@ def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
                 )
                 
             return env.all_of(events)
+        
+        """
+            Cross-shard Transactions -
+                Handle the Cross-shard Block
+        """

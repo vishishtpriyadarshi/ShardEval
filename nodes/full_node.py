@@ -150,6 +150,11 @@ class FullNode(ParticipatingNode):
                 id = int(1000*round(self.env.now, 3))
                 tx_block = TxBlock(f"TB_{self.id}_{id}", transactions_list, self.params, self.shard_id, filtered_curr_shard_nodes)
 
+                """
+                Cross-shard Transactions -
+                    (i)  Probabilistically divide the tx into inter vs intra(cross) shard tx
+                    (ii) Create Cross-shard Block and broadcast it
+                """
                 # print(f"[Logs 2]: At {self.env.now} -- {self.id} = {len(transactions_list)}")
                 broadcast(
                     self.env, 
@@ -339,10 +344,15 @@ class FullNode(ParticipatingNode):
             block = packeted_message.message
             block_type = ""
 
-            if isinstance(block, list):         block_type = "List"
-            elif isinstance(block, TxBlock):    block_type = "Tx"
-            elif isinstance(block, MiniBlock):  block_type = "Mini"
-            elif isinstance(block, Block):      block_type = "Final"
+            """
+            Cross-shard Transactions -
+                Add processing step for the Cross-shard Block
+            """
+            if isinstance(block, list):                 block_type = "List"
+            elif isinstance(block, TxBlock):            block_type = "Tx"
+            elif isinstance(block, CrossShardBlock):    block_type = "Cross-shard"
+            elif isinstance(block, MiniBlock):          block_type = "Mini"
+            elif isinstance(block, Block):              block_type = "Final"
             else:
                 raise RuntimeError("Unknown Block received")
 
@@ -363,6 +373,10 @@ class FullNode(ParticipatingNode):
             elif isinstance(block, TxBlock):
                 if block not in self.shard_leader.processed_tx_blocks:
                     self.process_received_tx_block(block, packeted_message.sender_id)
+
+            elif isinstance(block, CrossShardBlock):
+                """Under Progress"""
+                pass
 
             elif isinstance(block, MiniBlock):
                 if block.id not in self.processed_mini_blocks:

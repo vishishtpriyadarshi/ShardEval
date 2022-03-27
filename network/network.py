@@ -184,7 +184,7 @@ class Network:
         for key, value in neighbours_info.items():
             self.full_nodes[key].add_network_parameters(self.full_nodes, list(value))
     
-        # Connect the leaders of the shards with the Principal Committee
+        ################## Connect the leaders of the shards with the Principal Committee ##################
         degree = len(self.principal_committee_node_ids) // 2 + 1
         for idx in range(len(self.shard_nodes)):
             curr_leader = self.get_shard_leader(idx)
@@ -200,7 +200,7 @@ class Network:
             for id in neighbours_list:
                 self.full_nodes[id].neighbours_ids.append(curr_leader.id)
 
-        # Connect the shard nodes with each other and the leaders
+        ################## Connect the shard nodes with each other and the leaders ##################
         for idx in range(len(self.shard_nodes)):
             curr_shard_nodes = {}
             for node_id in self.shard_nodes[idx]:
@@ -259,6 +259,11 @@ class Network:
             assign_next_hop_to_leader(curr_shard_nodes, self.get_shard_leader(idx))
             # for id, node in curr_shard_nodes.items():
             #     print(f"{id} = {node.next_hop_id}")
+
+        """
+        Cross-shard Transactions -
+            Connect shard leaders with each other
+        """
 
 
     def get_shard_leader(self, idx):

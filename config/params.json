@@ -14,6 +14,7 @@
     "reward_percentage": 0.1,
     "tx_block_capacity": 20,
     "tx_blocks_in_mini_block": 1,
+    "cross_shard_tx_percentage": 0.2,
     "log_file": "simulation_results.log",
     "verbose": 0,
     "locations": [
