@@ -7,13 +7,14 @@ from nodes.participating_node import ParticipatingNode
 from network.broadcast import broadcast
 from network.mini_block import MiniBlock
 from network.tx_block import TxBlock
+from network.cross_shard_block import CrossShardBlock
 from network.block import Block
 from network.pipe import Pipe
 from factory.transaction import Transaction
 from factory.transaction_pool import TransactionPool
 from network.consensus.consensus import Consensus
 from utils.helper import get_transaction_delay, is_voting_complete, get_shard_neighbours, \
-     get_principal_committee_neigbours, is_vote_casted, can_generate_block, has_received_mini_block
+     get_principal_committee_neigbours, is_vote_casted, can_generate_block, has_received_mini_block, filter_nodes
 
 
 class FullNode(ParticipatingNode):
@@ -39,6 +40,7 @@ class FullNode(ParticipatingNode):
         self.curr_shard_nodes = {}
         self.neighbours_ids = []
         self.blockchain = []
+        self.shard_leaders = {}
 
         # Handled by only principal committee
         self.mini_block_consensus_pool = {}
@@ -60,7 +62,9 @@ class FullNode(ParticipatingNode):
         )
         self.pipes = Pipe(self.env, self.id, self.curr_shard_nodes)
         self.env.process(self.receive_block())
-    
+
+    def init_shard_leaders(self, leaders):
+        self.shard_leaders = leaders
 
     def update_neighbours(self, neighbours_ids):
         self.neighbours_ids = neighbours_ids
@@ -130,6 +134,14 @@ class FullNode(ParticipatingNode):
             if self.transaction_pool.transaction_queue.length() >= self.params["tx_block_capacity"]:
                 # print(f"Queue size of {self.id} = {self.transaction_pool.transaction_queue.length()}")
                 transactions_list = self.transaction_pool.transaction_queue.pop(self.params["tx_block_capacity"])
+                num_cross_shard_txns = int(len(transactions_list) * 0.3)
+                num_intra_shard_txns = len(transactions_list) - num_cross_shard_txns
+                random.shuffle(transactions_list)
+
+                intra_shard_txns = transactions_list[:num_intra_shard_txns]
+                cross_shard_txns = transactions_list[num_intra_shard_txns:]
+                for txn in cross_shard_txns:
+                    txn.cross_shard_status = 1
                 # print(f"New Queue size of {self.id} = {self.transaction_pool.transaction_queue.length()}")
                 # print(f"Queue {self.id} = {[tx.id for tx in self.transaction_pool.transaction_queue.queue]}\n\n")
 
@@ -148,7 +160,9 @@ class FullNode(ParticipatingNode):
                         filtered_curr_shard_nodes.append(node_id)
 
                 id = int(1000*round(self.env.now, 3))
-                tx_block = TxBlock(f"TB_{self.id}_{id}", transactions_list, self.params, self.shard_id, filtered_curr_shard_nodes)
+                tx_block = TxBlock(f"TB_{self.id}_{id}", intra_shard_txns, self.params, self.shard_id, filtered_curr_shard_nodes)
+                cross_shard_block = CrossShardBlock(f"TB_{self.id}_{id}", cross_shard_txns, self.params, self.shard_id, filtered_curr_shard_nodes)
+                
 
                 """
                 Cross-shard Transactions -
@@ -162,6 +176,21 @@ class FullNode(ParticipatingNode):
                     "Tx-block", 
                     self.id, 
                     shard_neigbours, 
+                    self.curr_shard_nodes, 
+                    self.params
+                )
+
+                neighbour_shard_leaders = []
+                for id in shard_neigbours:
+                    if id in self.shard_leaders.keys():
+                        neighbour_shard_leaders.append(id)
+
+                broadcast(
+                    self.env, 
+                    cross_shard_block, 
+                    "Cross-shard-block", 
+                    self.id,
+                    neighbour_shard_leaders, 
                     self.curr_shard_nodes, 
                     self.params
                 )
@@ -375,8 +404,10 @@ class FullNode(ParticipatingNode):
                     self.process_received_tx_block(block, packeted_message.sender_id)
 
             elif isinstance(block, CrossShardBlock):
-                """Under Progress"""
-                pass
+                print("received cross shard block", self.node_type)
+                if self.id != 2:
+                    raise RuntimeError("Cross Shard Block received by node other than leader")
+
 
             elif isinstance(block, MiniBlock):
                 if block.id not in self.processed_mini_blocks:

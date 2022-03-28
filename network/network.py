@@ -61,7 +61,7 @@ class Network:
         # participating_node_ids = list(self.participating_nodes.keys())
 
         # Dummy mechanism: currently we are choosing nodes at random and converting them to full nodes
-        mask = np.random.choice([0, 1], size=(self.num_nodes,), p=[1./3, 2./3])
+        mask = np.random.choice([0, 1], size=(self.num_nodes,), p=[0, 1])
 
         for idx in range(self.num_nodes):
             curr_participating_node = self.participating_nodes[idx]
@@ -260,10 +260,45 @@ class Network:
             # for id, node in curr_shard_nodes.items():
             #     print(f"{id} = {node.next_hop_id}")
 
+
         """
         Cross-shard Transactions -
             Connect shard leaders with each other
         """
+        num_leaders = len(self.shard_nodes)
+        leaders_id_list = []
+        for id in range(num_leaders):
+            leaders_id_list.append(self.get_shard_leader(id).id)
+        
+        neighbours_info = {}
+        degree = num_leaders // 2 + 1
+        for id in leaders_id_list:
+            possible_neighbours = leaders_id_list.copy()
+            possible_neighbours.remove(id) 
+
+            if id not in neighbours_info.keys():
+                neighbours_info[id] = set()            
+            
+            neighbours_list = np.random.choice(
+                possible_neighbours, 
+                size=degree, 
+                replace=False
+            )
+                
+            for neighbour_id in neighbours_list:
+                if neighbour_id not in neighbours_info.keys():
+                    neighbours_info[neighbour_id] = set()
+                
+                neighbours_info[id].add(neighbour_id)
+                neighbours_info[neighbour_id].add(id)
+        
+        leader_nodes = {id: self.full_nodes[id] for id in leaders_id_list}
+        
+        for id in leaders_id_list:
+            self.full_nodes[id].init_shard_leaders(leader_nodes)
+            self.full_nodes[id].neighbours_ids += (list(neighbours_info[id]))
+            
+        
 
 
     def get_shard_leader(self, idx):

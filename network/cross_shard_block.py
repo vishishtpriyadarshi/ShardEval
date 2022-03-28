@@ -11,8 +11,8 @@ class CrossShardBlock(Block):
         super().__init__(id, transactions_list, params)
         self.originating_shard_id = shard_id
         self.shard_votes_status = {}
-        
-        self.add_shard_info_for_voting(self, shard_id, shard_nodes)
+        self.transactions_list = transactions_list        
+        self.add_shard_info_for_voting(shard_id, shard_nodes)
     
 
     def add_shard_info_for_voting(self, shard_id, shard_nodes):
@@ -27,8 +27,8 @@ class CrossShardBlock(Block):
         (compared to the Tx-block)
         """
 
-        for tx in transactions_list:
-            self.votes_status[shard_id][tx.id] = {}
+        for tx in self.transactions_list:
+            self.shard_votes_status[shard_id][tx.id] = {}
             for node_id in shard_nodes:
-                self.votes_status[shard_id][tx.id][node_id] = -1
+                self.shard_votes_status[shard_id][tx.id][node_id] = -1
                 # -1 means votes has not been casted

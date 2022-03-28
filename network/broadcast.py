@@ -20,9 +20,7 @@ def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
                     % (object.id, neighbour_list)
                 )
 
-        elif (object_type == "Block" or object_type == "Tx-block" or \
-                object_type == "Mini-block-consensus" or object_type == "Mini-block" or \
-                object_type == "Mini-blocks-voting"):
+        else:
             # Broadcast Block to the network
             # OR Broadcast Tx-block to the shard nodes
             # OR Broadcast Mini-block to the Principal Committee members
@@ -44,7 +42,3 @@ def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
                 
             return env.all_of(events)
         
-        """
-            Cross-shard Transactions -
-                Handle the Cross-shard Block
-        """

@@ -14,3 +14,6 @@ class Transaction:
 
     def display(self):
         print(self.id)
+    
+    def set_receiver(self, receiver_node):
+        self.receiver = receiver_node
