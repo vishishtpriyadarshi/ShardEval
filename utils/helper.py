@@ -32,11 +32,13 @@ def is_vote_casted_for_cross_shard_block(cross_shard_block, shard_id, node_id):
 
 
 def received_cross_shard_block_for_first_time(cross_shard_block, shard_id):
-    flag = 1
-    for tx_id, tx_status in cross_shard_block.shard_votes_status[shard_id].items():
-        for _, node_vote in tx_status.items():
-            flag = flag and (node_vote == -1)
-    return flag
+    # flag = 1
+    # for tx_id, tx_status in cross_shard_block.shard_votes_status[shard_id].items():
+    #     for _, node_vote in tx_status.items():
+    #         flag = flag and (node_vote == -1)
+    # return flag
+
+    return shard_id not in cross_shard_block.shard_votes_status.keys()
 
 
 def get_shard_neighbours(nodes, neighbours_ids, shard_id):

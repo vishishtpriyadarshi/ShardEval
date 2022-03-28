@@ -1,6 +1,3 @@
-from asyncio.windows_events import NULL
-
-
 class Transaction:
     """
     This class models a transaction

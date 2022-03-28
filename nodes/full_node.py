@@ -431,9 +431,23 @@ class FullNode(ParticipatingNode):
                         break
     
                 if flag:        # Cross-shard-block has even 1 tx related to the current shard
-                    curr_shard_nodes_id = [ node for node in self.curr_shard_nodes.keys() ]
-                    block.add_shard_info_for_voting(self.shard_id, curr_shard_nodes_id)
-                    self.process_received_cross_shard_block(block, packeted_message.sender_id)
+                    if received_cross_shard_block_for_first_time(block, self.shard_id):
+                        curr_shard_nodes_id = [ node_id for node_id, node in self.curr_shard_nodes.items() if node.shard_id == self.shard_id]
+                        curr_shard_nodes_id.remove(self.id)
+                        block.add_shard_info_for_voting(self.shard_id, curr_shard_nodes_id)
+                        
+                        shard_neighbours = get_shard_neighbours(self.curr_shard_nodes, self.neighbours_ids, self.shard_id)
+                        broadcast(
+                            self.env, 
+                            block, 
+                            "Cross-shard-block", 
+                            self.id, 
+                            shard_neighbours, 
+                            self.curr_shard_nodes, 
+                            self.params
+                        )
+                    else:
+                        self.process_received_cross_shard_block(block, packeted_message.sender_id)
 
             elif isinstance(block, MiniBlock):
                 if block.id not in self.processed_mini_blocks:
@@ -781,30 +795,17 @@ class FullNode(ParticipatingNode):
         )
 
         if self.node_type == 2:
-            if received_cross_shard_block_for_first_time(cross_shard_block, self.shard_id):
-                shard_neighbours = get_shard_neighbours(self.curr_shard_nodes, self.neighbours_ids, self.shard_id)
-                broadcast(
-                    self.env, 
-                    cross_shard_block, 
-                    "Cross-shard-block", 
-                    self.id, 
-                    shard_neighbours, 
-                    self.curr_shard_nodes, 
-                    self.params
-                )
+            if flag:
+                if self.params["verbose"]:
+                    print(
+                        "%7.4f" % self.env.now
+                        + " : "
+                        + "Node %s (Leader) received voted Cross-shard-block %s" % (self.id, cross_shard_block.id)
+                    )
+                # self.generate_mini_block(cross_shard_block)
+                print(f"[Hackerman]: Voting for cross-shard-block {cross_shard_block.id} is complete and voted block reached the shard leader")
             else:
-                if flag:
-                    if self.params["verbose"]:
-                        print(
-                            "%7.4f" % self.env.now
-                            + " : "
-                            + "Node %s (Leader) received voted Cross-shard-block %s" % (self.id, cross_shard_block.id)
-                        )
-                    # self.generate_mini_block(cross_shard_block)
-                    print(f"[Hackerman]: Voting for cross-shard-block {cross_shard_block.id} is complete and voted block reached the shard leader")
-                else:
-                    print(cross_shard_block.shard_votes_status)
-                    raise RuntimeError(f"Shard Leader {self.id} received a voted Cross-shard-block {cross_shard_block.id} which is not been voted by all shard nodes.")
+                raise RuntimeError(f"Shard Leader {self.id} received a voted Cross-shard-block {cross_shard_block.id} which is not been voted by all shard nodes.")
 
         elif self.node_type == 3:
             if flag:
@@ -826,9 +827,9 @@ class FullNode(ParticipatingNode):
                 )
             else:
                 if is_vote_casted_for_cross_shard_block(cross_shard_block, self.shard_id, self.id) == False:
-                    print(f"VP - Id is {cross_shard_block.id} \nVotes = {cross_shard_block.shard_votes_status[self.shard_id]}")
+                    # print(f"VP - Id is {cross_shard_block.id} \nVotes = {cross_shard_block.shard_votes_status[self.shard_id]}")
                     self.cast_vote_for_cross_shard_block(cross_shard_block)
-                    print(f"Vishisht - Id is {cross_shard_block.id} \nVotes = {cross_shard_block.shard_votes_status[self.shard_id]}")
+                    # print(f"Vishisht - Id is {cross_shard_block.id} \nVotes = {cross_shard_block.shard_votes_status[self.shard_id]}")
                     if self.params["verbose"]:
                         print(
                             "%7.4f" % self.env.now
@@ -850,7 +851,7 @@ class FullNode(ParticipatingNode):
                         neighbours = shard_neigbours    # Exclude source node
                         neighbours.remove(sender_id)
 
-                    print(f"Sourav {self.id} - {is_voting_complete_for_cross_shard_block(cross_shard_block, self.shard_id)} and list is \n {cross_shard_block.shard_votes_status[self.shard_id]}")
+                    # print(f"Sourav {self.id} - {is_voting_complete_for_cross_shard_block(cross_shard_block, self.shard_id)} and list is \n {cross_shard_block.shard_votes_status[self.shard_id]}")
                     broadcast(
                         self.env, 
                         cross_shard_block, 

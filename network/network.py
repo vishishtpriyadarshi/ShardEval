@@ -260,7 +260,6 @@ class Network:
             # for id, node in curr_shard_nodes.items():
             #     print(f"{id} = {node.next_hop_id}")
 
-
         """
         Cross-shard Transactions -
             Connect shard leaders with each other
@@ -298,8 +297,6 @@ class Network:
             self.full_nodes[id].init_shard_leaders(leader_nodes)
             self.full_nodes[id].neighbours_ids += (list(neighbours_info[id]))
             
-        
-
 
     def get_shard_leader(self, idx):
         """
