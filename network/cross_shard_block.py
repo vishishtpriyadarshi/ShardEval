@@ -23,6 +23,11 @@ class CrossShardBlock(Block):
         """
 
         self.shard_votes_status[shard_id] = {}
+
+        if shard_id == self.originating_shard_id:
+            # cross-shard tx doesn't require voting from current shard
+            return
+
         """
         In Cross-shard block the self.shard_votes_status var is an dict consisting of votes_status for each shard
         (compared to the Tx-block)

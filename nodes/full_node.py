@@ -2,6 +2,7 @@ import numpy as np
 import random
 import functools
 import operator
+import json
 
 from nodes.participating_node import ParticipatingNode
 from network.broadcast import broadcast
@@ -144,7 +145,13 @@ class FullNode(ParticipatingNode):
                 
                 for txn in cross_shard_txns:
                     txn.cross_shard_status = 1
-                    txn.set_receiver(self.get_cross_shard_random_node_id())
+                    receiver_node_id = self.get_cross_shard_random_node_id()
+                    
+                    if self.curr_shard_nodes[receiver_node_id].node_type == 1:
+                        print(self.shard_leaders.keys())
+                        raise RuntimeError(f"Principal committee node {receiver_node_id} can't be a receiver of cross-shard tx for tx {txn.id}")
+                    txn.set_receiver(receiver_node_id)
+                    
                 # print(f"New Queue size of {self.id} = {self.transaction_pool.transaction_queue.length()}")
                 # print(f"Queue {self.id} = {[tx.id for tx in self.transaction_pool.transaction_queue.queue]}\n\n")
 
@@ -371,7 +378,8 @@ class FullNode(ParticipatingNode):
             vote = 2
 
             # If tx is relevant to this shard, vote for it else discard it by voting 2
-            if tx.receiver in self.curr_shard_nodes.keys():
+            curr_shard_nodes = [id for id, node in self.curr_shard_nodes.items() if node.shard_id == self.shard_id]
+            if tx.receiver in curr_shard_nodes:
                 vote = self.validate_transaction(tx)
             
             cross_shard_block.shard_votes_status[self.shard_id][tx.id][self.id] = vote
@@ -790,9 +798,30 @@ class FullNode(ParticipatingNode):
             raise RuntimeError("Cross-shard-block received by Principal Committee node.")    
 
         if self.shard_id == cross_shard_block.originating_shard_id:
-            # TODO: Need to make sure the cross-shard-block is properly voted by all the shards or not 
-            # and work on raising required exceptions if required
+            print(f"Votes status -\n{print(json.dumps(cross_shard_block.shard_votes_status, indent=4))}")
+            shard_leader_map = {}
+            tx_map = {}
+            for leader_id, leader in self.shard_leaders.items():
+                shard_leader_map[leader.shard_id] = leader_id
 
+            for tx in cross_shard_block.transactions_list:
+                tx_map[tx.id] = tx
+
+            for shard_id, tx_info in cross_shard_block.shard_votes_status.items():
+                for tx_id, tx_status in tx_info.items():
+                    relevant_nodes_flag = self.shard_leaders[shard_leader_map[shard_id]].curr_shard_nodes[tx_map[tx_id].receiver].shard_id != shard_id
+                    for _, node_vote in tx_status.items():
+                        if not relevant_nodes_flag and (node_vote == -1):
+                            # print(relevant_nodes_flag)
+                            # print(tx_status, tx_map[tx_id].receiver)
+                            raise RuntimeError(f"Cross-shard-block {cross_shard_block.id} received by the leader {self.id} of originating shard is not completely voted.")
+                        
+                        if relevant_nodes_flag ^ (node_vote == 2):
+                            print( tx_map[tx_id].receiver, shard_id, relevant_nodes_flag, node_vote)
+                            raise RuntimeError(f"Cross-shard-block {cross_shard_block.id} has improper voting done by the shards.")
+
+                        # (a and not b) or (not a and b) = bool(a) ^ bool(b) 
+                        
             if self.params["verbose"]:
                 print(
                     "%7.4f" % self.env.now
@@ -897,7 +926,10 @@ class FullNode(ParticipatingNode):
         cross_shard_leader = self.shard_leaders[self.id]
         while(cross_shard_leader.id == self.id):
             cross_shard_leader = random.choice(list(self.shard_leaders.values()))
-        cross_shard_node = random.choice(list(cross_shard_leader.curr_shard_nodes.values()))
+        
+        curr_shard_nodes = [node for node in cross_shard_leader.curr_shard_nodes.values() if node.shard_id == cross_shard_leader.shard_id]
+        cross_shard_node = random.choice(curr_shard_nodes)
         while(cross_shard_node.node_type == 2):
-            cross_shard_node = random.choice(list(cross_shard_leader.curr_shard_nodes.values()))
+            cross_shard_node = random.choice(curr_shard_nodes)
+        
         return cross_shard_node.id
