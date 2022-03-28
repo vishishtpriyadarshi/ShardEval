@@ -41,7 +41,4 @@ def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
                 )
                 
             return env.all_of(events)
-
-    else:
-        print("wow", object_type)
         
