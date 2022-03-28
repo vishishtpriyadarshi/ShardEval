@@ -9,6 +9,7 @@ class CrossShardBlock(Block):
 
     def __init__(self, id, transactions_list, params, shard_id, shard_nodes):
         super().__init__(id, transactions_list, params)
+        self.id = id
         self.originating_shard_id = shard_id
         self.shard_votes_status = {}
         self.transactions_list = transactions_list        

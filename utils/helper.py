@@ -4,7 +4,15 @@ from queue import Queue
 
 
 def is_voting_complete(tx_block):
-    for _, tx_status in tx_block.votes_status.items():
+    for tx_id, tx_status in tx_block.votes_status.items():
+        for _, node_vote in tx_status.items():
+            if node_vote == -1:
+                return False
+    return True
+
+
+def is_voting_complete_for_cross_shard_block(cross_shard_block, shard_id):
+    for _, tx_status in cross_shard_block.shard_votes_status[shard_id].items():
         for _, node_vote in tx_status.items():
             if node_vote == -1:
                 return False
@@ -12,9 +20,24 @@ def is_voting_complete(tx_block):
 
 
 def is_vote_casted(tx_block, node_id):
+    #TODO - doubt on its correctness
     random_tx = list(tx_block.votes_status.values())[0]
     return random_tx[node_id] != -1
-    
+
+
+def is_vote_casted_for_cross_shard_block(cross_shard_block, shard_id, node_id):
+    #TODO - doubt on its correctness
+    random_tx = list(cross_shard_block.shard_votes_status[shard_id].values())[0]
+    return random_tx[node_id] != -1
+
+
+def received_cross_shard_block_for_first_time(cross_shard_block, shard_id):
+    flag = 1
+    for tx_id, tx_status in cross_shard_block.shard_votes_status[shard_id].items():
+        for _, node_vote in tx_status.items():
+            flag = flag and (node_vote == -1)
+    return flag
+
 
 def get_shard_neighbours(nodes, neighbours_ids, shard_id):
     shard_neigbours = []
@@ -88,7 +111,6 @@ def has_received_mini_block(mini_block_consensus_pool, block_id):
     """
     Check whether the principal committee node is receiving mini-block for the first time
     """
-    # print(f"[Test] = {block_id in mini_block_consensus_pool}\n{block_id}\t{mini_block_consensus_pool}")
     return block_id in mini_block_consensus_pool
 
 

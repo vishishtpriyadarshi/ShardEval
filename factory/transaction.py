@@ -1,3 +1,6 @@
+from asyncio.windows_events import NULL
+
+
 class Transaction:
     """
     This class models a transaction
@@ -11,9 +14,10 @@ class Transaction:
         self.reward = reward
         self.state = {}
         self.cross_shard_status = cross_shard_status    # 0 - Intra-shard;  1 - Cross-shard
+        self.receiver = None
 
     def display(self):
         print(self.id)
     
-    def set_receiver(self, receiver_node):
-        self.receiver = receiver_node
+    def set_receiver(self, receiver_node_id):
+        self.receiver = receiver_node_id
