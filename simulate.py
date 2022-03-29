@@ -82,7 +82,7 @@ def main():
         print(f"\nSimpy TPS (processed) = {params['processed_tx_count']/params['simulation_time']}")
         print(f"Simpy TPS (accepted) = {count/params['simulation_time']}")
 
-        print(f"\nLatency of network configuration (in simpy units) = {time_network_configuration}")
+        # print(f"\nLatency of network configuration (in simpy units) = {time_network_configuration}")
     else:
         print("Simulation didn't execute for sufficiently long time")
 
