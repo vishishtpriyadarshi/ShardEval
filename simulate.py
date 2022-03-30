@@ -41,7 +41,7 @@ def main():
 
     orig_stdout = sys.stdout
     
-    dir_name = f"simulation_logs/{time.strftime('%Y-%m-%d')}"
+    dir_name = f"simulation_logs/{time.strftime('%Y-%m-%d/%H-%m')}"
     if not os.path.exists(dir_name):
         print(f"Creating directory '{dir_name}' for storing the simulation logs")
     pathlib.Path(dir_name).mkdir(parents=True, exist_ok=True)
@@ -82,7 +82,7 @@ def main():
         print(f"\nSimpy TPS (processed) = {params['processed_tx_count']/params['simulation_time']}")
         print(f"Simpy TPS (accepted) = {count/params['simulation_time']}")
 
-        print(f"\nLatency of network configuration (in simpy units) = {time_network_configuration}")
+        # print(f"\nLatency of network configuration (in simpy units) = {time_network_configuration}")
     else:
         print("Simulation didn't execute for sufficiently long time")
 

@@ -71,13 +71,20 @@ def create_graph(log_file, verbose=False):
         )
             
     G = nx.Graph()
-    total_nodes = []
+    total_nodes, principal_committee_nodes = [], []
     for key, val in network_info.items():
+        if key == 'principal_committee':
+            principal_committee_nodes = val.keys()
         total_nodes += val.keys()
     
     total_nodes = list(set(total_nodes).difference(["Leader"]))
     for node in total_nodes:
         c = 'blue' if node in leaders else 'green'
+        if node in principal_committee_nodes:
+            if node in leaders:
+                c = 'orange'
+            else:
+                c = 'yellow'
         G.add_node(node, color=c)
 
     for key, val in network_info.items():

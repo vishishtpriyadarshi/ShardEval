@@ -2,18 +2,21 @@ import numpy as np
 import random
 import functools
 import operator
+import json
 
 from nodes.participating_node import ParticipatingNode
 from network.broadcast import broadcast
 from network.mini_block import MiniBlock
 from network.tx_block import TxBlock
+from network.cross_shard_block import CrossShardBlock
 from network.block import Block
 from network.pipe import Pipe
 from factory.transaction import Transaction
 from factory.transaction_pool import TransactionPool
 from network.consensus.consensus import Consensus
 from utils.helper import get_transaction_delay, is_voting_complete, get_shard_neighbours, \
-     get_principal_committee_neigbours, is_vote_casted, can_generate_block, has_received_mini_block
+    get_principal_committee_neigbours, is_vote_casted, can_generate_block, has_received_mini_block, \
+    is_voting_complete_for_cross_shard_block, is_vote_casted_for_cross_shard_block, received_cross_shard_block_for_first_time
 
 
 class FullNode(ParticipatingNode):
@@ -39,6 +42,7 @@ class FullNode(ParticipatingNode):
         self.curr_shard_nodes = {}
         self.neighbours_ids = []
         self.blockchain = []
+        self.shard_leaders = {}
 
         # Handled by only principal committee
         self.mini_block_consensus_pool = {}
@@ -60,7 +64,9 @@ class FullNode(ParticipatingNode):
         )
         self.pipes = Pipe(self.env, self.id, self.curr_shard_nodes)
         self.env.process(self.receive_block())
-    
+
+    def init_shard_leaders(self, leaders):
+        self.shard_leaders = leaders
 
     def update_neighbours(self, neighbours_ids):
         self.neighbours_ids = neighbours_ids
@@ -130,6 +136,22 @@ class FullNode(ParticipatingNode):
             if self.transaction_pool.transaction_queue.length() >= self.params["tx_block_capacity"]:
                 # print(f"Queue size of {self.id} = {self.transaction_pool.transaction_queue.length()}")
                 transactions_list = self.transaction_pool.transaction_queue.pop(self.params["tx_block_capacity"])
+                num_cross_shard_txns = int(len(transactions_list) * 0.3)
+                num_intra_shard_txns = len(transactions_list) - num_cross_shard_txns
+                random.shuffle(transactions_list)
+
+                intra_shard_txns = transactions_list[:num_intra_shard_txns]
+                cross_shard_txns = transactions_list[num_intra_shard_txns:]
+                
+                for txn in cross_shard_txns:
+                    txn.cross_shard_status = 1
+                    receiver_node_id = self.get_cross_shard_random_node_id()
+                    
+                    if self.curr_shard_nodes[receiver_node_id].node_type == 1:
+                        print(self.shard_leaders.keys())
+                        raise RuntimeError(f"Principal committee node {receiver_node_id} can't be a receiver of cross-shard tx for tx {txn.id}")
+                    txn.set_receiver(receiver_node_id)
+                    
                 # print(f"New Queue size of {self.id} = {self.transaction_pool.transaction_queue.length()}")
                 # print(f"Queue {self.id} = {[tx.id for tx in self.transaction_pool.transaction_queue.queue]}\n\n")
 
@@ -139,7 +161,8 @@ class FullNode(ParticipatingNode):
                 )
                 yield self.env.timeout(delay)
                 
-                shard_neigbours = get_shard_neighbours(self.curr_shard_nodes, self.neighbours_ids, self.shard_id)
+                shard_neighbours = get_shard_neighbours(self.curr_shard_nodes, self.neighbours_ids, self.shard_id)
+                # print(f"[Debug]: Shard neighbours are {shard_neighbours}")
 
                 # To-do: Clean this piece of code for filtered_curr_shard_nodes
                 filtered_curr_shard_nodes = []
@@ -148,15 +171,27 @@ class FullNode(ParticipatingNode):
                         filtered_curr_shard_nodes.append(node_id)
 
                 id = int(1000*round(self.env.now, 3))
-                tx_block = TxBlock(f"TB_{self.id}_{id}", transactions_list, self.params, self.shard_id, filtered_curr_shard_nodes)
-
-                # print(f"[Logs 2]: At {self.env.now} -- {self.id} = {len(transactions_list)}")
+                tx_block = TxBlock(f"TB_{self.id}_{id}", intra_shard_txns, self.params, self.shard_id, filtered_curr_shard_nodes)
                 broadcast(
                     self.env, 
                     tx_block, 
                     "Tx-block", 
                     self.id, 
-                    shard_neigbours, 
+                    shard_neighbours, 
+                    self.curr_shard_nodes, 
+                    self.params
+                )
+
+                cross_shard_block = CrossShardBlock(f"CB_{self.id}_{id}", cross_shard_txns, self.params, self.shard_id, filtered_curr_shard_nodes)
+                neighbour_shard_leaders = list(self.shard_leaders.keys())
+                neighbour_shard_leaders.remove(self.id)
+
+                broadcast(
+                    self.env, 
+                    cross_shard_block, 
+                    "Cross-shard-block", 
+                    self.id,
+                    neighbour_shard_leaders, 
                     self.curr_shard_nodes, 
                     self.params
                 )
@@ -324,6 +359,22 @@ class FullNode(ParticipatingNode):
         # To-do: Add vote option when node is unable to validate transaction
         for tx in tx_block.transactions_list:
             tx_block.votes_status[tx.id][self.id] = self.validate_transaction(tx)
+
+    
+    def cast_vote_for_cross_shard_block(self, cross_shard_block):
+        """
+        ...
+        """
+        # To-do: Add vote option when node is unable to validate transaction
+        for tx in cross_shard_block.transactions_list:
+            vote = 2
+
+            # If tx is relevant to this shard, vote for it else discard it by voting 2
+            curr_shard_nodes = [id for id, node in self.curr_shard_nodes.items() if node.shard_id == self.shard_id]
+            if tx.receiver in curr_shard_nodes:
+                vote = self.validate_transaction(tx)
+            
+            cross_shard_block.shard_votes_status[self.shard_id][tx.id][self.id] = vote
     
 
     def receive_block(self):
@@ -339,10 +390,15 @@ class FullNode(ParticipatingNode):
             block = packeted_message.message
             block_type = ""
 
-            if isinstance(block, list):         block_type = "List"
-            elif isinstance(block, TxBlock):    block_type = "Tx"
-            elif isinstance(block, MiniBlock):  block_type = "Mini"
-            elif isinstance(block, Block):      block_type = "Final"
+            """
+            Cross-shard Transactions -
+                Add processing step for the Cross-shard Block
+            """
+            if isinstance(block, list):                 block_type = "List"
+            elif isinstance(block, TxBlock):            block_type = "Tx"
+            elif isinstance(block, CrossShardBlock):    block_type = "Cross-shard"
+            elif isinstance(block, MiniBlock):          block_type = "Mini"
+            elif isinstance(block, Block):              block_type = "Final"
             else:
                 raise RuntimeError("Unknown Block received")
 
@@ -363,6 +419,36 @@ class FullNode(ParticipatingNode):
             elif isinstance(block, TxBlock):
                 if block not in self.shard_leader.processed_tx_blocks:
                     self.process_received_tx_block(block, packeted_message.sender_id)
+
+            elif isinstance(block, CrossShardBlock):
+                flag = False
+                curr_shard_nodes = [id for id, node in self.curr_shard_nodes.items() if node.shard_id == self.shard_id]
+                for txn in block.transactions_list:
+                    if(txn.cross_shard_status != 1):
+                        raise RuntimeError(f"Intra Shard transaction present in Cross Shard Block")
+                    receiver = txn.receiver
+                    if(receiver in curr_shard_nodes):
+                        flag = True
+                        break
+    
+                if flag:        # Cross-shard-block has even 1 tx related to the current shard
+                    if received_cross_shard_block_for_first_time(block, self.shard_id):
+                        curr_shard_nodes_id = [ node_id for node_id, node in self.curr_shard_nodes.items() if node.shard_id == self.shard_id]
+                        curr_shard_nodes_id.remove(self.id)
+                        block.add_shard_info_for_voting(self.shard_id, curr_shard_nodes_id)
+                        
+                        shard_neighbours = get_shard_neighbours(self.curr_shard_nodes, self.neighbours_ids, self.shard_id)
+                        broadcast(
+                            self.env, 
+                            block, 
+                            "Cross-shard-block", 
+                            self.id, 
+                            shard_neighbours, 
+                            self.curr_shard_nodes, 
+                            self.params
+                        )
+                    else:
+                        self.process_received_cross_shard_block(block, packeted_message.sender_id)
 
             elif isinstance(block, MiniBlock):
                 if block.id not in self.processed_mini_blocks:
@@ -692,8 +778,159 @@ class FullNode(ParticipatingNode):
             ) 
 
 
+    def process_received_cross_shard_block(self, cross_shard_block, sender_id):
+        """
+        Handle the received Cross-shard-block
+        """
+
+        if self.node_type == 0:
+            raise RuntimeError("Cross-shard-block received in between re-configuration.")
+            # To-do: Complete when dealing with nodes re-configuration (new epoch)
+        
+        if self.node_type == 1:
+            raise RuntimeError("Cross-shard-block received by Principal Committee node.")    
+
+        if self.shard_id == cross_shard_block.originating_shard_id:
+            # print(f"Votes status -\n{print(json.dumps(cross_shard_block.shard_votes_status, indent=4))}")
+            shard_leader_map = {}
+            tx_map = {}
+            for leader_id, leader in self.shard_leaders.items():
+                shard_leader_map[leader.shard_id] = leader_id
+
+            for tx in cross_shard_block.transactions_list:
+                tx_map[tx.id] = tx
+
+            for shard_id, tx_info in cross_shard_block.shard_votes_status.items():
+                for tx_id, tx_status in tx_info.items():
+                    relevant_nodes_flag = self.shard_leaders[shard_leader_map[shard_id]].curr_shard_nodes[tx_map[tx_id].receiver].shard_id != shard_id
+                    for _, node_vote in tx_status.items():
+                        if not relevant_nodes_flag and (node_vote == -1):
+                            # print(relevant_nodes_flag)
+                            # print(tx_status, tx_map[tx_id].receiver)
+                            raise RuntimeError(f"Cross-shard-block {cross_shard_block.id} received by the leader {self.id} of originating shard is not completely voted.")
+                        
+                        # (a and not b) or (not a and b) = bool(a) ^ bool(b) 
+                        if relevant_nodes_flag ^ (node_vote == 2):
+                            # print(f"Receiver node = {tx_map[tx_id].receiver},\n \
+                            # tx_id = {tx_id}, \n \
+                            # originating shard = {cross_shard_block.originating_shard_id},\n \
+                            # current shard = {shard_id},\n \
+                            # flag = {relevant_nodes_flag},\n \
+                            # vote = {node_vote}")
+                            raise RuntimeError(f"Cross-shard-block {cross_shard_block.id} has improper voting done by the shards.")
+
+            if self.params["verbose"]:
+                print(
+                    "%7.4f" % self.env.now
+                    + " : "
+                    + "Node %s (Leader) received voted cross-shard-block %s which originated in its own shard" % (self.id, cross_shard_block.id)
+                )
+
+            # Generate mini-block consisting of cross-shard-blocks
+            self.generate_mini_block(cross_shard_block)
+            
+            #TODO: Generalise filtering of tx from mini block
+        else:
+            flag = is_voting_complete_for_cross_shard_block(cross_shard_block, self.shard_id)
+            shard_neigbours = get_shard_neighbours(
+                self.curr_shard_nodes, self.neighbours_ids, self.shard_id
+            )
+
+            if self.node_type == 2:
+                if flag:
+                    if self.params["verbose"]:
+                        print(
+                            "%7.4f" % self.env.now
+                            + " : "
+                            + "Node %s (Leader) received voted Cross-shard-block %s but it didn't originate in its own shard" % (self.id, cross_shard_block.id)
+                        )
+                    
+                    neighbours_list = [ node.id for node in self.shard_leaders.values() if node.shard_id == cross_shard_block.originating_shard_id]
+                    broadcast(
+                        self.env, 
+                        cross_shard_block, 
+                        "Voted-Cross-shard-block", 
+                        self.id, 
+                        neighbours_list, 
+                        self.curr_shard_nodes, 
+                        self.params
+                    )
+                else:
+                    # print(f"Cross-shard-block originated in the shard {cross_shard_block.originating_shard_id} and is currently in {self.shard_id}")
+                    # print(cross_shard_block.shard_votes_status)
+                    raise RuntimeError(f"Shard Leader {self.id} received a voted Cross-shard-block {cross_shard_block.id} which is not been voted by all shard nodes.")
+
+            elif self.node_type == 3:
+                if flag:
+                    if self.params["verbose"]:
+                        print(
+                            "%7.4f" % self.env.now
+                            + " : "
+                            + "Node %s (shard node) propagated voted Cross-shard-block %s" % (self.id, cross_shard_block.id)
+                        )
+
+                    broadcast(
+                        self.env, 
+                        cross_shard_block, 
+                        "Cross-shard-block", 
+                        self.id, 
+                        [ self.next_hop_id ], 
+                        self.curr_shard_nodes, 
+                        self.params
+                    )
+                else:
+                    if is_vote_casted_for_cross_shard_block(cross_shard_block, self.shard_id, self.id) == False:
+                        # print(f"Debug - Id is {cross_shard_block.id} \nVotes = {cross_shard_block.shard_votes_status[self.shard_id]}")
+                        self.cast_vote_for_cross_shard_block(cross_shard_block)
+                        # print(f"Debug - Id is {cross_shard_block.id} \nVotes = {json.dumps(cross_shard_block.shard_votes_status[self.shard_id], indent=4)}")
+                        if self.params["verbose"]:
+                            print(
+                                "%7.4f" % self.env.now
+                                + " : "
+                                + "Node %s voted for the Cross-shard-block %s" % (self.id, cross_shard_block.id)
+                            )
+
+                        # If voting is complete, pass the Cross-shard-block to the leader, else broadcast it further in the network
+                        neighbours = []
+                        if is_voting_complete_for_cross_shard_block(cross_shard_block, self.shard_id):
+                            neighbours = [ self.next_hop_id ]
+                            if self.params["verbose"]:
+                                print(
+                                    "%7.4f" % self.env.now
+                                    + " : "
+                                    + "Voting for the Cross-shard-block %s is complete and node %s sent it on its path to shard leader" % (cross_shard_block.id, self.id)
+                                )
+                        else:
+                            neighbours = shard_neigbours    # Exclude source node
+                            neighbours.remove(sender_id)
+
+                        # print(f"Sourav {self.id} - {is_voting_complete_for_cross_shard_block(cross_shard_block, self.shard_id)} and list is \n {cross_shard_block.shard_votes_status[self.shard_id]}")
+                        broadcast(
+                            self.env, 
+                            cross_shard_block, 
+                            "Cross-shard-block", 
+                            self.id, 
+                            neighbours, 
+                            self.curr_shard_nodes, 
+                            self.params
+                        )
+
+
     def update_blockchain(self, block):
         self.blockchain.append(block)
         
         if self.node_type == 2:
             self.params["chain"] = self.blockchain
+
+
+    def get_cross_shard_random_node_id(self):
+        cross_shard_leader = self.shard_leaders[self.id]
+        while(cross_shard_leader.id == self.id):
+            cross_shard_leader = random.choice(list(self.shard_leaders.values()))
+        
+        curr_shard_nodes = [node for node in cross_shard_leader.curr_shard_nodes.values() if node.shard_id == cross_shard_leader.shard_id]
+        cross_shard_node = random.choice(curr_shard_nodes)
+        while(cross_shard_node.node_type == 2):
+            cross_shard_node = random.choice(curr_shard_nodes)
+        
+        return cross_shard_node.id
