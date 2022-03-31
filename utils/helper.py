@@ -37,7 +37,8 @@ def received_cross_shard_block_for_first_time(cross_shard_block, shard_id):
     #     for _, node_vote in tx_status.items():
     #         flag = flag and (node_vote == -1)
     # return flag
-
+    # print(f"Debug: {shard_id}\n{json.dumps(cross_shard_block.shard_votes_status, indent=4)}")
+    # print(f"Res = {shard_id not in cross_shard_block.shard_votes_status.keys()}")
     return shard_id not in cross_shard_block.shard_votes_status.keys()
 
 

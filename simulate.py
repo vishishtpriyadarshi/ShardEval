@@ -45,7 +45,8 @@ def main():
     if not os.path.exists(dir_name):
         print(f"Creating directory '{dir_name}' for storing the simulation logs")
     pathlib.Path(dir_name).mkdir(parents=True, exist_ok=True)
-    file_name = f"{dir_name}/simulation_results_txLimit{params['tx_block_capacity']}_n{params['num_nodes']}_sh{params['num_shards']}_sim{params['simulation_time']}.log"
+    # file_name = f"{dir_name}/simulation_results_txLimit{params['tx_block_capacity']}_n{params['num_nodes']}_sh{params['num_shards']}_sim{params['simulation_time']}.log"
+    file_name = f"{dir_name}/simulation_results_cstx{params['cross_shard_tx_percentage']}_n{params['num_nodes']}_sh{params['num_shards']}_sim{params['simulation_time']}.log"
     
     f = open(file_name, 'w')
     print(f"Writing simulation logs to the file '{file_name}'\n")
@@ -63,6 +64,7 @@ def main():
     print("\n\n============  SIMULATION DETAILS  ============")
     print(f"\nNumber of nodes = {params['num_nodes']}")
     print(f"Number of shards = {params['num_shards']}")
+    print(f"Fraction of cross-shard tx = {params['cross_shard_tx_percentage']}")
     print(f"Simulation Time = {sim_time} seconds")
 
     if 'chain' in params:
