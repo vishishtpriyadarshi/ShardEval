@@ -17,40 +17,60 @@ class TransactionPool:
         self.neighbours_ids = neighbours_ids
         self.params = params
         self.nodes = nodes
-        self.transaction_queue = PriorityQueue()
+        self.intra_shard_tx_queue = PriorityQueue()
+        self.cross_shard_tx_queue = PriorityQueue()
         self.prev_transactions = []
+        self.intra_shard_tx = []
+        self.cross_shard_tx = []
 
 
-    def get_transaction(self, transaction_count):
+    def get_transaction(self, transaction_count, tx_type):
         """
         Return transaction_count number of Transactions. 
         Returns top transactions based on tx reward.
         """
-        return self.transaction_queue.get(transaction_count)
+        if tx_type == 'intra-shard':
+            return self.intra_shard_tx_queue.get(transaction_count)
+        elif tx_type == 'cross-shard':
+            return self.cross_shard_tx_queue.get(transaction_count)
+        else:
+            raise RuntimeError("Unknown transaction type specified")
 
 
-    def pop_transaction(self, transaction_count):
+    def pop_transaction(self, transaction_count, tx_type):
         """
         Remove transactions from transaction pool. 
         Called when transactions are added by a received block or a block is mined.
         """
-        popped_transactions = self.transaction_queue.pop(transaction_count)
+        popped_transactions = None
+        if tx_type == 'intra-shard':
+            popped_transactions = self.intra_shard_tx_queue.pop(transaction_count)
+        elif tx_type == 'cross-shard':
+            popped_transactions = self.cross_shard_tx_queue.pop(transaction_count)
+        else:
+            raise RuntimeError("Unknown transaction type specified")
+
         self.prev_transactions.append(popped_transactions)
+        return popped_transactions
 
 
-    def put_transaction(self, transaction, source_location):
+    def put_transaction(self, transaction, source_location, tx_type):
         """
         Add received transaction to the transaction pool and broadcast further
         """
+        if not tx_type == 'intra-shard' and not tx_type == 'cross-shard':
+            raise RuntimeError("Unknown transaction type specified")
+
         dest_location = self.nodes[self.id].location
         delay = get_transmission_delay(source_location, dest_location)
 
+        curr_queue = self.intra_shard_tx_queue if tx_type == 'intra-shard' else self.cross_shard_tx_queue
         yield self.env.timeout(delay)
         if (
-            not self.transaction_queue.is_present(transaction)
+            not curr_queue.is_present(transaction)
             and transaction not in self.prev_transactions
         ):
-            self.transaction_queue.insert(transaction)
+            curr_queue.insert(transaction)
 
             curr_node = self.nodes[self.id]
             neighbour_ids = [self.id if curr_node.next_hop_id == -1 else curr_node.next_hop_id]

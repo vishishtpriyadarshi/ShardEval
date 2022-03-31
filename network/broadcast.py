@@ -6,10 +6,11 @@ def broadcast(env, object, object_type, source, neighbour_list, nodes, params):
     """
     if neighbour_list:
         if object_type == "Tx":
+            tx_type = 'intra-shard' if object.cross_shard_status == 0 else 'cross-shard'
             # Broadcast a transaction to all neighbours
             for neighbour in neighbour_list:
                 env.process(
-                    nodes[neighbour].transaction_pool.put_transaction(object, nodes[source].location)
+                    nodes[neighbour].transaction_pool.put_transaction(object, nodes[source].location, tx_type)
                 )
             
             if params["verbose"]:

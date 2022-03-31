@@ -1,9 +1,9 @@
 {
-    "num_nodes": 15,
-    "simulation_time": 2000,
+    "num_nodes": 20,
+    "simulation_time": 4000,
     "num_epochs": 1,
     "num_slots": 10,
-    "num_shards": 3,
+    "num_shards": 4,
     "principal_committee_size": 0.35,
     "block_mu": 560,
     "block_sigma": 30,
@@ -16,7 +16,7 @@
     "tx_blocks_in_mini_block": 1,
     "cross_shard_tx_percentage": 0.9,
     "log_file": "simulation_results.log",
-    "verbose": 1,
+    "verbose": 0,
     "locations": [
         "Ireland",
         "Tokyo",

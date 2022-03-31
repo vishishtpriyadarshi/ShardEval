@@ -91,6 +91,9 @@ class FullNode(ParticipatingNode):
             )
             yield self.env.timeout(delay)
             
+            # if random.random() <= self.params["cross_shard_tx_percentage"]:
+            #     yield self.env.timeout(delay*2)
+
             value = np.random.randint(self.params["tx_value_low"], self.params["tx_value_high"])
             reward = value * self.params["reward_percentage"]
 
@@ -98,9 +101,11 @@ class FullNode(ParticipatingNode):
             for key, value in self.curr_shard_nodes.items():
                 transaction_state[key] = 0
 
+            cross_shard_status = random.random() <= self.params["cross_shard_tx_percentage"]
+            
             # id = int(1000*round(self.env.now, 3))
             id = str(uuid.uuid4())
-            transaction = Transaction(f"T_{self.id}_{id}", self.env.now, value, reward, transaction_state)
+            transaction = Transaction(f"T_{self.id}_{id}", self.env.now, value, reward, transaction_state, cross_shard_status)
             
             self.params["generated_tx_count"] += 1
             if self.params["verbose"]:
@@ -125,44 +130,78 @@ class FullNode(ParticipatingNode):
             num += 1
 
     
-    def preprocess_transactions(self):
+    # def preprocess_transactions(self):
+    #     """
+    #     Pre-processes the transactions (done by shard leader)
+    #     """
+
+    #     if self.node_type != 2:
+    #         raise RuntimeError("Pre-processing can only be performed by the shard leader")
+
+    #     while True:
+
+    #         if self.transaction_pool.transaction_queue.length() >= self.params["tx_block_capacity"]:
+    #             # print(f"Queue size of {self.id} = {self.transaction_pool.transaction_queue.length()}")
+    #             transactions_list = self.transaction_pool.transaction_queue.pop(self.params["tx_block_capacity"])
+    #             num_cross_shard_txns = int(len(transactions_list) * 0.3)
+    #             num_intra_shard_txns = len(transactions_list) - num_cross_shard_txns
+    #             random.shuffle(transactions_list)
+
+    #             intra_shard_txns = transactions_list[:num_intra_shard_txns]
+    #             cross_shard_txns = transactions_list[num_intra_shard_txns:]
+                
+    #             self.transaction_pool.intra_shard_tx += intra_shard_txns
+    #             self.transaction_pool.cross_shard_tx += cross_shard_txns
+
+    #             flag_intra_shard_tx, flag_cross_shard_tx = False, False
+    #             if len(self.transaction_pool.intra_shard_tx) >= self.params["tx_block_capacity"]:
+    #                 flag_intra_shard_tx = True
+                
+    #             if len(self.transaction_pool.cross_shard_tx) >= self.params["tx_block_capacity"]:
+    #                 flag_cross_shard_tx = True
+    
+    #             if flag_intra_shard_tx or flag_cross_shard_tx:
+    #                 # To-do: Add different type of delay for the pre-processing
+    #                 delay = get_transaction_delay(
+    #                     self.params["transaction_mu"], self.params["transaction_sigma"]
+    #                 )
+    #                 yield self.env.timeout(delay)
+
+    #                 if flag_intra_shard_tx:
+    #                     intra_shard_txns = self.transaction_pool.intra_shard_tx[ : self.params["tx_block_capacity"]]
+    #                     self.transaction_pool.intra_shard_txns = self.transaction_pool.intra_shard_tx[self.params["tx_block_capacity"] : ]
+                        
+    #                     self.preprocess_intra_shard_transactions(intra_shard_txns)
+    #                 if flag_cross_shard_tx:
+    #                     cross_shard_txns = self.transaction_pool.cross_shard_tx[ : self.params["tx_block_capacity"]]
+    #                     self.transaction_pool.cross_shard_txns = self.transaction_pool.cross_shard_tx[self.params["tx_block_capacity"] : ]
+
+    #                     yield self.env.timeout(delay*40)
+    #                     self.preprocess_cross_shard_transactions(cross_shard_txns)
+
+    #         else:       # To avoid code being stuck in an infinite loop
+    #             delay = get_transaction_delay(
+    #                 self.params["transaction_mu"], self.params["transaction_sigma"]
+    #             )
+    #             yield self.env.timeout(delay)
+
+
+    def preprocess_intra_shard_transactions(self):
         """
-        Pre-processes the transactions (done by shard leader)
+        Helper function to pre-process intra-shard transactions
         """
 
         if self.node_type != 2:
             raise RuntimeError("Pre-processing can only be performed by the shard leader")
 
         while True:
-
-            if self.transaction_pool.transaction_queue.length() >= self.params["tx_block_capacity"]:
-                # print(f"Queue size of {self.id} = {self.transaction_pool.transaction_queue.length()}")
-                transactions_list = self.transaction_pool.transaction_queue.pop(self.params["tx_block_capacity"])
-                num_cross_shard_txns = int(len(transactions_list) * 0.3)
-                num_intra_shard_txns = len(transactions_list) - num_cross_shard_txns
-                random.shuffle(transactions_list)
-
-                intra_shard_txns = transactions_list[:num_intra_shard_txns]
-                cross_shard_txns = transactions_list[num_intra_shard_txns:]
-                
-                for txn in cross_shard_txns:
-                    txn.cross_shard_status = 1
-                    receiver_node_id = self.get_cross_shard_random_node_id()
-                    
-                    if self.curr_shard_nodes[receiver_node_id].node_type == 1:
-                        print(self.shard_leaders.keys())
-                        raise RuntimeError(f"Principal committee node {receiver_node_id} can't be a receiver of cross-shard tx for tx {txn.id}")
-                    txn.set_receiver(receiver_node_id)
-                    
-                # print(f"New Queue size of {self.id} = {self.transaction_pool.transaction_queue.length()}")
-                # print(f"Queue {self.id} = {[tx.id for tx in self.transaction_pool.transaction_queue.queue]}\n\n")
-
-                # To-do: Add different type of delay for the pre-processing
+            if self.transaction_pool.intra_shard_tx_queue.length() >= self.params["tx_block_capacity"]:
                 delay = get_transaction_delay(
                     self.params["transaction_mu"], self.params["transaction_sigma"]
                 )
                 yield self.env.timeout(delay)
-                
+
+                intra_shard_txns = self.transaction_pool.pop_transaction(self.params["tx_block_capacity"], 'intra-shard')
                 shard_neighbours = get_shard_neighbours(self.curr_shard_nodes, self.neighbours_ids, self.shard_id)
                 # print(f"[Debug]: Shard neighbours are {shard_neighbours}")
 
@@ -175,6 +214,7 @@ class FullNode(ParticipatingNode):
                 # id = int(1000*round(self.env.now, 3))
                 id = str(uuid.uuid4())
                 tx_block = TxBlock(f"TB_{self.id}_{id}", intra_shard_txns, self.params, self.shard_id, filtered_curr_shard_nodes)
+                
                 broadcast(
                     self.env, 
                     tx_block, 
@@ -184,7 +224,46 @@ class FullNode(ParticipatingNode):
                     self.curr_shard_nodes, 
                     self.params
                 )
+            
+            else:       # To avoid code being stuck in an infinite loop
+                delay = get_transaction_delay(
+                    self.params["transaction_mu"], self.params["transaction_sigma"]
+                )
+                yield self.env.timeout(delay)
 
+
+    def preprocess_cross_shard_transactions(self):
+        """
+        Helper function to pre-process cross-shard transactions
+        """
+
+        if self.node_type != 2:
+            raise RuntimeError("Pre-processing can only be performed by the shard leader")
+
+        while True:
+            if self.transaction_pool.cross_shard_tx_queue.length() >= self.params["tx_block_capacity"]:
+                delay = get_transaction_delay(
+                    self.params["transaction_mu"], self.params["transaction_sigma"]
+                )
+                yield self.env.timeout(delay*5)
+
+                cross_shard_txns = self.transaction_pool.pop_transaction(self.params["tx_block_capacity"], 'cross-shard')
+                for txn in cross_shard_txns:
+                    txn.cross_shard_status = 1
+                    receiver_node_id = self.get_cross_shard_random_node_id()
+                    
+                    if self.curr_shard_nodes[receiver_node_id].node_type == 1:
+                        print(self.shard_leaders.keys())
+                        raise RuntimeError(f"Principal committee node {receiver_node_id} can't be a receiver of cross-shard tx for tx {txn.id}")
+                    txn.set_receiver(receiver_node_id)
+                    
+                # To-do: Clean this piece of code for filtered_curr_shard_nodes
+                filtered_curr_shard_nodes = []
+                for node_id in self.curr_shard_nodes.keys():
+                    if self.curr_shard_nodes[node_id].shard_id == self.shard_id and self.curr_shard_nodes[node_id].node_type == 3:
+                        filtered_curr_shard_nodes.append(node_id)
+
+                id = str(uuid.uuid4())
                 cross_shard_block = CrossShardBlock(f"CB_{self.id}_{id}", cross_shard_txns, self.params, self.shard_id, filtered_curr_shard_nodes)
                 neighbour_shard_leaders = list(self.shard_leaders.keys())
                 neighbour_shard_leaders.remove(self.id)
@@ -198,6 +277,7 @@ class FullNode(ParticipatingNode):
                     self.curr_shard_nodes, 
                     self.params
                 )
+
             else:       # To avoid code being stuck in an infinite loop
                 delay = get_transaction_delay(
                     self.params["transaction_mu"], self.params["transaction_sigma"]

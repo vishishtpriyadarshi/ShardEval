@@ -319,7 +319,9 @@ class Network:
                 curr_node = self.full_nodes[node_id]
 
                 if curr_node.node_type == 2:
-                    curr_node.env.process(curr_node.preprocess_transactions())
+                    # curr_node.env.process(curr_node.preprocess_transactions())
+                    curr_node.env.process(curr_node.preprocess_intra_shard_transactions())
+                    curr_node.env.process(curr_node.preprocess_cross_shard_transactions())
                     continue
                 
                 curr_node.env.process(curr_node.generate_transactions())

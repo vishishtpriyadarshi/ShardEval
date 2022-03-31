@@ -2,7 +2,7 @@ import json
 import os
 import subprocess
 
-num_nodes = [100]
+num_nodes = [20]
 num_shards = [4]
 # tx_block_capacity = [5, 8, 10, 15, 20]
 cs_tx_fraction = [0, 0.25, 0.5, 0.75, 0.9]
