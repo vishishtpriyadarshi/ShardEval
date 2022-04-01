@@ -21,8 +21,14 @@ Upon executing the simulator, a log file ```simulation_results.log``` containing
  
 To analyse the generated log file -
 ```python
-mkdir logs_data/interactive_plots logs_data/metadata logs_data/plots
+mkdir logs_data/interactive_plots logs_data/metadata logs_data/plots logs_data/summary
 python analyzer/log_analyzer.py <log_file>
+```
+
+To generate the summary of the generated log files present in a directory -
+```python
+mkdir logs_data/summary
+python analyzer/log_summarizer.py <directory_name>
 ```
 
 Upon execution, several files (html, txt, csv, png) will be created in respective folders inside the ```logs_data```.   

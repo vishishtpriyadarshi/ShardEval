@@ -94,8 +94,8 @@ def main():
         print(f"Total no of intra-shard transactions generated = {params['generated_intra_shard_tx_count']}")
         print(f"Total no of cross-shard transactions generated = {params['generated_cross_shard_tx_count']}")
 
-        print(f"\nSimpy TPS (processed) = {params['processed_tx_count']/params['simulation_time']}")
-        print(f"Simpy TPS (accepted) = {count/params['simulation_time']}")
+        print(f"\nProcessed TPS = {params['processed_tx_count']/params['simulation_time']}")
+        print(f"Accepted TPS = {count/params['simulation_time']}")
 
         # print(f"\nLatency of network configuration (in simpy units) = {time_network_configuration}")
     else:
