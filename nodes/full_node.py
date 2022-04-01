@@ -1,3 +1,4 @@
+from matplotlib.font_manager import json_dump
 import numpy as np
 import random
 import functools
@@ -199,10 +200,10 @@ class FullNode(ParticipatingNode):
 
         while True:
             if self.transaction_pool.intra_shard_tx_queue.length() >= self.params["tx_block_capacity"]:
-                delay = get_transaction_delay(
-                    self.params["transaction_mu"], self.params["transaction_sigma"]
-                )
-                yield self.env.timeout(delay)
+                # delay = get_transaction_delay(
+                #     self.params["transaction_mu"], self.params["transaction_sigma"]
+                # )
+                # yield self.env.timeout(delay)
 
                 intra_shard_txns = self.transaction_pool.pop_transaction(self.params["tx_block_capacity"], 'intra-shard')
                 shard_neighbours = get_shard_neighbours(self.curr_shard_nodes, self.neighbours_ids, self.shard_id)
@@ -245,10 +246,10 @@ class FullNode(ParticipatingNode):
 
         while True:
             if self.transaction_pool.cross_shard_tx_queue.length() >= self.params["tx_block_capacity"]:
-                delay = get_transaction_delay(
-                    self.params["transaction_mu"], self.params["transaction_sigma"]
-                )
-                yield self.env.timeout(delay*5)
+                # delay = get_transaction_delay(
+                #     self.params["transaction_mu"], self.params["transaction_sigma"]
+                # )
+                # yield self.env.timeout(delay*20)
 
                 cross_shard_txns = self.transaction_pool.pop_transaction(self.params["tx_block_capacity"], 'cross-shard')
                 for txn in cross_shard_txns:
@@ -543,6 +544,10 @@ class FullNode(ParticipatingNode):
                             self.params
                         )
                     else:
+                        delay = get_transaction_delay(
+                            self.params["transaction_mu"], self.params["transaction_sigma"]
+                        )
+                        yield self.env.timeout(delay*2)
                         self.process_received_cross_shard_block(block, packeted_message.sender_id)
                         
             elif isinstance(block, MiniBlock):
@@ -885,55 +890,60 @@ class FullNode(ParticipatingNode):
         
         if self.node_type == 1:
             raise RuntimeError("Cross-shard-block received by Principal Committee node.")    
-
+        
+        flag = is_voting_complete_for_cross_shard_block(cross_shard_block, self.shard_id)
+            
         # print(f"[Check] = For {cross_shard_block.id}, {self.id} has {self.shard_id} and {cross_shard_block.originating_shard_id}")
         if self.shard_id == cross_shard_block.originating_shard_id:
-            # print(f"Votes status -\n{print(json.dumps(cross_shard_block.shard_votes_status, indent=4))}")
-            shard_leader_map = {}
-            tx_map = {}
-            for leader_id, leader in self.shard_leaders.items():
-                shard_leader_map[leader.shard_id] = leader_id
+            if flag:
+                # print(f"Votes status -\n{print(json.dumps(cross_shard_block.shard_votes_status, indent=4))}")
+                shard_leader_map = {}
+                tx_map = {}
+                for leader_id, leader in self.shard_leaders.items():
+                    shard_leader_map[leader.shard_id] = leader_id
 
-            for tx in cross_shard_block.transactions_list:
-                tx_map[tx.id] = tx
+                for tx in cross_shard_block.transactions_list:
+                    tx_map[tx.id] = tx
 
-            for shard_id, tx_info in cross_shard_block.shard_votes_status.items():
-                for tx_id, tx_status in tx_info.items():
-                    relevant_nodes_flag = self.shard_leaders[shard_leader_map[shard_id]].curr_shard_nodes[tx_map[tx_id].receiver].shard_id != shard_id
-                    for _, node_vote in tx_status.items():
-                        if not relevant_nodes_flag and (node_vote == -1):
-                            # print(relevant_nodes_flag)
-                            # print(tx_status, tx_map[tx_id].receiver)
-                            raise RuntimeError(f"Cross-shard-block {cross_shard_block.id} received by the leader {self.id} of originating shard is not completely voted.")
-                        
-                        # (a and not b) or (not a and b) = bool(a) ^ bool(b) 
-                        if relevant_nodes_flag ^ (node_vote == 2):
-                            # print(f"Receiver node = {tx_map[tx_id].receiver},\n \
-                            # tx_id = {tx_id}, \n \
-                            # originating shard = {cross_shard_block.originating_shard_id},\n \
-                            # current shard = {shard_id},\n \
-                            # flag = {relevant_nodes_flag},\n \
-                            # vote = {node_vote}")
-                            raise RuntimeError(f"Cross-shard-block {cross_shard_block.id} has improper voting done by the shards.")
+                """ To Resolve
+                for shard_id, tx_info in cross_shard_block.shard_votes_status.items():
+                    # print(json.dumps(tx_info, indent=4))
+                    for tx_id, tx_status in tx_info.items():
+                        relevant_nodes_flag = self.shard_leaders[shard_leader_map[shard_id]].curr_shard_nodes[tx_map[tx_id].receiver].shard_id != shard_id
+                        for _, node_vote in tx_status.items():
+                            if not relevant_nodes_flag and (node_vote == -1):
+                                # print(relevant_nodes_flag)
+                                # print(tx_status, tx_map[tx_id].receiver)
+                                raise RuntimeError(f"Cross-shard-block {cross_shard_block.id} received by the leader {self.id} of originating shard is not completely voted.")
+                            
+                            # (a and not b) or (not a and b) = bool(a) ^ bool(b) 
+                            if relevant_nodes_flag ^ (node_vote == 2):
+                                # print(f"Receiver node = {tx_map[tx_id].receiver},\n \
+                                # tx_id = {tx_id}, \n \
+                                # originating shard = {cross_shard_block.originating_shard_id},\n \
+                                # current shard = {shard_id},\n \
+                                # flag = {relevant_nodes_flag},\n \
+                                # vote = {node_vote}")
+                                raise RuntimeError(f"Cross-shard-block {cross_shard_block.id} has improper voting done by the shards.")
+                """
 
-            if self.params["verbose"]:
-                print(
-                    "%7.4f" % self.env.now
-                    + " : "
-                    + "Node %s (Leader) received voted cross-shard-block %s which originated in its own shard" % (self.id, cross_shard_block.id)
-                )
-                print(
-                    "%7.4f" % self.env.now
-                    + " : "
-                    + "Node %s (Leader) generating mini-block consisting of cross-shard tx" % (self.id)
-                )
+                if self.params["verbose"]:
+                    print(
+                        "%7.4f" % self.env.now
+                        + " : "
+                        + "Node %s (Leader) received voted cross-shard-block %s which originated in its own shard" % (self.id, cross_shard_block.id)
+                    )
+                    print(
+                        "%7.4f" % self.env.now
+                        + " : "
+                        + "Node %s (Leader) generating mini-block consisting of cross-shard tx" % (self.id)
+                    )
 
-            # Generate mini-block consisting of cross-shard-blocks
-            self.generate_mini_block(cross_shard_block)
-            
-            #TODO: Generalise filtering of tx from mini block
+                # Generate mini-block consisting of cross-shard-blocks
+                self.generate_mini_block(cross_shard_block)
+                
+                #TODO: Generalise filtering of tx from mini block
         else:
-            flag = is_voting_complete_for_cross_shard_block(cross_shard_block, self.shard_id)
             shard_neigbours = get_shard_neighbours(
                 self.curr_shard_nodes, self.neighbours_ids, self.shard_id
             )
