@@ -53,6 +53,8 @@ def main():
     sys.stdout = f
 
     params["generated_tx_count"], params["processed_tx_count"] = 0, 0
+    params["generated_cross_shard_tx_count"], params["generated_intra_shard_tx_count"] = 0, 0
+    params["processed_cross_shard_tx_count"], params["processed_intra_shard_tx_count"] = 0, 0
 
     start_time = time.time()
     env = simpy.Environment()
@@ -68,18 +70,29 @@ def main():
     print(f"Simulation Time = {sim_time} seconds")
 
     if 'chain' in params:
-        count = 0
+        count, cross_shard_tx_count, intra_shard_tx_count = 0, 0, 0
         for block in params['chain']:
             count += len(block.transactions_list)
+
+            for tx in block.transactions_list:
+                intra_shard_tx_count += 1 - tx.cross_shard_status
+                cross_shard_tx_count += tx.cross_shard_status
         
         print(f"\nLength of Blockchain = {len(params['chain'])}")
         print(f"Total no of transactions included in Blockchain = {count}")
+        print(f"Total no of intra-shard transactions included in Blockchain = {intra_shard_tx_count}")
+        print(f"Total no of cross-shard transactions included in Blockchain = {cross_shard_tx_count}")
         
         time_tx_processing = params['simulation_time'] - params['tx_start_time']
         time_network_configuration = params['tx_start_time'] - params['network_config_start_time']
 
-        print(f"Total no of transactions processed = {params['processed_tx_count']}")
-        print(f"Total no of transactions generated = {params['generated_tx_count']}")
+        print(f"\nTotal no of transactions processed = {params['processed_tx_count']}")
+        print(f"Total no of intra-shard transactions processed = {params['processed_intra_shard_tx_count']}")
+        print(f"Total no of cross-shard transactions processed = {params['processed_cross_shard_tx_count']}")
+
+        print(f"\nTotal no of transactions generated = {params['generated_tx_count']}")
+        print(f"Total no of intra-shard transactions generated = {params['generated_intra_shard_tx_count']}")
+        print(f"Total no of cross-shard transactions generated = {params['generated_cross_shard_tx_count']}")
 
         print(f"\nSimpy TPS (processed) = {params['processed_tx_count']/params['simulation_time']}")
         print(f"Simpy TPS (accepted) = {count/params['simulation_time']}")

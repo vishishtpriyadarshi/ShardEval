@@ -108,6 +108,9 @@ class FullNode(ParticipatingNode):
             transaction = Transaction(f"T_{self.id}_{id}", self.env.now, value, reward, transaction_state, cross_shard_status)
             
             self.params["generated_tx_count"] += 1
+            self.params["generated_intra_shard_tx_count"] += 1 - cross_shard_status
+            self.params["generated_cross_shard_tx_count"] += cross_shard_status
+            
             if self.params["verbose"]:
                 print(
                     "%7.4f" % self.env.now
@@ -295,8 +298,8 @@ class FullNode(ParticipatingNode):
 
         if tx_block not in self.processed_tx_blocks:
             self.current_tx_blocks.append(tx_block)
-            if self.params["verbose"]:
-                print(f"[Debug len]: processed_tx_blocks = {len(self.processed_tx_blocks)}")
+            # if self.params["verbose"]:
+            #     print(f"[Debug len]: processed_tx_blocks = {len(self.processed_tx_blocks)}")
 
             if len(self.current_tx_blocks) >= self.params["tx_blocks_in_mini_block"]:
                 # To-Do: Maintain already processed tx-blocks list
@@ -308,7 +311,10 @@ class FullNode(ParticipatingNode):
                 # print(f"[Log]: {self.id} = {len(accepted_transactions)}")
 
                 self.params["processed_tx_count"] += len(accepted_transactions)
-
+                for tx in accepted_transactions:
+                    self.params["processed_intra_shard_tx_count"] += 1 - tx.cross_shard_status
+                    self.params["processed_cross_shard_tx_count"] += tx.cross_shard_status
+                    
                 # id = int(1000*round(self.env.now, 3))
                 id = str(uuid.uuid4())
                 mini_block = MiniBlock(f"MB_{self.id}_{id}", accepted_transactions, self.params, self.shard_id, self.env.now)
@@ -363,8 +369,8 @@ class FullNode(ParticipatingNode):
                 2. Update own blockchain
                 3. Broadcast the block to the shards (To-do: neighbors may have to debug)
             """
-            if self.params["verbose"]:
-                print(f"[Debug] - Node {self.id} ready to generate \nPool - {self.mini_block_consensus_pool}")
+            # if self.params["verbose"]:
+            #     print(f"[Debug] - Node {self.id} ready to generate \nPool - {self.mini_block_consensus_pool}")
 
             self.processed_mini_blocks = [ id for id in self.mini_block_consensus_pool ]
             filtered_mini_blocks = []
@@ -427,9 +433,9 @@ class FullNode(ParticipatingNode):
             ) 
 
         else:
-            # yield self.env.timeout(1)
-            if self.params["verbose"]:
-                print(f"[Debug] - Node {self.id} not ready \nPool - {self.mini_block_consensus_pool}")
+            pass
+            # if self.params["verbose"]:
+            #     print(f"[Debug] - Node {self.id} not ready \nPool - {self.mini_block_consensus_pool}")
     
 
     def validate_transaction(self, tx):
@@ -509,7 +515,7 @@ class FullNode(ParticipatingNode):
                     self.process_received_tx_block(block, packeted_message.sender_id)
 
             elif isinstance(block, CrossShardBlock):
-                flag = False
+                flag = block.originating_shard_id == self.shard_id
                 curr_shard_nodes = [id for id, node in self.curr_shard_nodes.items() if node.shard_id == self.shard_id]
                 for txn in block.transactions_list:
                     if txn.cross_shard_status != 1 :
@@ -518,7 +524,8 @@ class FullNode(ParticipatingNode):
                     if receiver in curr_shard_nodes:
                         flag = True
                         break
-    
+
+                # print(f"[Check]: {block.id} has flag = {flag} for {self.id}")
                 if flag:        # Cross-shard-block has even 1 tx related to the current shard
                     if received_cross_shard_block_for_first_time(block, self.shard_id):                        
                         curr_shard_nodes_id = [ node_id for node_id, node in self.curr_shard_nodes.items() if node.shard_id == self.shard_id]
@@ -879,6 +886,7 @@ class FullNode(ParticipatingNode):
         if self.node_type == 1:
             raise RuntimeError("Cross-shard-block received by Principal Committee node.")    
 
+        # print(f"[Check] = For {cross_shard_block.id}, {self.id} has {self.shard_id} and {cross_shard_block.originating_shard_id}")
         if self.shard_id == cross_shard_block.originating_shard_id:
             # print(f"Votes status -\n{print(json.dumps(cross_shard_block.shard_votes_status, indent=4))}")
             shard_leader_map = {}
@@ -914,14 +922,13 @@ class FullNode(ParticipatingNode):
                     + " : "
                     + "Node %s (Leader) received voted cross-shard-block %s which originated in its own shard" % (self.id, cross_shard_block.id)
                 )
+                print(
+                    "%7.4f" % self.env.now
+                    + " : "
+                    + "Node %s (Leader) generating mini-block consisting of cross-shard tx" % (self.id)
+                )
 
             # Generate mini-block consisting of cross-shard-blocks
-            
-            # delay = get_transaction_delay(
-            #     self.params["transaction_mu"], self.params["transaction_sigma"]
-            # )
-            # yield self.env.timeout(delay*2)
-            
             self.generate_mini_block(cross_shard_block)
             
             #TODO: Generalise filtering of tx from mini block
@@ -941,6 +948,7 @@ class FullNode(ParticipatingNode):
                         )
                     
                     neighbours_list = [ node.id for node in self.shard_leaders.values() if node.shard_id == cross_shard_block.originating_shard_id]
+                    # print(f"[Debug] - Sending {cross_shard_block.id} to {neighbours_list} and originating shard = {cross_shard_block.originating_shard_id}")
                     broadcast(
                         self.env, 
                         cross_shard_block, 
