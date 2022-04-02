@@ -135,3 +135,48 @@ def assign_next_hop_to_leader(nodes, leader):
                 used[neighbour_id] = True
                 q.put(neighbour_id)
                 nodes[neighbour_id].next_hop_id = curr_node.id
+
+
+def filter_transactions(tx_block, tx_block_type, cutoff_vote_percentage):
+    """
+    Returns the filtered transactions from the tx_block based on the votes
+    """
+    filtered_transactions = []
+    tx_mapping = {}
+    for tx in tx_block.transactions_list:
+        tx_mapping[tx.id] = tx
+
+    if tx_block_type == 'intra_shard_tx_block':
+        for tx_id, votes_info in tx_block.votes_status.items():
+            affirmative_votes_count = 0
+            for node_id, vote in votes_info.items():
+                affirmative_votes_count += 1 if vote else 0
+            
+            affirmative_votes_ratio = affirmative_votes_count / len(votes_info.keys())
+            if affirmative_votes_ratio > cutoff_vote_percentage:
+                filtered_transactions.append(tx_mapping[tx_id])
+    else:
+        shard_votes = {}
+        for shard_id, shard_info in tx_block.shard_votes_status.items():
+            for tx_id, votes_info in shard_info.items():
+                affirmative_votes_count = 0
+                flag = False
+                for node_id, vote in votes_info.items():
+                    affirmative_votes_count += 1 if vote else 0
+                    flag = (vote == 2 or vote == -1)
+                    if flag:
+                        break
+                
+                if not flag:
+                    affirmative_votes_ratio = affirmative_votes_count / len(votes_info.keys())
+                    if tx_id not in shard_votes:
+                        shard_votes[tx_id] = {}
+                    shard_votes[tx_id][shard_id] = affirmative_votes_ratio > cutoff_vote_percentage
+
+        for tx_id, votes_info in shard_votes.items():
+            for node_id, vote in votes_info.items():
+                if not vote:        # Accept the tx only when all shards vote True
+                    continue
+            filtered_transactions.append(tx_mapping[tx_id])
+
+    return filtered_transactions

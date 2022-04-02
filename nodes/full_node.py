@@ -18,7 +18,8 @@ from factory.transaction_pool import TransactionPool
 from network.consensus.consensus import Consensus
 from utils.helper import get_transaction_delay, is_voting_complete, get_shard_neighbours, \
     get_principal_committee_neigbours, is_vote_casted, can_generate_block, has_received_mini_block, \
-    is_voting_complete_for_cross_shard_block, is_vote_casted_for_cross_shard_block, received_cross_shard_block_for_first_time
+    is_voting_complete_for_cross_shard_block, is_vote_casted_for_cross_shard_block, received_cross_shard_block_for_first_time, \
+    filter_transactions
 
 
 class FullNode(ParticipatingNode):
@@ -92,9 +93,6 @@ class FullNode(ParticipatingNode):
             )
             yield self.env.timeout(delay)
             
-            # if random.random() <= self.params["cross_shard_tx_percentage"]:
-            #     yield self.env.timeout(delay*2)
-
             value = np.random.randint(self.params["tx_value_low"], self.params["tx_value_high"])
             reward = value * self.params["reward_percentage"]
 
@@ -207,9 +205,7 @@ class FullNode(ParticipatingNode):
 
                 intra_shard_txns = self.transaction_pool.pop_transaction(self.params["tx_block_capacity"], 'intra-shard')
                 shard_neighbours = get_shard_neighbours(self.curr_shard_nodes, self.neighbours_ids, self.shard_id)
-                # print(f"[Debug]: Shard neighbours are {shard_neighbours}")
-
-                # To-do: Clean this piece of code for filtered_curr_shard_nodes
+                
                 filtered_curr_shard_nodes = []
                 for node_id in self.curr_shard_nodes.keys():
                     if self.curr_shard_nodes[node_id].shard_id == self.shard_id and self.curr_shard_nodes[node_id].node_type == 3:
@@ -261,7 +257,6 @@ class FullNode(ParticipatingNode):
                         raise RuntimeError(f"Principal committee node {receiver_node_id} can't be a receiver of cross-shard tx for tx {txn.id}")
                     txn.set_receiver(receiver_node_id)
                     
-                # To-do: Clean this piece of code for filtered_curr_shard_nodes
                 filtered_curr_shard_nodes = []
                 for node_id in self.curr_shard_nodes.keys():
                     if self.curr_shard_nodes[node_id].shard_id == self.shard_id and self.curr_shard_nodes[node_id].node_type == 3:
@@ -289,7 +284,7 @@ class FullNode(ParticipatingNode):
                 yield self.env.timeout(delay)
 
 
-    def generate_mini_block(self, tx_block):
+    def generate_mini_block(self, tx_block, tx_block_type):
         """
         Generate a mini block and broadcast it to the principal committee
         """
@@ -307,12 +302,11 @@ class FullNode(ParticipatingNode):
                 self.processed_tx_blocks += self.current_tx_blocks[0 : self.params["tx_blocks_in_mini_block"]]
                 self.current_tx_blocks = self.current_tx_blocks[self.params["tx_blocks_in_mini_block"] : ]
 
-                # To-Do: Filter transactions from tx_block based on votes
-                accepted_transactions = tx_block.transactions_list
-                # print(f"[Log]: {self.id} = {len(accepted_transactions)}")
-
-                self.params["processed_tx_count"] += len(accepted_transactions)
-                for tx in accepted_transactions:
+                accepted_transactions = filter_transactions(tx_block, tx_block_type, self.params["cutoff_vote_percentage"])
+                # accepted_transactions = tx_block.transactions_list
+                
+                self.params["processed_tx_count"] += len(tx_block.transactions_list)
+                for tx in tx_block.transactions_list:
                     self.params["processed_intra_shard_tx_count"] += 1 - tx.cross_shard_status
                     self.params["processed_cross_shard_tx_count"] += tx.cross_shard_status
                     
@@ -591,7 +585,7 @@ class FullNode(ParticipatingNode):
                         + " : "
                         + "Node %s (Leader) received voted Tx-block %s" % (self.id, tx_block.id)
                     )
-                self.generate_mini_block(tx_block)
+                self.generate_mini_block(tx_block, 'intra_shard_tx_block')
             else:
                 raise RuntimeError(f"Shard Leader {self.id} received a voted Tx-block {tx_block.id} which is not been voted by all shard nodes.")
 
@@ -940,9 +934,7 @@ class FullNode(ParticipatingNode):
                     )
 
                 # Generate mini-block consisting of cross-shard-blocks
-                self.generate_mini_block(cross_shard_block)
-                
-                #TODO: Generalise filtering of tx from mini block
+                self.generate_mini_block(cross_shard_block, 'cross_shard_tx_block')
         else:
             shard_neigbours = get_shard_neighbours(
                 self.curr_shard_nodes, self.neighbours_ids, self.shard_id
