@@ -200,10 +200,10 @@ class FullNode(ParticipatingNode):
 
         while True:
             if self.transaction_pool.intra_shard_tx_queue.length() >= self.params["tx_block_capacity"]:
-                # delay = get_transaction_delay(
-                #     self.params["transaction_mu"], self.params["transaction_sigma"]
-                # )
-                # yield self.env.timeout(delay)
+                delay = get_transaction_delay(
+                    self.params["transaction_mu"], self.params["transaction_sigma"]
+                )
+                yield self.env.timeout(delay)
 
                 intra_shard_txns = self.transaction_pool.pop_transaction(self.params["tx_block_capacity"], 'intra-shard')
                 shard_neighbours = get_shard_neighbours(self.curr_shard_nodes, self.neighbours_ids, self.shard_id)
@@ -246,10 +246,10 @@ class FullNode(ParticipatingNode):
 
         while True:
             if self.transaction_pool.cross_shard_tx_queue.length() >= self.params["tx_block_capacity"]:
-                # delay = get_transaction_delay(
-                #     self.params["transaction_mu"], self.params["transaction_sigma"]
-                # )
-                # yield self.env.timeout(delay*20)
+                delay = get_transaction_delay(
+                    self.params["transaction_mu"], self.params["transaction_sigma"]
+                )
+                yield self.env.timeout(delay)
 
                 cross_shard_txns = self.transaction_pool.pop_transaction(self.params["tx_block_capacity"], 'cross-shard')
                 for txn in cross_shard_txns:

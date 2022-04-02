@@ -3,6 +3,7 @@ import json
 import re
 import csv
 import glob
+import pathlib
 
 
 def add_cell_entry(query, row_data, line):
@@ -20,8 +21,13 @@ def summarize(dir):
                 'Processed TPS = ', 'Accepted TPS = ']
     
     col_names = [name.rstrip(' = ') for name in queries]
-    filename = f"logs_data/summary/{os.path.basename(os.path.normpath(dir))}_summary.csv"
     
+    dir_name = f"logs_data/summary/{pathlib.PurePath(dir).parent.name}"
+    if not os.path.exists(dir_name):
+        print(f"Creating directory '{dir_name}' for storing summary of the simulation logs\n")
+    pathlib.Path(dir_name).mkdir(parents=True, exist_ok=True)
+
+    filename = f"{dir_name}/{os.path.basename(os.path.normpath(dir))}_summary.csv"
     writer = csv.writer(open(filename, 'w'))
     writer.writerow(col_names)
 
