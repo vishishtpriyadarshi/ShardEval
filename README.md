@@ -1,7 +1,10 @@
-![ShardEVal](docs/ShardEval.png)
+<p align="center">
+    <img src="https://github.com/vishishtpriyadarshi/ShardEval/blob/main/docs/ShardEval.png">
+</p>
+
 
 ## Basic Overview
-ShardEval is a **sharding based blockchain simulator**. It is built on the top of [BlockEval](https://github.com/deepakgouda/BlockEval). More about the algorithm and simulator can be found here in this [doc](https://docs.google.com/document/d/1rB9lp8E5DQ6BXFdl3mfWjlItKq1i_78THTsPUrD1aXc/edit#).
+ShardEval is a **sharding-based blockchain simulator**. It is built on the top of [BlockEval](https://github.com/deepakgouda/BlockEval). More about the algorithm and simulator can be found here in this [doc](https://docs.google.com/document/d/1rB9lp8E5DQ6BXFdl3mfWjlItKq1i_78THTsPUrD1aXc/edit#).
 
 ![Architecture](docs/draft.png)
 
@@ -76,30 +79,34 @@ Total no of cross-shard transactions generated = 113
 
 Processed TPS = 0.22
 Accepted TPS = 0.066
-...
 ```
 
 ### Analysis of the Logs
 Upon execution, several files (html, txt, csv, png) will be created in respective folders inside the ```logs_data```.   
 
-To analyse the generated log file -
-```bash
-mkdir logs_data/interactive_plots logs_data/metadata logs_data/plots logs_data/summary
-python analyzer/log_analyzer.py <log_file>
-```
+- To analyse the generated log file -
+    ```bash
+    mkdir logs_data/interactive_plots logs_data/metadata logs_data/plots logs_data/summary
+    python analyzer/log_analyzer.py <log_file>
+    ```
 
-To generate the summary of the generated log files present in a directory -
-```bash
-mkdir logs_data/summary
-python analyzer/log_summarizer.py <directory_name>
-```
+- To generate the summary of the generated log files present in a directory -
+    ```bash
+    python analyzer/log_summarizer.py <directory_name>
+    ```
 
-To generate plots from the summary of the logs -
-```bash
-mkdir logs_data/plots
-python analyzer/visualizer.py logs_data/summary/<summary_file>.csv
-```
+- To generate plots from the summary of the logs -
+    ```bash
+    python analyzer/visualizer.py logs_data/summary/<summary_file>.csv
+    ```
 
 Example -
-
 ![sample plot](docs/sample_plt.png)
+
+
+**Note:**  
+For end-to-end execution of the simulator following commands should be executed -
+```bash
+chmod +x execute_simulator.sh
+./execute_simulator.sh
+```
