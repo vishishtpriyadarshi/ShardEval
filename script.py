@@ -1,19 +1,20 @@
 import json
 import os
+import sys
 import subprocess
 
 num_nodes = [100]
-num_shards = [5, 10, 15, 20]
+num_shards = [i for i in range(4, 60)]
 # tx_block_capacity = [5, 8, 10, 15, 20]
-cs_tx_fraction = [0, 0.25, 0.5, 0.75, 0.9]
+cs_tx_fraction = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
 
 
 for node_cnt in num_nodes:
     for shard_cnt in num_shards:
+        if shard_cnt == int(0.65 * node_cnt / 3):
+            break
+        
         for cs_tx_ratio in cs_tx_fraction:
-            # if (node_cnt != 15 and shard_cnt <= 2) or (node_cnt == 15 and shard_cnt > 1):
-            #     continue
-
             filename = 'config/params.json'
             with open(filename, 'r') as f:
                 data = json.load(f)
@@ -27,4 +28,9 @@ for node_cnt in num_nodes:
                 json.dump(data, f, indent=4)
 
             cmd = ['python', 'simulate.py']
-            subprocess.Popen(cmd).wait()
+            proc = subprocess.Popen(cmd)
+            proc.wait()
+
+            (stdout, stderr) = proc.communicate()
+            if proc.returncode != 0:
+                sys.exit(f"\n[script.py]: Aw, Snap! An error has occurred")

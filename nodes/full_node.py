@@ -81,8 +81,6 @@ class FullNode(ParticipatingNode):
         Generates transactions in the shard and broadcasts it to the neighbour nodes
         """
 
-        # To-Do: Don't allow generation of transactions during shard re-configuration
-
         if self.node_type != 3:
             raise RuntimeError("Node not allowed to generate transactions.")
 
@@ -541,7 +539,7 @@ class FullNode(ParticipatingNode):
                         delay = get_transaction_delay(
                             self.params["transaction_mu"], self.params["transaction_sigma"]
                         )
-                        yield self.env.timeout(delay*2)
+                        yield self.env.timeout(delay*10)
                         self.process_received_cross_shard_block(block, packeted_message.sender_id)
                         
             elif isinstance(block, MiniBlock):
@@ -880,8 +878,7 @@ class FullNode(ParticipatingNode):
 
         if self.node_type == 0:
             raise RuntimeError("Cross-shard-block received in between re-configuration.")
-            # To-do: Complete when dealing with nodes re-configuration (new epoch)
-        
+            
         if self.node_type == 1:
             raise RuntimeError("Cross-shard-block received by Principal Committee node.")    
         

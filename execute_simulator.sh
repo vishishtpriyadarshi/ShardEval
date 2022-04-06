@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 echo "[Shell]: Running script.py"
 python script.py
 
