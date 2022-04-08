@@ -1,6 +1,6 @@
 {
     "num_nodes": 100,
-    "simulation_time": 4000,
+    "simulation_time": 6000,
     "num_epochs": 1,
     "num_slots": 10,
     "num_shards": 20,
@@ -14,7 +14,7 @@
     "reward_percentage": 0.1,
     "tx_block_capacity": 10,
     "tx_blocks_in_mini_block": 1,
-    "cross_shard_tx_percentage": 1.0,
+    "cross_shard_tx_percentage": 0.9,
     "cutoff_vote_percentage": 0.5,
     "log_file": "simulation_results.log",
     "verbose": 0,

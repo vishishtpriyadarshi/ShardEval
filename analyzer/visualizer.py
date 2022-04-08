@@ -41,9 +41,9 @@ def visualize(filename, dir_name):
     __visualize(df, num_nodes, num_shards, cross_shard_tx_ratio, 'Number of nodes', 'Number of shards', \
             'Fraction of cross-shard tx', 'Processed TPS', 'No of shards vs TPS', plt_name)
 
-    # plt_name = f"{dir_name}/{pathlib.PurePath(filename).with_suffix('').name}_txRatioVsTPS"
-    # __visualize(df, num_nodes, cross_shard_tx_ratio, num_shards, 'Number of nodes', 'Fraction of cross-shard tx', \
-    #         'Number of shards', 'Processed TPS', 'fraction of cross-shard tx vs TPS', plt_name)
+    plt_name = f"{dir_name}/txRatioVsTPS"
+    __visualize(df, num_nodes, cross_shard_tx_ratio, num_shards, 'Number of nodes', 'Fraction of cross-shard tx', \
+            'Number of shards', 'Processed TPS', 'fraction of cross-shard tx vs TPS', plt_name)
         
 
 def main():

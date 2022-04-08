@@ -536,10 +536,10 @@ class FullNode(ParticipatingNode):
                             self.params
                         )
                     else:
-                        delay = get_transaction_delay(
-                            self.params["transaction_mu"], self.params["transaction_sigma"]
-                        )
-                        yield self.env.timeout(delay*10)
+                        # delay = get_transaction_delay(
+                        #     self.params["transaction_mu"], self.params["transaction_sigma"]
+                        # )
+                        # yield self.env.timeout(delay*5)
                         self.process_received_cross_shard_block(block, packeted_message.sender_id)
                         
             elif isinstance(block, MiniBlock):
