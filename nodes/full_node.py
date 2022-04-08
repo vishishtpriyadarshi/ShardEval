@@ -5,6 +5,8 @@ import functools
 import operator
 import json
 import uuid
+import time
+from interruptingcow import timeout
 
 from nodes.participating_node import ParticipatingNode
 from network.broadcast import broadcast
@@ -243,7 +245,7 @@ class FullNode(ParticipatingNode):
                 delay = get_transaction_delay(
                     self.params["transaction_mu"], self.params["transaction_sigma"]
                 )
-                yield self.env.timeout(delay)
+                yield self.env.timeout(delay * 2)
 
                 cross_shard_txns = self.transaction_pool.pop_transaction(self.params["tx_block_capacity"], 'cross-shard')
                 for txn in cross_shard_txns:
@@ -443,6 +445,15 @@ class FullNode(ParticipatingNode):
         """
         Cast votes on each tx in tx_block
         """
+        delay = get_transaction_delay(
+                    self.params["transaction_mu"], self.params["transaction_sigma"]
+                )
+        try:
+            with timeout(0.5, exception=RuntimeError):
+                pass
+        except RuntimeError:
+            pass
+        
         # To-do: Add vote option when node is unable to validate transaction
         for tx in tx_block.transactions_list:
             tx_block.votes_status[tx.id][self.id] = self.validate_transaction(tx)
@@ -452,6 +463,15 @@ class FullNode(ParticipatingNode):
         """
         ...
         """
+        delay = get_transaction_delay(
+                    self.params["transaction_mu"], self.params["transaction_sigma"]
+                )
+        try:
+            with timeout(0.5, exception=RuntimeError):
+                pass
+        except RuntimeError:
+            pass
+
         # To-do: Add vote option when node is unable to validate transaction
         for tx in cross_shard_block.transactions_list:
             vote = 2
