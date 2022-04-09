@@ -1,6 +1,6 @@
 {
     "num_nodes": 100,
-    "simulation_time": 6000,
+    "simulation_time": 4000,
     "num_epochs": 1,
     "num_slots": 10,
     "num_shards": 20,

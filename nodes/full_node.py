@@ -245,7 +245,7 @@ class FullNode(ParticipatingNode):
                 delay = get_transaction_delay(
                     self.params["transaction_mu"], self.params["transaction_sigma"]
                 )
-                yield self.env.timeout(delay * 2)
+                yield self.env.timeout(delay)
 
                 cross_shard_txns = self.transaction_pool.pop_transaction(self.params["tx_block_capacity"], 'cross-shard')
                 for txn in cross_shard_txns:
@@ -445,14 +445,14 @@ class FullNode(ParticipatingNode):
         """
         Cast votes on each tx in tx_block
         """
-        delay = get_transaction_delay(
-                    self.params["transaction_mu"], self.params["transaction_sigma"]
-                )
-        try:
-            with timeout(0.5, exception=RuntimeError):
-                pass
-        except RuntimeError:
-            pass
+        # delay = get_transaction_delay(
+        #             self.params["transaction_mu"], self.params["transaction_sigma"]
+        #         )
+        # try:
+        #     with timeout(0.5, exception=RuntimeError):
+        #         pass
+        # except RuntimeError:
+        #     pass
         
         # To-do: Add vote option when node is unable to validate transaction
         for tx in tx_block.transactions_list:
@@ -463,14 +463,14 @@ class FullNode(ParticipatingNode):
         """
         ...
         """
-        delay = get_transaction_delay(
-                    self.params["transaction_mu"], self.params["transaction_sigma"]
-                )
-        try:
-            with timeout(0.5, exception=RuntimeError):
-                pass
-        except RuntimeError:
-            pass
+        # delay = get_transaction_delay(
+        #             self.params["transaction_mu"], self.params["transaction_sigma"]
+        #         )
+        # try:
+        #     with timeout(0.5, exception=RuntimeError):
+        #         pass
+        # except RuntimeError:
+        #     pass
 
         # To-do: Add vote option when node is unable to validate transaction
         for tx in cross_shard_block.transactions_list:
@@ -545,6 +545,11 @@ class FullNode(ParticipatingNode):
                         curr_shard_nodes_id.remove(self.id)
                         block.add_shard_info_for_voting(self.shard_id, curr_shard_nodes_id)
                         
+                        delay = get_transaction_delay(
+                            self.params["transaction_mu"], self.params["transaction_sigma"]
+                        )
+                        yield self.env.timeout(delay*0.2)
+
                         shard_neighbours = get_shard_neighbours(self.curr_shard_nodes, self.neighbours_ids, self.shard_id)
                         broadcast(
                             self.env, 
