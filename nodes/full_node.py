@@ -54,7 +54,7 @@ class FullNode(ParticipatingNode):
         self.processed_mini_blocks = []
         self.processed_tx_blocks = []
         self.current_tx_blocks = []
-
+        
         # Experimental
         self.pc_leader_id = -1
         self.mini_blocks_vote_pool = []
@@ -83,7 +83,7 @@ class FullNode(ParticipatingNode):
         Generates transactions in the shard and broadcasts it to the neighbour nodes
         """
 
-        if self.node_type != 3:
+        if not (self.node_type == 3 or self.node_type == 2):
             raise RuntimeError("Node not allowed to generate transactions.")
 
         num = 0
@@ -445,13 +445,7 @@ class FullNode(ParticipatingNode):
         """
         Cast votes on each tx in tx_block
         """
-        # delay = get_transaction_delay(
-        #             self.params["transaction_mu"], self.params["transaction_sigma"]
-        #         )
-        # try:
-        #     with timeout(0.5, exception=RuntimeError):
-        #         pass
-        # except RuntimeError:
+        # for i in range(10000):
         #     pass
         
         # To-do: Add vote option when node is unable to validate transaction
@@ -463,13 +457,7 @@ class FullNode(ParticipatingNode):
         """
         ...
         """
-        # delay = get_transaction_delay(
-        #             self.params["transaction_mu"], self.params["transaction_sigma"]
-        #         )
-        # try:
-        #     with timeout(0.5, exception=RuntimeError):
-        #         pass
-        # except RuntimeError:
+        # for i in range(10000):
         #     pass
 
         # To-do: Add vote option when node is unable to validate transaction
@@ -530,14 +518,15 @@ class FullNode(ParticipatingNode):
             elif isinstance(block, CrossShardBlock):
                 flag = block.originating_shard_id == self.shard_id
                 curr_shard_nodes = [id for id, node in self.curr_shard_nodes.items() if node.shard_id == self.shard_id]
-                for txn in block.transactions_list:
-                    if txn.cross_shard_status != 1 :
-                        raise RuntimeError(f"Intra Shard transaction present in Cross Shard Block")
-                    receiver = txn.receiver
-                    if receiver in curr_shard_nodes:
-                        flag = True
-                        break
-
+                # for txn in block.transactions_list:
+                #     if txn.cross_shard_status != 1 :
+                #         raise RuntimeError(f"Intra Shard transaction present in Cross Shard Block")
+                #     receiver = txn.receiver
+                #     if receiver in curr_shard_nodes:
+                #         flag = True
+                #         break
+                
+                flag = True
                 # print(f"[Check]: {block.id} has flag = {flag} for {self.id}")
                 if flag:        # Cross-shard-block has even 1 tx related to the current shard
                     if received_cross_shard_block_for_first_time(block, self.shard_id):                        
