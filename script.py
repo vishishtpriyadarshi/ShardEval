@@ -4,18 +4,18 @@ import sys
 import subprocess
 
 num_nodes = [100]
-# num_shards = [i for i in range(4, 60)]
-num_shards = [4, 10, 20]
+num_shards = [i for i in range(3, 60)]
+# num_shards = [4, 10, 20]
 # tx_block_capacity = [5, 8, 10, 15, 20]
 # cs_tx_fraction = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
-# cs_tx_fraction = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-cs_tx_fraction = [0.0, 0.1, 0.9, 1.0]
+cs_tx_fraction = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+# cs_tx_fraction = [0.0, 0.1, 0.9, 1.0]
 
 
 for node_cnt in num_nodes:
     for shard_cnt in num_shards:
-        # if shard_cnt == int(0.65 * node_cnt / 3):
-        #     break
+        if shard_cnt == int(0.65 * node_cnt / 3):
+            break
         
         for cs_tx_ratio in cs_tx_fraction:
             filename = 'config/params.json'

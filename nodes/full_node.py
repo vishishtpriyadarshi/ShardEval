@@ -537,7 +537,7 @@ class FullNode(ParticipatingNode):
                         delay = get_transaction_delay(
                             self.params["transaction_mu"], self.params["transaction_sigma"]
                         )
-                        yield self.env.timeout(delay*0.2)
+                        yield self.env.timeout(delay*0.4)
 
                         shard_neighbours = get_shard_neighbours(self.curr_shard_nodes, self.neighbours_ids, self.shard_id)
                         broadcast(
