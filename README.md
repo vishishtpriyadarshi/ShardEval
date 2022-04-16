@@ -12,36 +12,91 @@ ShardEval is a **sharding-based blockchain simulator**. It is built on the top o
 ```bash
 cd ShardEval
 pip install -r requirements.txt
+bash setup.sh
 ```
 
 ## Usage 
+The command-line interface for the doc-phi can be used as:
 
-### Execution of the Simulator
-The simulator can be executed in 2 ways -
-1. Using ```simulate.py``` to generate a single log file
+```
+ __ _                   _   __            _ 
+/ _\ |__   __ _ _ __ __| | /__\_   ____ _| |
+\ \| '_ \ / _` | '__/ _` |/_\ \ \ / / _` | |
+_\ \ | | | (_| | | | (_| //__  \ V / (_| | |
+\__/_| |_|\__,_|_|  \__,_\__/   \_/ \__,_|_|
 
-    ```bash
-    mkdir simulation_logs
-    python simulate.py
-    ```
+Usage: shard-eval [OPTIONS] COMMAND [ARGS]...
 
-2. Using ```script.py``` to generate log files in bulk
+Options:
+  --help  Show this message and exit.
 
-    ```bash
-    mkdir simulation_logs
-    python script.py
-    ```
+Commands:
+  analyze-log           Analyze the generated log files
+  batch-run-simulation  Initiate simulations in batches
+  execute-simulator     execute simulator completely
+  run-simulation        Initiate a simulation
+  summarize-logs        Summarize the generated log files
+  visualize-file        visualize the generated log files
+```
 
-    The script files need to be modified suitably to generate logs with suitable parameters. The parameters can be modified fron the ```config/params.json``` file.
+A more elaborate explanation is as follows:
+
+### 1. Running Simulation
+The simulation can be executed by:
+```
+shard-eval run-simulation
+```
+The simulation executes as per the parameters specified in the
+```config/params.json``` file. The result of the simulation are the log files which are stored accordingly in the folder ```simulation_logs```.
 
 **Note:** To generate detailed logs, set ```verbose``` to 1 in the ```params.json``` file.
 
+### 2. Running Simulation in Batch
+The simulation can be executed in batch by using following command:
+```
+shard-eval batch-run-simulation
+```
 
-### Output from the Simulator
-Upon executing the simulator, log file(s) containing the simulation results and entire lifecycle of the simulation will be generated.  
-In case of ```simulate.py```, the log file will be named as ```simulation_results.log```, while in case of ```script.py```, more elaborate naming convention is followed and logs fils are stored in a directory structure representing current dare and time.
+The ```script.py``` file needs to be changed accordingly to generate the logs as per the required parameters.
 
-Example -
+### 3. Analyzing the logs
+The generated log files can be analyzed by:
+
+```
+shard-eval analyze-log <log_file>
+```
+
+Upon execution, several files (html, txt, csv, png) will be created in respective folders inside the ```logs_data``` which will contain a detailed analysis of the log file. 
+
+
+### 4. Summarizing the logs (in batch)
+To create a summary of the logs, following command can be used:
+
+```
+shard-eval summarize-logs <logs_directory>
+```
+
+A single csv file containing the summary of all the logs will be generated.
+
+
+### 5. Visualizing the summary of the logs
+After creating the summary, the csv file can be visualized using:
+
+```
+shard-eval visualize-file <summary_file>
+```
+
+Several plots will be created inside the suitable directories under the ```logs_data``` directory.
+
+
+### 6. End-to-end execution of the simulator
+To execute the simulator completely and perform all the steps in an instant, following command can be useful:
+
+```
+shard-eval execute-simulator
+```
+
+### Example log file
 
 ```
 ...
@@ -79,34 +134,4 @@ Total no of cross-shard transactions generated = 113
 
 Processed TPS = 0.22
 Accepted TPS = 0.066
-```
-
-### Analysis of the Logs
-Upon execution, several files (html, txt, csv, png) will be created in respective folders inside the ```logs_data```.   
-
-- To analyse the generated log file -
-    ```bash
-    mkdir logs_data/interactive_plots logs_data/metadata logs_data/plots logs_data/summary
-    python analyzer/log_analyzer.py <log_file>
-    ```
-
-- To generate the summary of the generated log files present in a directory -
-    ```bash
-    python analyzer/log_summarizer.py <directory_name>
-    ```
-
-- To generate plots from the summary of the logs -
-    ```bash
-    python analyzer/visualizer.py logs_data/summary/<summary_file>.csv
-    ```
-
-Example -
-![sample plot](docs/sample_plt.png)
-
-
-**Note:**  
-For end-to-end execution of the simulator following commands should be executed -
-```bash
-chmod +x execute_simulator.sh
-./execute_simulator.sh
 ```

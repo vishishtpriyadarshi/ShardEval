@@ -24,7 +24,7 @@ def execute_command(filename, parameter):
 
 @click.group()
 def main():
-    f = Figlet(font='doom')
+    f = Figlet(font='ogre')
     click.secho(f.renderText('ShardEval'), fg='green')
     
 
