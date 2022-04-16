@@ -2,15 +2,17 @@ import json
 import os
 import sys
 import subprocess
+import time
 
-num_nodes = [100]
+num_nodes = [20]
 num_shards = [i for i in range(3, 60)]
 # num_shards = [4, 10, 20]
 # tx_block_capacity = [5, 8, 10, 15, 20]
 # cs_tx_fraction = [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
-cs_tx_fraction = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
-# cs_tx_fraction = [0.0, 0.1, 0.9, 1.0]
+# cs_tx_fraction = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+cs_tx_fraction = [0.1, 0.9]
 
+dir_suffix = time.strftime('%Y-%m-%d/%H-%M')
 
 for node_cnt in num_nodes:
     for shard_cnt in num_shards:
@@ -30,10 +32,10 @@ for node_cnt in num_nodes:
             with open(filename, 'w') as f:
                 json.dump(data, f, indent=4)
 
-            cmd = ['python', 'simulate.py']
-            proc = subprocess.Popen(cmd, shell=True)
+            cmd = ['python', 'simulate.py', dir_suffix]
+            proc = subprocess.Popen(cmd)
             proc.wait()
 
             (stdout, stderr) = proc.communicate()
             if proc.returncode != 0:
-                sys.exit(f"\n[script.py]: Aw, Snap! An error has occurred")
+                sys.exit("\n\x1b[1;31m[script.py]: Aw, Snap! An error has occurred")

@@ -1,4 +1,4 @@
-import sys
+import os, sys, inspect
 import json
 import re
 import csv
@@ -7,6 +7,11 @@ from prettytable import PrettyTable
 import networkx as nx
 from pyvis.network import Network
 import matplotlib.pyplot as plt
+
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir)
+from utils.color_print import ColorPrint
 
 
 def get_file_suffix():
@@ -96,13 +101,13 @@ def create_graph(log_file, verbose=False):
     nx.draw(G, with_labels = True)
 
     filename = "network_graph_" + get_file_suffix()
-    print(f"Saving static graph in file 'logs_data/plots/{filename}.png'\n")
+    ColorPrint.print_info(f"\nSaving static graph in file 'logs_data/plots/{filename}.png'")
     plt.savefig(f"logs_data/plots/{filename}.png")
 
     vis_net = Network(height='750px', width='100%')
     vis_net.from_nx(G)
     # vis_net.show_buttons(filter_=['physics'])
-    print(f"Saving interactive graph in file 'logs_data/interactive_plots/{filename}.html'\n")
+    ColorPrint.print_info(f"\n[Info]: Saving interactive graph in file 'logs_data/interactive_plots/{filename}.html'")
     vis_net.save_graph(f"logs_data/interactive_plots/{filename}.html")
 
 
@@ -121,7 +126,7 @@ def analyse_tx_blocks(log_file):
     filename = "metadata_" + get_file_suffix()
     col_names = ['Tx-Block ID', 'Timestamp', 'Sender', 'Receiver']
 
-    print(f"Preparing csv file 'logs_data/metadata/{filename}.csv'\n")
+    ColorPrint.print_info(f"[Info]: Preparing csv file 'logs_data/metadata/{filename}.csv'")
     writer = csv.writer(open(f"logs_data/metadata/{filename}.csv", 'w'))
     writer.writerow(col_names)
     pt = PrettyTable()
@@ -147,12 +152,16 @@ def analyse_tx_blocks(log_file):
                 writer.writerow(['', timestamp, sender, receiver])
                 pt.add_row(['', timestamp, sender, receiver])
 
-    print(f"Writing metadata in file 'logs_data/metadata/{filename}.txt'\n")
+    ColorPrint.print_info(f"[Info]: Writing metadata in file 'logs_data/metadata/{filename}.txt'\n")
     with open(f"logs_data/metadata/{filename}.txt", "w") as text_file:
         text_file.write(pt.get_string())
 
 
 def main():
+    if len(sys.argv) == 1:
+        ColorPrint.print_fail(f"\n[Error]: log file not specified")
+        exit(1)
+        
     log_file = sys.argv[1]
     create_graph(log_file)
     analyse_tx_blocks(log_file)

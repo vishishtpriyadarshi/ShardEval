@@ -6,6 +6,7 @@ import pathlib
 import time
 
 from network.network import Network
+from utils.color_print import ColorPrint
 
 
 def execute_simulation(name, env, params):
@@ -40,16 +41,17 @@ def main():
     params = load_parameters()
 
     orig_stdout = sys.stdout
+    dir_suffix = sys.argv[1] if len(sys.argv) > 1 else time.strftime('%Y-%m-%d/%H-%M')
+    dir_name = f"simulation_logs/{dir_suffix}"
     
-    dir_name = f"simulation_logs/{time.strftime('%Y-%m-%d/%H-%m')}"
     if not os.path.exists(dir_name):
-        print(f"Creating directory '{dir_name}' for storing the simulation logs")
+        ColorPrint.print_info(f"\n[Info]: Creating directory '{dir_name}' for storing the simulation logs")
     pathlib.Path(dir_name).mkdir(parents=True, exist_ok=True)
     # file_name = f"{dir_name}/simulation_results_txLimit{params['tx_block_capacity']}_n{params['num_nodes']}_sh{params['num_shards']}_sim{params['simulation_time']}.log"
     file_name = f"{dir_name}/simulation_results_cstx{params['cross_shard_tx_percentage']}_n{params['num_nodes']}_sh{params['num_shards']}_sim{params['simulation_time']}.log"
     
     f = open(file_name, 'w')
-    print(f"Writing simulation logs to the file '{file_name}'\n")
+    ColorPrint.print_info(f"\n[Info]: Writing simulation logs to the file '{file_name}'")
     sys.stdout = f
 
     params["generated_tx_count"], params["processed_tx_count"] = 0, 0

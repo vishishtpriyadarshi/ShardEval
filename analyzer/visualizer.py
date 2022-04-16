@@ -1,8 +1,12 @@
-import os
-import sys
+import os, sys, inspect
 import pandas as pd
 import matplotlib.pyplot as plt
 import pathlib
+
+current_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent_dir = os.path.dirname(current_dir)
+sys.path.insert(0, parent_dir)
+from utils.color_print import ColorPrint
 
 
 def __visualize(df, base_list, param_list, cond_list, base_col, param_col, cond_col, tps_col, plt_title, plt_name):
@@ -23,8 +27,8 @@ def __visualize(df, base_list, param_list, cond_list, base_col, param_col, cond_
             plt.savefig(f"{plt_name}_{base_col}={n}_{cond_col}={m}.png")
             plt.figure()
 
-            print(f"Saving plot for {plt_title} for {base_col} = {n} and {cond_col}={m}")
-            
+            ColorPrint.print_info(f"[Info]: Saving plot for {plt_title} for {base_col} = {n} and {cond_col}={m}")
+        
         plt.legend(cond_list, loc='best', title=cond_col)
         plt.grid(axis='y')
         # plt.savefig(f"{plt_name}_{base_col}={n}.png")
@@ -47,18 +51,22 @@ def visualize(filename, dir_name):
         
 
 def main():
+    if len(sys.argv) == 1:
+        ColorPrint.print_fail(f"\n[Error]: log file not specified")
+        exit(1)
+
     filename = sys.argv[1]
-    
     parent_dir_name = f"logs_data/plots/{pathlib.PurePath(filename).parent.name}"
     exact_filename = pathlib.PurePath(filename).name
     dir_name = f"{parent_dir_name}/{exact_filename[:exact_filename.find('_')]}"
     
     if not os.path.exists(dir_name):
-        print(f"Creating directory '{dir_name}' for storing plots\n")
+        ColorPrint.print_info(f"[Info]: Creating directory '{dir_name}' for storing plots")
     pathlib.Path(dir_name).mkdir(parents=True, exist_ok=True)
     
     visualize(filename, dir_name)
-    
+    print("\n")
+
 
 if __name__=="__main__":
     main()
