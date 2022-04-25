@@ -139,4 +139,4 @@ Accepted TPS = 0.066
 ```
 
 ## Disclaimer
-This repository was created by @vishishtpriyadarshi and @coolgoel as part of the BTP work done under [Prof. Kalpesh Kapoor](https://www.iitg.ac.in/kalpesh/) at IIT Guwahati.
+This repository was created by [vishishtpriyadarshi](https://github.com/vishishtpriyadarshi) and [coolgoel](https://github.com/coolgoel) as part of the BTP work done under [Prof. Kalpesh Kapoor](https://www.iitg.ac.in/kalpesh/) at IIT Guwahati.
