@@ -24,6 +24,7 @@ def __visualize(df, base_list, param_list, cond_list, base_col, param_col, cond_
             plt.title(f'{plt_title} for {base_col} = {n}')
             plt.plot(x, y, marker="o")
 
+            # plt.grid()
             plt.savefig(f"{plt_name}_{base_col}={n}_{cond_col}={m}.png")
             plt.figure()
 
@@ -43,7 +44,7 @@ def visualize(filename, dir_name):
 
     plt_name = f"{dir_name}/shardsVsTPS"
     __visualize(df, num_nodes, num_shards, cross_shard_tx_ratio, 'Number of nodes', 'Number of shards', \
-            'Fraction of cross-shard tx', 'Processed TPS', 'No of shards vs TPS', plt_name)
+            'Fraction of cross-shard tx', 'Processed TPS', 'Processed TPS vs Number of Shards', plt_name)
 
     plt_name = f"{dir_name}/txRatioVsTPS"
     __visualize(df, num_nodes, cross_shard_tx_ratio, num_shards, 'Number of nodes', 'Fraction of cross-shard tx', \

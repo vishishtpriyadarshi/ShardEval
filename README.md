@@ -3,19 +3,21 @@
 </p>
 
 
-## Basic Overview
-ShardEval is a **sharding-based blockchain simulator**. It is built on the top of [BlockEval](https://github.com/deepakgouda/BlockEval). More about the algorithm and simulator can be found here in this [doc](https://docs.google.com/document/d/1rB9lp8E5DQ6BXFdl3mfWjlItKq1i_78THTsPUrD1aXc/edit#).
+# Basic Overview
+ShardEval is a **sharding-based blockchain simulator**. It can be used to simulate protocols for the sharding-based Blockchain systems. ShardEval is built on the top of [BlockEval](https://github.com/deepakgouda/BlockEval).
 
-![Architecture](docs/draft.png)
+Following is a brief representation of the simulator workflow for sharded systems:
 
-## Setup
+![Worklfow](docs/workflow.png)
+
+# Setup
 ```bash
 cd ShardEval
 pip install -r requirements.txt
 bash setup.sh
 ```
 
-## Usage 
+# Usage 
 The command-line interface for the doc-phi can be used as:
 
 ```
@@ -41,7 +43,7 @@ Commands:
 
 A more elaborate explanation is as follows:
 
-### 1. Running Simulation
+## 1. Running Simulation
 The simulation can be executed by:
 ```
 shard-eval run-simulation
@@ -51,7 +53,7 @@ The simulation executes as per the parameters specified in the
 
 **Note:** To generate detailed logs, set ```verbose``` to 1 in the ```params.json``` file.
 
-### 2. Running Simulation in Batch
+## 2. Running Simulation in Batch
 The simulation can be executed in batch by using following command:
 ```
 shard-eval batch-run-simulation
@@ -59,44 +61,44 @@ shard-eval batch-run-simulation
 
 The ```script.py``` file needs to be changed accordingly to generate the logs as per the required parameters.
 
-### 3. Analyzing the logs
+## 3. Analyzing the logs
 The generated log files can be analyzed by:
 
 ```
-shard-eval analyze-log <log_file>
+shard-eval analyze-log --log_file=<log_file>
 ```
 
 Upon execution, several files (html, txt, csv, png) will be created in respective folders inside the ```logs_data``` which will contain a detailed analysis of the log file. 
 
 
-### 4. Summarizing the logs (in batch)
+## 4. Summarizing the logs (in batch)
 To create a summary of the logs, following command can be used:
 
 ```
-shard-eval summarize-logs <logs_directory>
+shard-eval summarize-logs --log_dir=<logs_directory>
 ```
 
 A single csv file containing the summary of all the logs will be generated.
 
 
-### 5. Visualizing the summary of the logs
+## 5. Visualizing the summary of the logs
 After creating the summary, the csv file can be visualized using:
 
 ```
-shard-eval visualize-file <summary_file>
+shard-eval visualize-file --summary_file=<summary_file>
 ```
 
 Several plots will be created inside the suitable directories under the ```logs_data``` directory.
 
 
-### 6. End-to-end execution of the simulator
+## 6. End-to-end execution of the simulator
 To execute the simulator completely and perform all the steps in an instant, following command can be useful:
 
 ```
 shard-eval execute-simulator
 ```
 
-### Example log file
+## Sample log file
 
 ```
 ...
@@ -135,3 +137,6 @@ Total no of cross-shard transactions generated = 113
 Processed TPS = 0.22
 Accepted TPS = 0.066
 ```
+
+## Disclaimer
+This repository was created by @vishishtpriyadarshi and @coolgoel as part of the BTP work done under [Prof. Kalpesh Kapoor](https://www.iitg.ac.in/kalpesh/) at IIT Guwahati.

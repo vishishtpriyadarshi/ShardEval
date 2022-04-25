@@ -89,7 +89,7 @@ def visualize_file(summary_file):
 
 @main.command(help='execute simulator completely')
 def execute_simulator():
-    spinner = Halo(text='Visualising summary files', text_color='yellow', spinner='dots')
+    spinner = Halo(text='Executing simulator', text_color='yellow', spinner='dots')
     
     spinner.start()
     spinner.stop_and_persist(symbol='⌛'.encode('utf-8'), text='Executing simulator')
