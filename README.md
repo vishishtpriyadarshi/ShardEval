@@ -2,6 +2,9 @@
     <img src="https://github.com/vishishtpriyadarshi/ShardEval/blob/main/docs/ShardEval.png">
 </p>
 
+<hr />
+
+[![DOI](https://zenodo.org/badge/450803771.svg)](https://zenodo.org/badge/latestdoi/450803771)
 
 # Basic Overview
 ShardEval is a **sharding-based blockchain simulator**. It can be used to simulate protocols for the sharding-based Blockchain systems. ShardEval is built on the top of [BlockEval](https://github.com/deepakgouda/BlockEval).
@@ -98,7 +101,7 @@ To execute the simulator completely and perform all the steps in an instant, fol
 shard-eval execute-simulator
 ```
 
-## Sample log file
+# Sample log file
 
 ```
 ...
@@ -137,6 +140,3 @@ Total no of cross-shard transactions generated = 113
 Processed TPS = 0.22
 Accepted TPS = 0.066
 ```
-
-## Disclaimer
-This repository was created by [vishishtpriyadarshi](https://github.com/vishishtpriyadarshi) and [coolgoel](https://github.com/coolgoel) as part of the BTP work done under [Prof. Kalpesh Kapoor](https://www.iitg.ac.in/kalpesh/) at IIT Guwahati.

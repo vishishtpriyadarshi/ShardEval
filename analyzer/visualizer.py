@@ -14,6 +14,9 @@ def __visualize(df, base_list, param_list, cond_list, base_col, param_col, cond_
     
     for n in base_list:
         for m in cond_list:
+            # if not (abs(m) <= 1e-4 or abs(m - 0.7) <= 1e-4):
+            #     continue
+            
             rows = df.loc[(df[base_col] == n) & (df[cond_col] == m)]
             rows = rows.sort_values(param_col)
             x = rows[param_col]
@@ -31,6 +34,7 @@ def __visualize(df, base_list, param_list, cond_list, base_col, param_col, cond_
             ColorPrint.print_info(f"[Info]: Saving plot for {plt_title} for {base_col} = {n} and {cond_col}={m}")
         
         plt.legend(cond_list, loc='best', title=cond_col)
+        # plt.legend([0.0, 0.7], loc='best', title=cond_col)
         plt.grid(axis='y')
         # plt.savefig(f"{plt_name}_{base_col}={n}.png")
         # plt.show()
