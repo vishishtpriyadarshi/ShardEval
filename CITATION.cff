@@ -1,5 +1,5 @@
 cff-version: 1.1.0
-message: "If you use this software, please cite it as below."
+message: "If you use this simulator, please cite it as below."
 authors:
 - family-names: "Priyadarshi"
   given-names: "Vishisht"
@@ -7,8 +7,8 @@ authors:
   given-names: "Sourav"
 - family-names: "Kapoor"
   given-names: "Kalpesh"
-title: "ShardEval: Sharding-based Blockchain Simulator"
+title: "Analysis of Optimal Number of Shards Using ShardEval, A Simulator for Sharded Blockchains"
 version: v1.0.0
-doi: 10.5281/zenodo.6806273
-date-released: 2022-07-07
-url: "https://github.com/vishishtpriyadarshi/ShardEval"
+booktitle: "Information Systems Security",
+year: "2023",
+publisher: "Springer Nature Switzerland"
