@@ -106,10 +106,10 @@ If you use this simulator in your research, please cite:
 
 ```bib
 @InProceedings{10.1007/978-3-031-49099-6_21,
-              author="Priyadarshi, Vishisht and Goel, Sourav and Kapoor, Kalpesh",
-              title="Analysis of Optimal Number of Shards Using ShardEval, A Simulator for Sharded Blockchains",
-              booktitle="Information Systems Security",
-              year="2023",
-              publisher="Springer Nature Switzerland"
+  author = "Priyadarshi, Vishisht and Goel, Sourav and Kapoor, Kalpesh",
+  title = "Analysis of Optimal Number of Shards Using ShardEval, A Simulator for Sharded Blockchains",
+  booktitle = "Information Systems Security",
+  year = "2023",
+  publisher = "Springer Nature Switzerland"
 }
 ```
